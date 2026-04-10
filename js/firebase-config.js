@@ -3,7 +3,7 @@
    Stores data in the user-requested admin-portal tree
    ============================================= */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -17,7 +17,7 @@ const firebaseConfig = {
   measurementId: "G-FTF4K4EF0Y"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const portalRef = ref(db, "admin-portal");
 let portalWriteQueue = Promise.resolve();
