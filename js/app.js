@@ -815,22 +815,48 @@ const getObj = (key) => {
 const normalizeText = (text) => (text || '').toString().trim().toLowerCase();
 let vmDataReadyPromise = null;
 
+async function persistAnyViaRest(key, value) {
+  const baseUrl = window.__vmFirebaseDatabaseUrl || 'https://schoolweb-d6da1-default-rtdb.firebaseio.com';
+  const target = `${baseUrl}/admin-portal/School%20Progress/System%20Data/${encodeURIComponent(key)}.json`;
+  const response = await fetch(target, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(value)
+  });
+  if (!response.ok) {
+    throw new Error(`REST persist failed (${response.status})`);
+  }
+  return response.json().catch(() => null);
+}
+
 async function persistAnyToStorageAndFirebase(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
   if (!window.FB) {
-    pendingFirebaseSyncs.set(key, value);
-    return { storedLocally: true, syncedRemotely: false };
+    try {
+      await persistAnyViaRest(key, value);
+      pendingFirebaseSyncs.delete(key);
+      return { storedLocally: true, syncedRemotely: true, via: 'rest' };
+    } catch (error) {
+      pendingFirebaseSyncs.set(key, value);
+      return { storedLocally: true, syncedRemotely: false, error };
+    }
   }
 
   try {
     const docId = FIREBASE_DOC_MAP[key] || 'data';
     await window.FB.setAny(key, value, docId);
     pendingFirebaseSyncs.delete(key);
-    return { storedLocally: true, syncedRemotely: true };
+    return { storedLocally: true, syncedRemotely: true, via: 'sdk' };
   } catch (error) {
     console.warn(`[Firebase] Explicit persist failed for ${key}:`, error);
-    pendingFirebaseSyncs.set(key, value);
-    return { storedLocally: true, syncedRemotely: false, error };
+    try {
+      await persistAnyViaRest(key, value);
+      pendingFirebaseSyncs.delete(key);
+      return { storedLocally: true, syncedRemotely: true, via: 'rest-fallback', error };
+    } catch (restError) {
+      pendingFirebaseSyncs.set(key, value);
+      return { storedLocally: true, syncedRemotely: false, error: restError };
+    }
   }
 }
 

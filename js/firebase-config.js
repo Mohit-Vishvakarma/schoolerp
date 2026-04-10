@@ -16,6 +16,7 @@ const firebaseConfig = {
   appId: "1:682634808397:web:87e7113118541313606004",
   measurementId: "G-FTF4K4EF0Y"
 };
+window.__vmFirebaseDatabaseUrl = firebaseConfig.databaseURL;
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getDatabase(app);
