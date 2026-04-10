@@ -1,50 +1,277 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="About Shri Saraswati Vidya Mandir."><title>About Us | Shri Saraswati Vidya Mandir</title><link rel="stylesheet" href="../css/style.css"></head><body class="">
-<header class="navbar">
-  <div class="navbar-inner">
-    <a class="navbar-brand" href="../index.html">
-      <div class="navbar-logo">SV</div>
-      <div class="navbar-name"><h1>Shri Saraswati Vidya Mandir</h1><span>Academic Excellence, Modern Learning</span></div>
-    </a>
-    <ul class="nav-links">
-      <li><a href="../index.html" data-nav-target="index.html">Home</a></li>
-      <li><a href="about.html" data-nav-target="about.html">About</a></li>
-      <li><a href="admission.html" data-nav-target="admission.html">Admission</a></li>
-      <li><a href="curriculum.html" data-nav-target="curriculum.html">Curriculum</a></li>
-      <li><a href="faculties.html" data-nav-target="faculties.html">Faculty</a></li>
-      <li><a href="results.html" data-nav-target="results.html">Results</a></li>
-      <li><a href="contact.html" data-nav-target="contact.html">Contact</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a class="btn btn-outline-primary btn-sm" href="login.html">Portal Login</a>
-      <a class="btn btn-accent btn-sm" href="admission.html">Apply Now</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="About Excellence Academy - Quality Education">
+    <title>About Us - Excellence Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .about-hero { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 80px 20px; text-align: center; }
+        .about-hero h1 { font-size: clamp(32px, 6vw, 56px); font-weight: 700; margin-bottom: 16px; }
+        .about-hero p { font-size: 18px; opacity: 0.9; max-width: 700px; margin: 0 auto; }
+        .timeline { position: relative; padding: 60px 0; }
+        .timeline-item { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; margin-bottom: 60px; }
+        .timeline-item:nth-child(even) { direction: rtl; }
+        .timeline-item:nth-child(even) > * { direction: ltr; }
+        .timeline-year { font-size: 32px; font-weight: 700; color: #2563eb; margin-bottom: 8px; }
+        .timeline-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+        .timeline-desc { color: #6b7280; line-height: 1.7; }
+        .timeline-image { background: linear-gradient(135deg, #2563eb 0%, #2563eb 100%); height: 300px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 80px; color: rgba(255,255,255,0.3); }
+        .values-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 40px; }
+        .value-card { background: white; padding: 32px 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
+        .value-icon { font-size: 48px; margin-bottom: 16px; }
+        .value-title { color: #111827; font-weight: 700; margin-bottom: 8px; }
+        .value-desc { color: #6b7280; font-size: 13px; line-height: 1.6; }
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-top: 40px; }
+        .team-member { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; }
+        .member-avatar { font-size: 80px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); padding: 32px 0; }
+        .member-info { padding: 20px; }
+        .member-name { color: #111827; font-weight: 700; margin-bottom: 4px; }
+        .member-role { color: #6b7280; font-size: 12px; }
+
+        @media (max-width: 768px) {
+            .timeline-item { grid-template-columns: 1fr; }
+            .timeline-item:nth-child(even) { direction: ltr; }
+            .timeline-image { height: 200px; font-size: 48px; }
+            .about-hero { padding: 50px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header sticky-header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon">📚</span>
+                    <span class="logo-text">Excellence Academy</span>
+                </a>
+                <nav class="nav-menu" id="navMenu">
+                    <a href="../index.html" class="nav-link">Home</a>
+                    <a href="about.html" class="nav-link active">About</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <div class="about-hero">
+        <h1>About Excellence Academy</h1>
+        <p>Shaping minds, building futures since 2005</p>
     </div>
-    <button class="hamburger" id="hamburger" type="button" aria-label="Open menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="mobile-nav" id="mobileNav">
-    <a href="../index.html" data-nav-target="index.html">Home</a>
-    <a href="about.html" data-nav-target="about.html">About</a>
-    <a href="admission.html" data-nav-target="admission.html">Admission</a>
-    <a href="curriculum.html" data-nav-target="curriculum.html">Curriculum</a>
-    <a href="faculties.html" data-nav-target="faculties.html">Faculty</a>
-    <a href="students.html" data-nav-target="students.html">Students</a>
-    <a href="results.html" data-nav-target="results.html">Results</a>
-    <a href="fee-payment.html" data-nav-target="fee-payment.html">Fee Payment</a>
-    <a href="notice-board.html" data-nav-target="notice-board.html">Notice Board</a>
-    <a href="events.html" data-nav-target="events.html">Events</a>
-    <a href="blogs.html" data-nav-target="blogs.html">Blogs</a>
-    <a href="gallery.html" data-nav-target="gallery.html">Gallery</a>
-    <a href="contact.html" data-nav-target="contact.html">Contact</a>
-  </div>
-</header><main class="page-shell">
-<section class="internal-hero"><div class="container"><div class="internal-hero-grid"><div class="internal-hero-copy"><span class="internal-badge">Since 1985</span><h1 class="internal-title">A school system built around <span>clarity, care and consistency.</span></h1><p class="internal-subtitle">SSVM has grown into a trusted campus where academics, values and digital convenience work together for families.</p><div class="hero-mini-stats"><div class="hero-mini-stat"><strong>41+</strong><span>Years of legacy</span></div><div class="hero-mini-stat"><strong>5200+</strong><span>Learners mentored</span></div><div class="hero-mini-stat"><strong>250+</strong><span>Faculty and staff</span></div></div></div><aside class="internal-hero-card"><h3>Why families choose SSVM</h3><p>Parents value the school for visible discipline, approachable teachers and systems that make daily school life smoother.</p><ul class="hero-checklist"><li>Consistent design language across public pages</li><li>Readable dummy content for UI balance</li><li>Responsive sections that match the homepage palette</li></ul></aside></div></div></section><section><div class="container"><div class="metrics-strip"><div class="metric-tile"><strong>41+</strong><span>Years of legacy</span></div><div class="metric-tile"><strong>5200+</strong><span>Learners mentored</span></div><div class="metric-tile"><strong>250+</strong><span>Faculty and staff</span></div></div></div></section><section class="page-section"><div class="container"><div class="section-slab"><div class="content-grid-3"><article class="page-card"><span class="eyebrow">Journey</span><h3>Foundation and growth</h3><p>From a modest local school to a modern campus, every phase focused on teaching quality and family trust.</p></article><article class="page-card"><span class="eyebrow">Approach</span><h3>Vision-led academics</h3><p>Structured planning, regular review and strong mentoring keep student progress visible.</p></article><article class="page-card"><span class="eyebrow">Culture</span><h3>Balanced development</h3><p>Academics, speaking, arts and sports are treated as part of one school experience.</p></article></div></div><div class="section-slab"><div class="content-grid-2"><article class="page-card"><span class="eyebrow">Mission</span><h3>Mission</h3><p>Create confident, disciplined and future-ready learners with strong ethical grounding.</p></article><article class="page-card"><span class="eyebrow">Vision</span><h3>Vision</h3><p>Build a school ecosystem where performance and personal growth stay equally important.</p></article></div></div><div class="cta-banner"><div><h3>See the leadership philosophy</h3><p>Read the principal desk and faculty pages for a deeper understanding of the school culture.</p></div><div class="cta-actions"><a class="btn btn-accent" href="principal.html">Principal Desk</a><a class="btn btn-outline" href="faculties.html">Meet Faculty</a></div></div></div></section></main>
-<footer class="footer">
-  <div class="footer-main">
-    <div class="container footer-grid">
-      <div class="footer-brand"><h3>Shri Saraswati Vidya Mandir</h3><p>Trusted school ecosystem for academics, values, campus life and digital-first parent support.</p></div>
-      <div class="footer-col"><h4>Explore</h4><ul class="footer-links"><li><a href="about.html">About</a></li><li><a href="curriculum.html">Curriculum</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li></ul></div>
-      <div class="footer-col"><h4>Student Services</h4><ul class="footer-links"><li><a href="results.html">Results</a></li><li><a href="fee-payment.html">Fee Payment</a></li><li><a href="notice-board.html">Notices</a></li><li><a href="transport.html">Transport</a></li></ul></div>
-      <div class="footer-col"><h4>Connect</h4><ul class="footer-links"><li><a href="contact.html">14 Knowledge Avenue, Indore</a></li><li><a href="contact.html">+91 91090 12030</a></li><li><a href="contact.html">connect@ssvmindore.edu.in</a></li><li><a href="login.html">ERP Portal</a></li></ul></div>
+
+    <div class="container">
+        <!-- Our Story -->
+        <section style="padding: 80px 0;">
+            <h2 class="section-title" style="max-width: 600px;">Our Story</h2>
+            <div style="max-width: 800px; margin-top: 30px;">
+                <p style="color: #6b7280; font-size: 16px; line-height: 1.8; margin-bottom: 16px;">
+                    Excellence Academy was founded in 2005 with a singular vision: to provide world-class education that combines academic rigor with holistic development. What began as a modest institution with 200 students has grown into a premier educational establishment with over 5,000 students across multiple classes.
+                </p>
+                <p style="color: #6b7280; font-size: 16px; line-height: 1.8; margin-bottom: 16px;">
+                    Over the past two decades, we have maintained our commitment to excellence in every aspect of education. Our modern infrastructure, experienced faculty, and innovative teaching methods have made us a beacon of quality education in the region.
+                </p>
+                <p style="color: #6b7280; font-size: 16px; line-height: 1.8;">
+                    Today, Excellence Academy stands as a testament to the power of vision, dedication, and relentless pursuit of excellence. We continue to evolve and innovate, ensuring that every student receives the best education possible.
+                </p>
+            </div>
+        </section>
+
+        <!-- Mission & Vision -->
+        <section style="padding: 80px 0; background: #f9fafb; border-radius: 12px; margin: 60px 0; padding: 60px 40px;">
+            <h2 class="section-title" style="margin-bottom: 40px; text-align: center;">Our Mission & Vision</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+                <div>
+                    <h3 style="color: #2563eb; font-size: 20px; font-weight: 700; margin-bottom: 12px;">🎯 Our Vision</h3>
+                    <p style="color: #6b7280; line-height: 1.8;">
+                        To be a globally recognized institution that fosters academic excellence, character development, and all-round personality development in every student, equipping them to become responsible citizens and leaders of tomorrow.
+                    </p>
+                </div>
+                <div>
+                    <h3 style="color: #2563eb; font-size: 20px; font-weight: 700; margin-bottom: 12px;">🚀 Our Mission</h3>
+                    <p style="color: #6b7280; line-height: 1.8;">
+                        To provide quality education that blends traditional values with modern pedagogical methods, utilizing advanced technology and innovative teaching practices to help students realize their full potential and contribute to society.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline -->
+        <section style="padding: 80px 0;">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 60px;">Our Journey</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div>
+                        <div class="timeline-year">2005</div>
+                        <div class="timeline-title">Foundation Year</div>
+                        <div class="timeline-desc">Excellence Academy was established with 200 students and 15 dedicated teachers, offering education from Classes VI to X.</div>
+                    </div>
+                    <div class="timeline-image">📚</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div>
+                        <div class="timeline-year">2010</div>
+                        <div class="timeline-title">Expansion & XI-XII Classes</div>
+                        <div class="timeline-desc">Added Class XI and XII Science & Commerce streams, expanding student strength to 1,500 and faculty to 85 members.</div>
+                    </div>
+                    <div class="timeline-image">🏢</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div>
+                        <div class="timeline-year">2015</div>
+                        <div class="timeline-title">Modern Infrastructure</div>
+                        <div class="timeline-desc">Built new infrastructure including smart classrooms, advanced labs, modern library, and sports facilities.</div>
+                    </div>
+                    <div class="timeline-image">🏗️</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div>
+                        <div class="timeline-year">2020</div>
+                        <div class="timeline-title">Digital Transformation</div>
+                        <div class="timeline-desc">Implemented comprehensive ERP system for seamless management and introduced online learning platforms during COVID-19.</div>
+                    </div>
+                    <div class="timeline-image">💻</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div>
+                        <div class="timeline-year">2024</div>
+                        <div class="timeline-title">Excellence Continues</div>
+                        <div class="timeline-desc">Serving over 5,000 students with 250+ faculty members and recognized as a premier institution in the region.</div>
+                    </div>
+                    <div class="timeline-image">🏆</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Values -->
+        <section style="padding: 80px 0;">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 20px;">Our Core Values</h2>
+            <p style="text-align: center; color: #6b7280; margin-bottom: 40px;">The principles that guide everything we do</p>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">📖</div>
+                    <div class="value-title">Excellence</div>
+                    <div class="value-desc">We strive for excellence in academics, character, and all aspects of student development.</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <div class="value-title">Integrity</div>
+                    <div class="value-desc">We uphold the highest standards of honesty and ethical conduct in all our dealings.</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">💡</div>
+                    <div class="value-title">Innovation</div>
+                    <div class="value-desc">We embrace new ideas and innovative teaching methods to enhance learning outcomes.</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🌍</div>
+                    <div class="value-title">Inclusivity</div>
+                    <div class="value-desc">We create a welcoming environment where every student feels valued and supported.</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🎯</div>
+                    <div class="value-title">Purpose Driven</div>
+                    <div class="value-desc">We believe education should prepare students to contribute meaningfully to society.</div>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">👥</div>
+                    <div class="value-title">Community</div>
+                    <div class="value-desc">We foster a strong community where students, staff, and families work together.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leadership -->
+        <section style="padding: 80px 0; background: #f9fafb; border-radius: 12px; margin: 60px 0; padding: 60px 40px;">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 50px;">Our Leadership</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-avatar">👨‍💼</div>
+                    <div class="member-info">
+                        <div class="member-name">Dr. Rajesh Kumar</div>
+                        <div class="member-role">Principal & Founder</div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👩‍🎓</div>
+                    <div class="member-info">
+                        <div class="member-name">Ms. Anjali Singh</div>
+                        <div class="member-role">Vice Principal (Academics)</div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👨‍🏫</div>
+                    <div class="member-info">
+                        <div class="member-name">Mr. Vikram Patel</div>
+                        <div class="member-role">Head of Administration</div>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👩‍💼</div>
+                    <div class="member-info">
+                        <div class="member-name">Ms. Priya Desai</div>
+                        <div class="member-role">Head of Co-Curricular Activities</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements -->
+        <section style="padding: 80px 0;">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 50px;">Our Achievements</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; text-align: center;">
+                <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 40px; font-weight: 700; color: #2563eb; margin-bottom: 8px;">95%</div>
+                    <div style="color: #6b7280;">Pass Rate in Board Exams</div>
+                </div>
+                <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 40px; font-weight: 700; color: #2563eb; margin-bottom: 8px;">75+</div>
+                    <div style="color: #6b7280;">Toppers Every Year</div>
+                </div>
+                <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 40px; font-weight: 700; color: #2563eb; margin-bottom: 8px;">250+</div>
+                    <div style="color: #6b7280;">Experienced Faculty Members</div>
+                </div>
+                <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 40px; font-weight: 700; color: #2563eb; margin-bottom: 8px;">5000+</div>
+                    <div style="color: #6b7280;">Happy Students</div>
+                </div>
+            </div>
+        </section>
     </div>
-  </div>
-  <div class="footer-bottom"><div class="container"><p>&copy; <span id="footerYear"></span> Shri Saraswati Vidya Mandir. All rights reserved.</p><div class="footer-bottom-links"><a href="policy.html">Policies</a><a href="admission.html">Admissions</a><a href="contact.html">Support</a></div></div></div>
-</footer><script src="../js/public-pages.js"></script><script type="module" src="../js/firebase-config.js"></script><script src="../js/app.js"></script></body></html>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Excellence Academy</h4>
+                    <p>Premier institution committed to academic excellence and character development.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📍 123 Education Street, Mumbai<br>📞 +91-98765-43210<br>📧 info@excellenceacademy.com</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="admission.html">Admission</a></li>
+                        <li><a href="login.html">Login</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Excellence Academy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

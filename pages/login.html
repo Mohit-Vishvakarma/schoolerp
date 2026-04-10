@@ -1,50 +1,53 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="SSVM portal login."><title>Portal Login | Shri Saraswati Vidya Mandir</title><link rel="stylesheet" href="../css/style.css"></head><body class="login-page-body">
-<header class="navbar">
-  <div class="navbar-inner">
-    <a class="navbar-brand" href="../index.html">
-      <div class="navbar-logo">SV</div>
-      <div class="navbar-name"><h1>Shri Saraswati Vidya Mandir</h1><span>Academic Excellence, Modern Learning</span></div>
-    </a>
-    <ul class="nav-links">
-      <li><a href="../index.html" data-nav-target="index.html">Home</a></li>
-      <li><a href="about.html" data-nav-target="about.html">About</a></li>
-      <li><a href="admission.html" data-nav-target="admission.html">Admission</a></li>
-      <li><a href="curriculum.html" data-nav-target="curriculum.html">Curriculum</a></li>
-      <li><a href="faculties.html" data-nav-target="faculties.html">Faculty</a></li>
-      <li><a href="results.html" data-nav-target="results.html">Results</a></li>
-      <li><a href="contact.html" data-nav-target="contact.html">Contact</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a class="btn btn-outline-primary btn-sm" href="login.html">Portal Login</a>
-      <a class="btn btn-accent btn-sm" href="admission.html">Apply Now</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Login | Vidya Mandir School</title>
+  <meta name="description" content="Login to Vidya Mandir School ERP Portal - Student, Teacher, and Admin access">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="login-page-body">
+<div id="toastContainer" class="toast-container"></div>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">VM</div>
+      <h2>Vidya Mandir School</h2>
+      <p>ERP Portal Login</p>
     </div>
-    <button class="hamburger" id="hamburger" type="button" aria-label="Open menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="mobile-nav" id="mobileNav">
-    <a href="../index.html" data-nav-target="index.html">Home</a>
-    <a href="about.html" data-nav-target="about.html">About</a>
-    <a href="admission.html" data-nav-target="admission.html">Admission</a>
-    <a href="curriculum.html" data-nav-target="curriculum.html">Curriculum</a>
-    <a href="faculties.html" data-nav-target="faculties.html">Faculty</a>
-    <a href="students.html" data-nav-target="students.html">Students</a>
-    <a href="results.html" data-nav-target="results.html">Results</a>
-    <a href="fee-payment.html" data-nav-target="fee-payment.html">Fee Payment</a>
-    <a href="notice-board.html" data-nav-target="notice-board.html">Notice Board</a>
-    <a href="events.html" data-nav-target="events.html">Events</a>
-    <a href="blogs.html" data-nav-target="blogs.html">Blogs</a>
-    <a href="gallery.html" data-nav-target="gallery.html">Gallery</a>
-    <a href="contact.html" data-nav-target="contact.html">Contact</a>
-  </div>
-</header><main class="page-shell">
-<section class="internal-hero"><div class="container"><div class="internal-hero-grid"><div class="internal-hero-copy"><span class="internal-badge">ERP Access</span><h1 class="internal-title">One portal for <span>students, teachers and admin teams.</span></h1><p class="internal-subtitle">Marks, notices, homework and operational visibility are centralized through a shared login flow.</p><div class="hero-mini-stats"><div class="hero-mini-stat"><strong>3</strong><span>Role-based dashboards</span></div><div class="hero-mini-stat"><strong>24/7</strong><span>Access availability</span></div><div class="hero-mini-stat"><strong>1</strong><span>Unified login flow</span></div></div></div><aside class="internal-hero-card"><h3>Portal readiness</h3><p>Demo credentials are available, making review and testing simple.</p><ul class="hero-checklist"><li>Consistent design language across public pages</li><li>Readable dummy content for UI balance</li><li>Responsive sections that match the homepage palette</li></ul></aside></div></div></section><section><div class="container"><div class="metrics-strip"><div class="metric-tile"><strong>3</strong><span>Role-based dashboards</span></div><div class="metric-tile"><strong>24/7</strong><span>Access availability</span></div><div class="metric-tile"><strong>1</strong><span>Unified login flow</span></div></div></div></section><section class="page-section"><div class="container"><div class="login-page"><div class="login-card"><div class="login-logo"><div class="logo-icon">SV</div><h2>Shri Saraswati Vidya Mandir</h2><p>ERP Portal Login</p></div><div class="login-tabs"><button type="button" class="login-tab active" data-role="student">Student</button><button type="button" class="login-tab" data-role="teacher">Teacher</button><button type="button" class="login-tab" data-role="admin">Admin</button></div><div style="text-align:center;margin:10px 0;font-size:12px;color:#64748b;">Currently selected: <span id="currentRoleDisplay" style="font-weight:700;color:#2563eb;">Student</span></div><form id="loginForm"><div class="form-group"><label id="loginIdLabel" class="form-label">Roll No / Student ID / Email</label><input type="text" id="loginId" class="form-control" placeholder="e.g. 101 or STU001" required></div><div class="form-group"><label class="form-label" for="loginPass">Password</label><input type="password" id="loginPass" class="form-control" required></div><button type="submit" class="btn btn-primary btn-block btn-lg">Login</button></form><div id="loginError" class="login-error"></div><div style="margin-top:20px;padding:16px;background:var(--gray-100);border-radius:var(--radius);font-size:13px;color:var(--gray-700);line-height:1.8;"><strong>Demo Credentials</strong><br>Student: <code>101</code> or <code>STU001</code> / <code>student123</code><br>Teacher: <code>sunita@vidyamandir.in</code> or <code>TCH001</code> / <code>teacher123</code><br>Admin: <code>admin</code> or <code>admin@vidyamandir.in</code> / <code>admin123</code></div></div></div></div></section></main>
-<footer class="footer">
-  <div class="footer-main">
-    <div class="container footer-grid">
-      <div class="footer-brand"><h3>Shri Saraswati Vidya Mandir</h3><p>Trusted school ecosystem for academics, values, campus life and digital-first parent support.</p></div>
-      <div class="footer-col"><h4>Explore</h4><ul class="footer-links"><li><a href="about.html">About</a></li><li><a href="curriculum.html">Curriculum</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li></ul></div>
-      <div class="footer-col"><h4>Student Services</h4><ul class="footer-links"><li><a href="results.html">Results</a></li><li><a href="fee-payment.html">Fee Payment</a></li><li><a href="notice-board.html">Notices</a></li><li><a href="transport.html">Transport</a></li></ul></div>
-      <div class="footer-col"><h4>Connect</h4><ul class="footer-links"><li><a href="contact.html">14 Knowledge Avenue, Indore</a></li><li><a href="contact.html">+91 91090 12030</a></li><li><a href="contact.html">connect@ssvmindore.edu.in</a></li><li><a href="login.html">ERP Portal</a></li></ul></div>
+    <div class="login-tabs">
+      <button type="button" class="login-tab active" data-role="student">🎓 Student</button>
+      <button type="button" class="login-tab" data-role="teacher">👩‍🏫 Teacher</button>
+      <button type="button" class="login-tab" data-role="admin">🛡️ Admin</button>
+    </div>
+    <div style="text-align:center;margin:10px 0;font-size:12px;color:#666">
+      Currently selected: <span id="currentRoleDisplay" style="font-weight:bold;color:#2563eb">Student</span>
+    </div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label id="loginIdLabel" class="form-label">Roll No / ID / Email</label>
+        <input type="text" id="loginId" class="form-control" placeholder="Enter your ID or email" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="loginPass" class="form-control" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">Login →</button>
+    </form>
+    <div id="loginError" class="login-error"></div>
+    <div style="margin-top:20px;padding:16px;background:var(--gray-100);border-radius:var(--radius);font-size:13px;color:var(--gray-600)">
+      <strong>Demo Credentials:</strong><br>
+      🎓 Student: Roll <code>101</code> or ID <code>STU001</code> / Pass <code>student123</code><br>
+      👩‍🏫 Teacher: Email <code>sunita@vidyamandir.in</code> or ID <code>TCH001</code> / Pass <code>teacher123</code><br>
+      🛡️ Admin: Email <code>admin@vidyamandir.in</code> or ID <code>admin</code> / Pass <code>admin123</code>
+    </div>
+    <div style="text-align:center;margin-top:16px">
+      <a href="../index.html" style="font-size:14px;color:var(--gray-500)">← Back to Website</a>
     </div>
   </div>
-  <div class="footer-bottom"><div class="container"><p>&copy; <span id="footerYear"></span> Shri Saraswati Vidya Mandir. All rights reserved.</p><div class="footer-bottom-links"><a href="policy.html">Policies</a><a href="admission.html">Admissions</a><a href="contact.html">Support</a></div></div></div>
-</footer><script src="../js/public-pages.js"></script><script type="module" src="../js/firebase-config.js"></script><script src="../js/app.js"></script></body></html>
+</div>
+<script type="module" src="../js/firebase-config.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>

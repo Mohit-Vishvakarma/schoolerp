@@ -246,7 +246,7 @@ function downloadTimetable() {
     
     // In a real app, this would generate and download a PDF
     const timetableData = `
-Timetable - Shri Saraswati Vidya Mandir
+Timetable - Elite Academy
 
 Monday:
 9:00 AM - Mathematics

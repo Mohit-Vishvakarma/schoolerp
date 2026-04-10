@@ -815,51 +815,6 @@ const getObj = (key) => {
 const normalizeText = (text) => (text || '').toString().trim().toLowerCase();
 let vmDataReadyPromise = null;
 
-async function persistAnyViaRest(key, value) {
-  const baseUrl = window.__vmFirebaseDatabaseUrl || 'https://schoolweb-d6da1-default-rtdb.firebaseio.com';
-  const target = `${baseUrl}/admin-portal/School%20Progress/System%20Data/${encodeURIComponent(key)}.json`;
-  const response = await fetch(target, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(value)
-  });
-  if (!response.ok) {
-    throw new Error(`REST persist failed (${response.status})`);
-  }
-  return response.json().catch(() => null);
-}
-
-async function persistAnyToStorageAndFirebase(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
-  if (!window.FB) {
-    try {
-      await persistAnyViaRest(key, value);
-      pendingFirebaseSyncs.delete(key);
-      return { storedLocally: true, syncedRemotely: true, via: 'rest' };
-    } catch (error) {
-      pendingFirebaseSyncs.set(key, value);
-      return { storedLocally: true, syncedRemotely: false, error };
-    }
-  }
-
-  try {
-    const docId = FIREBASE_DOC_MAP[key] || 'data';
-    await window.FB.setAny(key, value, docId);
-    pendingFirebaseSyncs.delete(key);
-    return { storedLocally: true, syncedRemotely: true, via: 'sdk' };
-  } catch (error) {
-    console.warn(`[Firebase] Explicit persist failed for ${key}:`, error);
-    try {
-      await persistAnyViaRest(key, value);
-      pendingFirebaseSyncs.delete(key);
-      return { storedLocally: true, syncedRemotely: true, via: 'rest-fallback', error };
-    } catch (restError) {
-      pendingFirebaseSyncs.set(key, value);
-      return { storedLocally: true, syncedRemotely: false, error: restError };
-    }
-  }
-}
-
 async function syncKeyToFirebase(key, value) {
   if (!window.FB) {
     pendingFirebaseSyncs.set(key, value);
@@ -1032,7 +987,6 @@ async function runNoticeCrudSmokeTest() {
 window.vmDebug = {
   runNoticeCrudSmokeTest
 };
-window.vmPersistKey = persistAnyToStorageAndFirebase;
 
 function showToast(msg, type = 'success') {
   const tc = document.getElementById('toastContainer');
@@ -1106,8 +1060,7 @@ function initAOS() {
 function initNavbar() {
   const hamburger = document.getElementById('hamburger');
   const mobileNav = document.getElementById('mobileNav');
-  if (hamburger && mobileNav && hamburger.dataset.bound !== 'true') {
-    hamburger.dataset.bound = 'true';
+  if (hamburger && mobileNav) {
     hamburger.addEventListener('click', () => {
       hamburger.classList.toggle('active');
       mobileNav.classList.toggle('open');
@@ -1741,13 +1694,7 @@ function saveAdmissionRecord() {
     return { ok: false };
   }
   admissions.unshift(record);
-  if (window.vmPersistKey) {
-    window.vmPersistKey('vm_admissions', admissions).catch(error => {
-      console.warn('Admission Firebase sync failed:', error);
-    });
-  } else {
-    setData('vm_admissions', admissions);
-  }
+  setData('vm_admissions', admissions);
   return { ok: true, record };
 }
 
@@ -1774,13 +1721,7 @@ function saveContactMessageRecord(form) {
     return { ok: false };
   }
   contactMessages.unshift(record);
-  if (window.vmPersistKey) {
-    window.vmPersistKey('vm_contactMessages', contactMessages).catch(error => {
-      console.warn('Contact Firebase sync failed:', error);
-    });
-  } else {
-    setData('vm_contactMessages', contactMessages);
-  }
+  setData('vm_contactMessages', contactMessages);
   return { ok: true, record };
 }
 

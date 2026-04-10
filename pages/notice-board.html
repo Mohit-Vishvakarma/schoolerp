@@ -1,50 +1,61 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="SSVM notice board."><title>Notice Board | Shri Saraswati Vidya Mandir</title><link rel="stylesheet" href="../css/style.css"></head><body class="">
-<header class="navbar">
-  <div class="navbar-inner">
-    <a class="navbar-brand" href="../index.html">
-      <div class="navbar-logo">SV</div>
-      <div class="navbar-name"><h1>Shri Saraswati Vidya Mandir</h1><span>Academic Excellence, Modern Learning</span></div>
-    </a>
-    <ul class="nav-links">
-      <li><a href="../index.html" data-nav-target="index.html">Home</a></li>
-      <li><a href="about.html" data-nav-target="about.html">About</a></li>
-      <li><a href="admission.html" data-nav-target="admission.html">Admission</a></li>
-      <li><a href="curriculum.html" data-nav-target="curriculum.html">Curriculum</a></li>
-      <li><a href="faculties.html" data-nav-target="faculties.html">Faculty</a></li>
-      <li><a href="results.html" data-nav-target="results.html">Results</a></li>
-      <li><a href="contact.html" data-nav-target="contact.html">Contact</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a class="btn btn-outline-primary btn-sm" href="login.html">Portal Login</a>
-      <a class="btn btn-accent btn-sm" href="admission.html">Apply Now</a>
-    </div>
-    <button class="hamburger" id="hamburger" type="button" aria-label="Open menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="mobile-nav" id="mobileNav">
-    <a href="../index.html" data-nav-target="index.html">Home</a>
-    <a href="about.html" data-nav-target="about.html">About</a>
-    <a href="admission.html" data-nav-target="admission.html">Admission</a>
-    <a href="curriculum.html" data-nav-target="curriculum.html">Curriculum</a>
-    <a href="faculties.html" data-nav-target="faculties.html">Faculty</a>
-    <a href="students.html" data-nav-target="students.html">Students</a>
-    <a href="results.html" data-nav-target="results.html">Results</a>
-    <a href="fee-payment.html" data-nav-target="fee-payment.html">Fee Payment</a>
-    <a href="notice-board.html" data-nav-target="notice-board.html">Notice Board</a>
-    <a href="events.html" data-nav-target="events.html">Events</a>
-    <a href="blogs.html" data-nav-target="blogs.html">Blogs</a>
-    <a href="gallery.html" data-nav-target="gallery.html">Gallery</a>
-    <a href="contact.html" data-nav-target="contact.html">Contact</a>
-  </div>
-</header><main class="page-shell">
-<section class="internal-hero"><div class="container"><div class="internal-hero-grid"><div class="internal-hero-copy"><span class="internal-badge">Official Updates</span><h1 class="internal-title">A notice board designed for <span>quick reading and fast action.</span></h1><p class="internal-subtitle">Students and parents can quickly scan recent academic, urgent and event notices.</p><div class="hero-mini-stats"><div class="hero-mini-stat"><strong>Live</strong><span>Latest visibility</span></div><div class="hero-mini-stat"><strong>5</strong><span>Notice categories</span></div><div class="hero-mini-stat"><strong>1 page</strong><span>Centralized updates</span></div></div></div><aside class="internal-hero-card"><h3>Notice categories</h3><p>Latest updates are surfaced first and grouped with category labels for easy scanning.</p><ul class="hero-checklist"><li>Consistent design language across public pages</li><li>Readable dummy content for UI balance</li><li>Responsive sections that match the homepage palette</li></ul></aside></div></div></section><section><div class="container"><div class="metrics-strip"><div class="metric-tile"><strong>Live</strong><span>Latest visibility</span></div><div class="metric-tile"><strong>5</strong><span>Notice categories</span></div><div class="metric-tile"><strong>1 page</strong><span>Centralized updates</span></div></div></div></section><section class="page-section"><div class="container"><div class="section-slab"><div id="notice-popup" class="modal-overlay" style="display:none;"><div class="modal-content"><div class="modal-header"><div><h3>Important Notice</h3><p class="modal-subtitle">Latest school-wide update</p></div><button class="modal-close" type="button" onclick="closeNoticePopup()">&times;</button></div><div class="modal-body"><p id="popup-notice-content">Notice content will appear here.</p><p class="mini-note" style="margin-top:10px;">Date: <span id="popup-notice-date"></span></p></div></div></div><div id="notices-container" class="content-grid-2"></div></div></div></section></main>
-<footer class="footer">
-  <div class="footer-main">
-    <div class="container footer-grid">
-      <div class="footer-brand"><h3>Shri Saraswati Vidya Mandir</h3><p>Trusted school ecosystem for academics, values, campus life and digital-first parent support.</p></div>
-      <div class="footer-col"><h4>Explore</h4><ul class="footer-links"><li><a href="about.html">About</a></li><li><a href="curriculum.html">Curriculum</a></li><li><a href="events.html">Events</a></li><li><a href="gallery.html">Gallery</a></li></ul></div>
-      <div class="footer-col"><h4>Student Services</h4><ul class="footer-links"><li><a href="results.html">Results</a></li><li><a href="fee-payment.html">Fee Payment</a></li><li><a href="notice-board.html">Notices</a></li><li><a href="transport.html">Transport</a></li></ul></div>
-      <div class="footer-col"><h4>Connect</h4><ul class="footer-links"><li><a href="contact.html">14 Knowledge Avenue, Indore</a></li><li><a href="contact.html">+91 91090 12030</a></li><li><a href="contact.html">connect@ssvmindore.edu.in</a></li><li><a href="login.html">ERP Portal</a></li></ul></div>
-    </div>
-  </div>
-  <div class="footer-bottom"><div class="container"><p>&copy; <span id="footerYear"></span> Shri Saraswati Vidya Mandir. All rights reserved.</p><div class="footer-bottom-links"><a href="policy.html">Policies</a><a href="admission.html">Admissions</a><a href="contact.html">Support</a></div></div></div>
-</footer><script src="../js/public-pages.js"></script><script type="module" src="../js/firebase-config.js"></script><script src="../js/app.js"></script><script src="../js/notice-board.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notice Board - Elite Academy</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">Elite Academy</div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="notice-board.html" class="active">Notice Board</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Notice Board Section -->
+    <section class="section">
+        <div class="container">
+            <h2>Notice Board</h2>
+            
+            <!-- Notice Popup (shown on page load for demo) -->
+            <div id="notice-popup" class="modal" style="display: flex;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeNoticePopup()">&times;</span>
+                    <h3>Important Notice</h3>
+                    <p id="popup-notice-content">School will remain closed tomorrow due to maintenance. Regular classes will resume from day after tomorrow.</p>
+                    <p><small>Date: <span id="popup-notice-date">April 5, 2026</span></small></p>
+                </div>
+            </div>
+
+            <!-- Notices List -->
+            <div id="notices-container">
+                <!-- Notices will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="section" style="background: #333; color: white;">
+        <div class="container">
+            <div style="text-align: center;">
+                <p>&copy; 2026 Elite Academy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/notice-board.js"></script>
+</body>
+</html>

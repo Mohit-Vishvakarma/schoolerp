@@ -225,28 +225,14 @@ function updateFeeStatus(paidAmount, paymentMethod, transactionId, paymentDate) 
         }
     });
 
-    if (window.vmPersistKey) {
-        window.vmPersistKey('vm_feeHistory', feeHistory).catch(error => {
-            console.warn('Fee history Firebase sync failed:', error);
-            localStorage.setItem('vm_feeHistory', JSON.stringify(feeHistory));
-        });
-    } else {
-        localStorage.setItem('vm_feeHistory', JSON.stringify(feeHistory));
-    }
+    localStorage.setItem('vm_feeHistory', JSON.stringify(feeHistory));
 
     const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
     const studentIndex = students.findIndex(item => item.id === student.id);
     const pendingEntries = feeHistory.filter(item => item.studentId === student.id && item.status !== 'paid');
     if (studentIndex >= 0) {
         students[studentIndex].fees = pendingEntries.length ? 'pending' : 'paid';
-        if (window.vmPersistKey) {
-            window.vmPersistKey('vm_students', students).catch(error => {
-                console.warn('Student fee status Firebase sync failed:', error);
-                localStorage.setItem('vm_students', JSON.stringify(students));
-            });
-        } else {
-            localStorage.setItem('vm_students', JSON.stringify(students));
-        }
+        localStorage.setItem('vm_students', JSON.stringify(students));
     }
 
     const auth = JSON.parse(localStorage.getItem('ssvm_auth') || 'null');
