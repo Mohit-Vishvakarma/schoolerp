@@ -1495,8 +1495,6 @@ textarea.form-control { resize: vertical; min-height: 100px; }
   min-width: 140px;
 }
 
-<<<<<<< HEAD
-=======
 /* ===== PUBLIC INNER PAGES ===== */
 .page-shell {
   padding-top: 96px;
@@ -1962,7 +1960,6 @@ textarea.form-control { resize: vertical; min-height: 100px; }
   }
 }
 
->>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))
 /* Profile Styles */
 .profile-field {
   margin-bottom: 16px;
@@ -2058,7 +2055,3 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 .toast-warning {
   background: linear-gradient(135deg, var(--accent), #d97706);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))

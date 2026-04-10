@@ -1734,7 +1734,7 @@ function buildAdmissionRecord() {
   };
 }
 
-function saveAdmissionRecord() {
+async function saveAdmissionRecord() {
   const admissions = getData('vm_admissions');
   const record = buildAdmissionRecord();
   if (!record.name || !record.class || !record.parent || !record.contact) {
@@ -1742,9 +1742,10 @@ function saveAdmissionRecord() {
   }
   admissions.unshift(record);
   if (window.vmPersistKey) {
-    window.vmPersistKey('vm_admissions', admissions).catch(error => {
-      console.warn('Admission Firebase sync failed:', error);
-    });
+    const persistResult = await window.vmPersistKey('vm_admissions', admissions);
+    if (persistResult?.error) {
+      console.warn('Admission Firebase sync failed:', persistResult.error);
+    }
   } else {
     setData('vm_admissions', admissions);
   }
@@ -1767,7 +1768,7 @@ function buildContactMessageRecord(form) {
   };
 }
 
-function saveContactMessageRecord(form) {
+async function saveContactMessageRecord(form) {
   const contactMessages = getData('vm_contactMessages');
   const record = buildContactMessageRecord(form);
   if (!record.name || !record.phone || !record.message) {
@@ -1775,9 +1776,10 @@ function saveContactMessageRecord(form) {
   }
   contactMessages.unshift(record);
   if (window.vmPersistKey) {
-    window.vmPersistKey('vm_contactMessages', contactMessages).catch(error => {
-      console.warn('Contact Firebase sync failed:', error);
-    });
+    const persistResult = await window.vmPersistKey('vm_contactMessages', contactMessages);
+    if (persistResult?.error) {
+      console.warn('Contact Firebase sync failed:', persistResult.error);
+    }
   } else {
     setData('vm_contactMessages', contactMessages);
   }
@@ -1788,9 +1790,9 @@ function initAdmissionForm() {
   const form = document.getElementById('publicAdmissionForm');
   if (!form) return;
   if ((form.getAttribute('onsubmit') || '').includes('handleAdmissionForm')) return;
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    const result = saveAdmissionRecord();
+    const result = await saveAdmissionRecord();
     if (!result.ok) {
       showToast('Please fill all required admission details.', 'error');
       return;
@@ -1805,9 +1807,9 @@ function initContactForm() {
   const form = document.getElementById('contactForm');
   if (!form) return;
   if ((form.getAttribute('onsubmit') || '').includes('handleContactForm')) return;
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    const result = saveContactMessageRecord(form);
+    const result = await saveContactMessageRecord(form);
     if (!result.ok) {
       showToast('Please fill name, phone and message.', 'error');
       return;
