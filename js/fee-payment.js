@@ -225,14 +225,36 @@ function updateFeeStatus(paidAmount, paymentMethod, transactionId, paymentDate) 
         }
     });
 
+<<<<<<< HEAD
     localStorage.setItem('vm_feeHistory', JSON.stringify(feeHistory));
+=======
+    if (window.vmPersistKey) {
+        window.vmPersistKey('vm_feeHistory', feeHistory).catch(error => {
+            console.warn('Fee history Firebase sync failed:', error);
+            localStorage.setItem('vm_feeHistory', JSON.stringify(feeHistory));
+        });
+    } else {
+        localStorage.setItem('vm_feeHistory', JSON.stringify(feeHistory));
+    }
+>>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))
 
     const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
     const studentIndex = students.findIndex(item => item.id === student.id);
     const pendingEntries = feeHistory.filter(item => item.studentId === student.id && item.status !== 'paid');
     if (studentIndex >= 0) {
         students[studentIndex].fees = pendingEntries.length ? 'pending' : 'paid';
+<<<<<<< HEAD
         localStorage.setItem('vm_students', JSON.stringify(students));
+=======
+        if (window.vmPersistKey) {
+            window.vmPersistKey('vm_students', students).catch(error => {
+                console.warn('Student fee status Firebase sync failed:', error);
+                localStorage.setItem('vm_students', JSON.stringify(students));
+            });
+        } else {
+            localStorage.setItem('vm_students', JSON.stringify(students));
+        }
+>>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))
     }
 
     const auth = JSON.parse(localStorage.getItem('ssvm_auth') || 'null');

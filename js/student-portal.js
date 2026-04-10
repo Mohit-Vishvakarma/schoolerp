@@ -246,7 +246,11 @@ function downloadTimetable() {
     
     // In a real app, this would generate and download a PDF
     const timetableData = `
+<<<<<<< HEAD
 Timetable - Elite Academy
+=======
+Timetable - Shri Saraswati Vidya Mandir
+>>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))
 
 Monday:
 9:00 AM - Mathematics
@@ -290,4 +294,8 @@ function logout() {
     localStorage.removeItem('studentLoggedIn');
     localStorage.removeItem('currentStudent');
     location.reload();
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))

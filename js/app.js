@@ -1106,7 +1106,12 @@ function initAOS() {
 function initNavbar() {
   const hamburger = document.getElementById('hamburger');
   const mobileNav = document.getElementById('mobileNav');
+<<<<<<< HEAD
   if (hamburger && mobileNav) {
+=======
+  if (hamburger && mobileNav && hamburger.dataset.bound !== 'true') {
+    hamburger.dataset.bound = 'true';
+>>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))
     hamburger.addEventListener('click', () => {
       hamburger.classList.toggle('active');
       mobileNav.classList.toggle('open');
@@ -1740,7 +1745,17 @@ function saveAdmissionRecord() {
     return { ok: false };
   }
   admissions.unshift(record);
+<<<<<<< HEAD
   setData('vm_admissions', admissions);
+=======
+  if (window.vmPersistKey) {
+    window.vmPersistKey('vm_admissions', admissions).catch(error => {
+      console.warn('Admission Firebase sync failed:', error);
+    });
+  } else {
+    setData('vm_admissions', admissions);
+  }
+>>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))
   return { ok: true, record };
 }
 
@@ -1767,7 +1782,17 @@ function saveContactMessageRecord(form) {
     return { ok: false };
   }
   contactMessages.unshift(record);
+<<<<<<< HEAD
   setData('vm_contactMessages', contactMessages);
+=======
+  if (window.vmPersistKey) {
+    window.vmPersistKey('vm_contactMessages', contactMessages).catch(error => {
+      console.warn('Contact Firebase sync failed:', error);
+    });
+  } else {
+    setData('vm_contactMessages', contactMessages);
+  }
+>>>>>>> e367cd0 (cheak 2 vercel web to database ( connet aur not ))
   return { ok: true, record };
 }
 
