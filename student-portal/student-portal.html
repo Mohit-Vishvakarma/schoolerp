@@ -1,0 +1,4147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal | Vidya Mandir School</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="./student-portal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="student-page" style="margin:0;padding:0;background:var(--off-white)">
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal-overlay" style="display:none">
+  <div class="modal-content student-profile-modal">
+    <div class="modal-header">
+      <div>
+        <h3>Edit Profile</h3>
+        <p class="modal-subtitle">Update your contact details and emergency information for faster support.</p>
+      </div>
+      <button onclick="closeModal('profileModal')" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="profileForm" onsubmit="saveProfile(); return false;">
+        <div class="student-profile-form-grid">
+        <div class="form-group student-profile-span-2">
+          <label class="form-label">Profile Image Upload</label>
+          <input type="file" id="profileInputAvatar" class="form-control" accept="image/*">
+          <small class="student-upload-help">JPG, PNG ya WebP image upload karein.</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="profileInputName" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="profileInputEmail" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="tel" id="profileInputPhone" class="form-control">
+        </div>
+        <div class="form-group student-profile-span-2">
+          <label class="form-label">Address</label>
+          <textarea id="profileInputAddress" rows="3" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emergency Contact</label>
+          <input type="tel" id="profileInputEmergency" class="form-control">
+        </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('profileModal')" class="btn btn-ghost">Cancel</button>
+      <button type="button" onclick="saveProfile()" class="btn btn-primary">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Message Modal -->
+<div id="messageModal" class="modal-overlay" style="display:none">
+  <div class="modal-content" style="max-width:600px">
+    <div class="modal-header">
+      <h3>Send Message to Teacher</h3>
+      <button onclick="closeModal('messageModal')" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Select Teacher</label>
+        <select id="messageTeacher" required>
+          <option value="">Choose a teacher...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <input type="text" id="messageSubject" placeholder="Message subject" required>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="messageContent" rows="5" placeholder="Type your message here..." required></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('messageModal')" class="btn btn-ghost">Cancel</button>
+      <button onclick="sendMessage()" class="btn btn-primary">Send Message</button>
+    </div>
+  </div>
+</div>
+
+<div id="libraryChapterModal" class="modal-overlay" style="display:none">
+  <div class="modal-content library-chapter-modal">
+    <div class="modal-header">
+      <div>
+        <h3 id="libraryChapterModalTitle">Chapter Reader</h3>
+        <p class="modal-subtitle" id="libraryChapterModalMeta">Open chapter content for focused reading.</p>
+      </div>
+      <button onclick="closeModal('libraryChapterModal')" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="libraryChapterModalBody" class="library-chapter-modal-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Manual Schedule Modal -->
+<div id="manualScheduleModal" class="modal-overlay" style="display:none">
+  <div class="modal-content manual-schedule-modal">
+    <div class="modal-header">
+      <div>
+        <h3>Create Manual Schedule</h3>
+        <p class="modal-subtitle">Design your own weekly timetable with custom subjects and timings.</p>
+      </div>
+      <button onclick="closeModal('manualScheduleModal')" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="schedule-builder">
+        <div class="schedule-form-section">
+          <h4>Add New Class</h4>
+          <div class="schedule-form-grid">
+            <div class="form-group">
+              <label class="form-label">Day</label>
+              <select id="scheduleDay" class="form-control">
+                <option value="">Select Day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Start Time</label>
+              <input type="time" id="scheduleStartTime" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">End Time</label>
+              <input type="time" id="scheduleEndTime" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              <input type="text" id="scheduleSubject" class="form-control" placeholder="e.g., Mathematics, Science">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Teacher (Optional)</label>
+              <input type="text" id="scheduleTeacher" class="form-control" placeholder="e.g., Mr. Sharma">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Room (Optional)</label>
+              <input type="text" id="scheduleRoom" class="form-control" placeholder="e.g., Room 101">
+            </div>
+          </div>
+          <div class="schedule-form-actions">
+            <button onclick="addScheduleItem()" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Add Class
+            </button>
+            <button onclick="clearScheduleForm()" class="btn btn-ghost">
+              <i class="fas fa-times"></i> Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="schedule-preview-section">
+          <h4>Weekly Preview</h4>
+          <div class="schedule-preview-grid">
+            <div class="schedule-day-column">
+              <div class="schedule-day-header">Monday</div>
+              <div id="mondayClasses" class="schedule-day-classes"></div>
+            </div>
+            <div class="schedule-day-column">
+              <div class="schedule-day-header">Tuesday</div>
+              <div id="tuesdayClasses" class="schedule-day-classes"></div>
+            </div>
+            <div class="schedule-day-column">
+              <div class="schedule-day-header">Wednesday</div>
+              <div id="wednesdayClasses" class="schedule-day-classes"></div>
+            </div>
+            <div class="schedule-day-column">
+              <div class="schedule-day-header">Thursday</div>
+              <div id="thursdayClasses" class="schedule-day-classes"></div>
+            </div>
+            <div class="schedule-day-column">
+              <div class="schedule-day-header">Friday</div>
+              <div id="fridayClasses" class="schedule-day-classes"></div>
+            </div>
+            <div class="schedule-day-column">
+              <div class="schedule-day-header">Saturday</div>
+              <div id="saturdayClasses" class="schedule-day-classes"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('manualScheduleModal')" class="btn btn-ghost">Cancel</button>
+      <button onclick="saveManualSchedule()" class="btn btn-primary">Save Schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- Exam Detail Modal -->
+<div id="examDetailModal" class="modal-overlay" style="display:none">
+  <div class="modal-content" style="max-width:600px">
+    <div class="modal-header">
+      <h3 id="examDetailTitle">Exam Details</h3>
+      <button onclick="closeModal('examDetailModal')" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" id="examDetailBody">
+      <p>Loading exam details...</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('examDetailModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Schedule Modal -->
+<div id="dailyScheduleModal" class="modal-overlay" style="display:none">
+  <div class="modal-content daily-schedule-modal">
+    <div class="modal-header">
+      <div>
+        <h3>Plan Your Day</h3>
+        <p class="modal-subtitle">Organize your daily activities and schedule</p>
+      </div>
+      <button onclick="closeModal('dailyScheduleModal')" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="daily-planner">
+        <div class="daily-form-section">
+          <h4>Add Activity</h4>
+          <div class="daily-form-grid">
+            <div class="form-group">
+              <label class="form-label">Start Time</label>
+              <input type="time" id="dailyStartTime" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">End Time</label>
+              <input type="time" id="dailyEndTime" class="form-control">
+            </div>
+            <div class="form-group daily-span-2">
+              <label class="form-label">Activity</label>
+              <input type="text" id="dailyActivity" class="form-control" placeholder="e.g., Mathematics Study, Football Practice, Homework">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select id="dailyCategory" class="form-control">
+                <option value="study">📚 Study</option>
+                <option value="sports">⚽ Sports</option>
+                <option value="homework">📝 Homework</option>
+                <option value="coaching">🎓 Coaching</option>
+                <option value="personal">👤 Personal</option>
+                <option value="other">📌 Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Priority</label>
+              <select id="dailyPriority" class="form-control">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+          <div class="daily-form-actions">
+            <button onclick="addDailyActivity()" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Add Activity
+            </button>
+            <button onclick="clearDailyForm()" class="btn btn-ghost">
+              <i class="fas fa-times"></i> Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="daily-timeline-section">
+          <h4>Today's Timeline</h4>
+          <div class="daily-timeline">
+            <div class="timeline-header">
+              <span>Time</span>
+              <span>Activity</span>
+              <span>Actions</span>
+            </div>
+            <div id="dailyTimeline" class="timeline-activities">
+              <!-- Activities will be added here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button onclick="closeModal('dailyScheduleModal')" class="btn btn-ghost">Cancel</button>
+      <button onclick="saveDailySchedule()" class="btn btn-primary">Save Day Plan</button>
+    </div>
+  </div>
+</div>
+
+<aside class="portal-sidebar" id="portalSidebar">
+  <div class="portal-sidebar-brand">
+    <div class="logo">VM</div>
+    <h2>Vidya Mandir<small>Student Portal</small></h2>
+  </div>
+  <nav class="portal-nav">
+    <a class="active" data-section="secDash"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a data-section="secProfile"><span class="nav-icon">👤</span> My Profile</a>
+    <a data-section="secAttendance"><span class="nav-icon">📅</span> Attendance</a>
+    <a data-section="secMarks"><span class="nav-icon">📊</span> Marks & Results</a>
+    <a data-section="secHomework"><span class="nav-icon">📝</span> Homework</a>
+    <a data-section="secTimetable"><span class="nav-icon">🗓️</span> Timetable</a>
+    <a data-section="secExams"><span class="nav-icon">📋</span> Exam Schedule</a>
+    <a data-section="secLibrary"><span class="nav-icon">📚</span> Library</a>
+    <a data-section="secMessages"><span class="nav-icon">💬</span> Messages</a>
+    <a data-section="secFees"><span class="nav-icon">💳</span> Fee Status</a>
+    <a data-section="secNotices"><span class="nav-icon">📢</span> Notices</a>
+    <a data-section="secStudy"><span class="nav-icon">🎓</span> Study Material</a>
+    <a data-section="secTests"><span class="nav-icon">✏️</span> Online Tests</a>
+    <a data-section="secProgress"><span class="nav-icon">📈</span> Progress</a>
+    <a data-section="secParents"><span class="nav-icon">👨‍👩‍👧‍👦</span> Parents</a>
+    <a data-section="secCertificates"><span class="nav-icon">🏆</span> Certificates</a>
+    <a data-section="secClasses"><span class="nav-icon">🎥</span> Online Classes</a>
+    <a data-section="secSettings"><span class="nav-icon">⚙️</span> Settings</a>
+    <a onclick="doLogout()"><span class="nav-icon">🚪</span> Logout</a>
+  </nav>
+</aside>
+
+<div class="portal-main">
+  <header class="portal-topbar">
+    <div style="display:flex;align-items:center;gap:14px">
+      <button style="border:none;background:none;font-size:22px;cursor:pointer;display:none" id="sidebarToggle">☰</button>
+      <h2 id="portalTopbarTitle">Dashboard</h2>
+    </div>
+    <div class="topbar-right">
+      <button onclick="composeMessage()" class="btn btn-sm btn-outline-primary" style="margin-right:10px">
+        <i class="fas fa-envelope"></i> Message Teacher
+      </button>
+      <div class="topbar-notif">
+        <i class="fas fa-bell"></i>
+        <span class="notif-badge" id="notificationCount">0</span>
+      </div>
+      <div class="topbar-user">
+        <div class="topbar-avatar" id="studentAvatar">🎓</div>
+        <div class="topbar-user-info">
+          <span id="studentName">Student</span>
+          <small id="studentClass">—</small>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="portal-content">
+
+    <section id="secDash" class="portal-section active">
+      <div class="dashboard-welcome">
+        <div class="dashboard-welcome-bg"></div>
+        <p class="dashboard-welcome-subtitle">Welcome back,</p>
+        <h2 class="dashboard-welcome-name" id="dashWelcomeName">Student</h2>
+        <p class="dashboard-welcome-details" id="studentRoll">Roll No: — | Class: —</p>
+      </div>
+
+      <div class="dash-stats">
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">📅</div>
+          <div class="dash-stat-info">
+            <label>Attendance</label>
+            <div class="dash-stat-num" id="studentAttPct">—</div>
+            <span class="dash-stat-change up">This semester</span>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">📊</div>
+          <div class="dash-stat-info">
+            <label>Academic Score</label>
+            <div class="dash-stat-num" id="studentMarksPct">—</div>
+            <span class="dash-stat-change up">Overall aggregate</span>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">🏅</div>
+          <div class="dash-stat-info">
+            <label>Grade</label>
+            <div class="dash-stat-num" id="studentGrade">—</div>
+            <span class="dash-stat-change up">Current grade</span>
+          </div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon">💳</div>
+          <div class="dash-stat-info">
+            <label>Fee Status</label>
+            <div class="dash-stat-num" id="studentFeeStatus" style="font-size:16px">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-analytics-grid">
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Subject Performance</h4>
+          </div>
+          <div class="card-body">
+            <div class="chart-container dashboard-chart">
+              <canvas id="dashboardPerformanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Attendance Trend</h4>
+          </div>
+          <div class="card-body">
+            <div class="chart-container dashboard-chart">
+              <canvas id="dashboardAttendanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Homework Consistency</h4>
+          </div>
+          <div class="card-body">
+            <div class="chart-container dashboard-chart">
+              <canvas id="dashboardHomeworkChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="table-card" style="margin-bottom:20px">
+        <div class="card-header">
+          <h4>Quick Actions</h4>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+            <button onclick="composeMessage()" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-envelope"></i> Message Teacher
+            </button>
+            <button onclick="viewTimetable()" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-calendar"></i> View Timetable
+            </button>
+            <button onclick="viewHomework()" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-book"></i> Check Homework
+            </button>
+            <button onclick="viewResults()" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-chart-bar"></i> View Results
+            </button>
+            <button onclick="downloadStudyMaterial()" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-download"></i> Study Material
+            </button>
+            <button onclick="payFees()" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-credit-card"></i> Pay Fees
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="table-card" style="margin-bottom:20px">
+        <div class="card-header">
+          <h4>Recent Activity</h4>
+        </div>
+        <div class="card-body" id="recentActivity">
+          <div class="activity-item">
+            <div class="activity-icon">📝</div>
+            <div class="activity-content">
+              <div class="activity-title">Homework submitted for Mathematics</div>
+              <div class="activity-time">2 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">📊</div>
+            <div class="activity-content">
+              <div class="activity-title">Science test results published</div>
+              <div class="activity-time">1 day ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">💬</div>
+            <div class="activity-content">
+              <div class="activity-title">New message from English teacher</div>
+              <div class="activity-time">2 days ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Events -->
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Upcoming Events</h4>
+        </div>
+        <div class="card-body" id="upcomingEvents">
+          <div class="event-item">
+            <div class="event-date">
+              <div class="event-day">15</div>
+              <div class="event-month">Apr</div>
+            </div>
+            <div class="event-content">
+              <div class="event-title">Mathematics Unit Test</div>
+              <div class="event-desc">Chapters 5-7, 2 hours duration</div>
+            </div>
+          </div>
+          <div class="event-item">
+            <div class="event-date">
+              <div class="event-day">20</div>
+              <div class="event-month">Apr</div>
+            </div>
+            <div class="event-content">
+              <div class="event-title">Annual Sports Day</div>
+              <div class="event-desc">Inter-house competitions and prize distribution</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="secProfile" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">My Profile</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Personal Information</h4>
+          <button type="button" onclick="openEditProfileModal()" class="btn btn-sm btn-primary">
+            <i class="fas fa-edit"></i> Edit Profile
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="student-profile-layout">
+            <div class="student-profile-card">
+              <div class="student-profile-avatar-wrap">
+                <img id="profileAvatarImage" class="student-profile-avatar-image" alt="Student profile">
+                <div id="profileAvatarFallback" class="student-profile-avatar-fallback">S</div>
+              </div>
+              <h4 id="profileCardName">Student</h4>
+              <p id="profileCardClass">Class --</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+            <div>
+              <div class="profile-field">
+                <label>Full Name</label>
+                <div id="profileFullName">—</div>
+              </div>
+              <div class="profile-field">
+                <label>Student ID</label>
+                <div id="profileStudentId">—</div>
+              </div>
+              <div class="profile-field">
+                <label>Class & Section</label>
+                <div id="profileClass">—</div>
+              </div>
+              <div class="profile-field">
+                <label>Roll Number</label>
+                <div id="profileRollNo">—</div>
+              </div>
+            </div>
+            <div>
+              <div class="profile-field">
+                <label>Email</label>
+                <div id="profileEmail">—</div>
+              </div>
+              <div class="profile-field">
+                <label>Phone</label>
+                <div id="profilePhone">—</div>
+              </div>
+              <div class="profile-field">
+                <label>Date of Birth</label>
+                <div id="profileDOB">—</div>
+              </div>
+              <div class="profile-field">
+                <label>Address</label>
+                <div id="profileAddress">—</div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Parent/Guardian Information</h4>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+            <div>
+              <div class="profile-field">
+                <label>Father's Name</label>
+                <div id="fatherName">—</div>
+              </div>
+              <div class="profile-field">
+                <label>Father's Phone</label>
+                <div id="fatherPhone">—</div>
+              </div>
+            </div>
+            <div>
+              <div class="profile-field">
+                <label>Mother's Name</label>
+                <div id="motherName">—</div>
+              </div>
+              <div class="profile-field">
+                <label>Emergency Contact</label>
+                <div id="emergencyContact">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section id="secAttendance" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Attendance Details</h3>
+
+      <div class="table-card">
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px">
+            <div style="text-align:center;padding:20px;background:rgba(16,185,129,0.1);border-radius:var(--radius)">
+              <div style="font-size:32px;font-weight:700;color:var(--green)" id="totalPresent">—</div>
+              <div style="font-size:13px;color:var(--gray-500)">Days Present</div>
+            </div>
+            <div style="text-align:center;padding:20px;background:rgba(239,68,68,0.1);border-radius:var(--radius)">
+              <div style="font-size:32px;font-weight:700;color:var(--red)" id="totalAbsent">—</div>
+              <div style="font-size:13px;color:var(--gray-500)">Days Absent</div>
+            </div>
+            <div style="text-align:center;padding:20px;background:rgba(37,99,235,0.1);border-radius:var(--radius)">
+              <div style="font-size:32px;font-weight:700;color:var(--primary-light)" id="attPctDisplay">—</div>
+              <div style="font-size:13px;color:var(--gray-500)">Percentage</div>
+            </div>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-header"><span>Monthly Attendance</span><span>95 School Days</span></div>
+            <div class="progress-bar" style="height:12px">
+              <div class="progress-fill green" id="attBarBig" style="width:0%;height:12px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Attendance Chart -->
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Monthly Attendance Trend</h4>
+        </div>
+        <div style="padding:20px">
+          <canvas id="monthlyAttendanceChart" height="80"></canvas>
+        </div>
+      </div>
+
+      <!-- Attendance Calendar -->
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Attendance Calendar</h4>
+          <div class="attendance-month-controls">
+            <button class="attendance-month-btn" onclick="changeAttendanceMonth(-1)" type="button">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <div id="attendanceCalendarMonth" style="font-size:13px;color:var(--gray-500)">Current Month</div>
+            <button class="attendance-month-btn" onclick="changeAttendanceMonth(1)" type="button">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="attendance-month-btn today" onclick="jumpToCurrentAttendanceMonth()" type="button">This Month</button>
+          </div>
+        </div>
+        <div class="card-body" id="attendanceCalendar">
+          <div class="attendance-calendar-legend">
+            <span><i class="attendance-dot present"></i> Present</span>
+            <span><i class="attendance-dot absent"></i> Absent</span>
+            <span><i class="attendance-dot holiday"></i> Holiday</span>
+          </div>
+          <div id="attendanceCalendarGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARKS & RESULTS -->
+    <section id="secMarks" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Marks & Results</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Subject-wise Performance</h4>
+          <select id="examSelector" onchange="loadExamResults()" style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:6px">
+            <option value="latest">Latest Exam</option>
+            <option value="midterm">Mid-term Exam</option>
+            <option value="final">Final Exam</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Max Marks</th>
+                <th>Marks Obtained</th>
+                <th>Percentage</th>
+                <th>Grade</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="studentMarksTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Performance Chart -->
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>📊 Performance Chart</h4>
+        </div>
+        <div style="padding:20px">
+          <canvas id="studentMarksChart" height="100"></canvas>
+        </div>
+      </div>
+
+      <!-- Progress Report -->
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Academic Progress Report</h4>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
+            <div class="progress-item">
+              <div class="progress-label">Overall Grade</div>
+              <div class="progress-value" id="overallGrade">A</div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label">Class Rank</div>
+              <div class="progress-value" id="classRank">5th</div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label">Improvement</div>
+              <div class="progress-value" id="improvement">+12%</div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label">Attendance</div>
+              <div class="progress-value" id="progressAttendance">95%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOMEWORK -->
+    <section id="secHomework" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Homework & Assignments</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Homework Self Growth</h4>
+        </div>
+        <div class="card-body">
+          <div class="student-rank-summary homework-growth-summary" id="homeworkGrowthSummary">
+            <div class="student-rank-stat">
+              <span class="label">Completion Rate</span>
+              <strong>0%</strong>
+            </div>
+            <div class="student-rank-stat">
+              <span class="label">Done</span>
+              <strong>0</strong>
+            </div>
+            <div class="student-rank-stat">
+              <span class="label">Not Done</span>
+              <strong>0</strong>
+            </div>
+            <div class="student-rank-stat">
+              <span class="label">Current Streak</span>
+              <strong>0</strong>
+            </div>
+          </div>
+          <div class="chart-container homework-growth-chart">
+            <canvas id="homeworkGrowthChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Pending Assignments</h4>
+        </div>
+        <div class="card-body" id="pendingHomework">
+          <div class="homework-item pending">
+            <div class="homework-header">
+              <h5>Mathematics - Chapter 5: Quadratic Equations</h5>
+              <span class="homework-status pending">Pending</span>
+            </div>
+            <div class="homework-content">
+              <p>Solve all exercises from Ex 5.2. Show all steps clearly.</p>
+              <div class="homework-meta">
+                <span><i class="fas fa-calendar"></i> Due: 22 Mar 2025</span>
+                <span><i class="fas fa-star"></i> Marks: 10</span>
+                <span><i class="fas fa-user"></i> Mr. Sharma</span>
+              </div>
+            </div>
+            <div class="homework-actions">
+              <button class="btn btn-sm btn-primary">Submit Assignment</button>
+              <button class="btn btn-sm btn-outline-primary">View Details</button>
+            </div>
+          </div>
+
+          <div class="homework-item pending">
+            <div class="homework-header">
+              <h5>English - Essay Writing</h5>
+              <span class="homework-status pending">Pending</span>
+            </div>
+            <div class="homework-content">
+              <p>Write a 300-400 word essay on "My Favourite Season".</p>
+              <div class="homework-meta">
+                <span><i class="fas fa-calendar"></i> Due: 23 Mar 2025</span>
+                <span><i class="fas fa-star"></i> Marks: 10</span>
+                <span><i class="fas fa-user"></i> Ms. Patel</span>
+              </div>
+            </div>
+            <div class="homework-actions">
+              <button class="btn btn-sm btn-primary">Submit Assignment</button>
+              <button class="btn btn-sm btn-outline-primary">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Completed Assignments</h4>
+        </div>
+        <div class="card-body" id="completedHomework">
+          <div class="homework-item completed">
+            <div class="homework-header">
+              <h5>Science - Lab Report</h5>
+              <span class="homework-status completed">Submitted</span>
+            </div>
+            <div class="homework-content">
+              <p>Osmosis experiment observation and results.</p>
+              <div class="homework-meta">
+                <span><i class="fas fa-calendar"></i> Submitted: 21 Mar 2025</span>
+                <span><i class="fas fa-star"></i> Marks: 15/15</span>
+                <span><i class="fas fa-user"></i> Mr. Gupta</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIMETABLE -->
+    <section id="secTimetable" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Weekly Timetable</h3>
+
+      <!-- Timetable Controls -->
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Timetable Management</h4>
+          <div>
+            <button class="btn btn-sm btn-primary" onclick="openManualScheduleModal()">
+              <i class="fas fa-plus"></i> Create Manual Schedule
+            </button>
+            <button class="btn btn-sm btn-outline-primary" onclick="resetTimetable()">
+              <i class="fas fa-undo"></i> Reset to Default
+            </button>
+            <button class="btn btn-sm btn-outline-primary" onclick="window.print()">
+              <i class="fas fa-print"></i> Print
+            </button>
+            <button class="btn btn-sm btn-outline-primary" onclick="downloadTimetable()">
+              <i class="fas fa-download"></i> Download
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="timetable-notice">
+            <i class="fas fa-info-circle"></i>
+            <span>You can now create your own custom timetable. Click "Create Manual Schedule" to get started.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Class Schedule</h4>
+        </div>
+        <div class="timetable-wrap" id="studentTimetableWrap">
+          <div id="studentTimetable" style="padding:16px"></div>
+        </div>
+      </div>
+
+      <!-- Today's Schedule -->
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <div>
+            <h4>Today's Schedule</h4>
+            <p class="today-schedule-subtitle" id="todayScheduleMeta">Your day plan at a glance</p>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="openDailyScheduleModal()">
+            <i class="fas fa-calendar-plus"></i> Plan My Day
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="today-schedule-day" id="todayScheduleDay">Today</div>
+          <div id="todaySchedule">
+            <div class="schedule-item">
+              <div class="schedule-time">8:00 - 8:45</div>
+              <div class="schedule-content">
+                <div class="schedule-subject">Mathematics</div>
+                <div class="schedule-teacher">Mr. Sharma</div>
+              </div>
+              <div class="schedule-room">Room 101</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXAM SCHEDULE -->
+    <section id="secExams" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Exam Schedule</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Upcoming Exams</h4>
+        </div>
+        <div class="card-body" id="examSchedule">
+          <div class="exam-item">
+            <div class="exam-date">
+              <div class="exam-day">15</div>
+              <div class="exam-month">Apr</div>
+            </div>
+            <div class="exam-details">
+              <div class="exam-subject">Mathematics</div>
+              <div class="exam-info">Unit Test - Chapters 5-7</div>
+              <div class="exam-meta">
+                <span><i class="fas fa-clock"></i> 2 hours</span>
+                <span><i class="fas fa-map-marker-alt"></i> Room 101</span>
+              </div>
+            </div>
+            <div class="exam-actions">
+              <button class="btn btn-sm btn-primary" onclick="viewExamSyllabus('EXAM001')">View Syllabus</button>
+              <button class="btn btn-sm btn-outline-primary" onclick="viewExamDetails('EXAM001')">View Details</button>
+            </div>
+          </div>
+
+          <div class="exam-item">
+            <div class="exam-date">
+              <div class="exam-day">18</div>
+              <div class="exam-month">Apr</div>
+            </div>
+            <div class="exam-details">
+              <div class="exam-subject">Science</div>
+              <div class="exam-info">Practical Exam</div>
+              <div class="exam-meta">
+                <span><i class="fas fa-clock"></i> 3 hours</span>
+                <span><i class="fas fa-map-marker-alt"></i> Lab 1</span>
+              </div>
+            </div>
+            <div class="exam-actions">
+              <button class="btn btn-sm btn-primary" onclick="viewExamSyllabus('EXAM002')">View Syllabus</button>
+              <button class="btn btn-sm btn-outline-primary" onclick="viewExamDetails('EXAM002')">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exam Results -->
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Recent Exam Results</h4>
+        </div>
+        <div class="card-body">
+          <div class="chart-container exam-progress-chart">
+            <canvas id="examProgressChart"></canvas>
+          </div>
+          <div class="student-rank-summary rank-mini-summary" id="examRankSummary"></div>
+          <div id="examResults">
+            <div class="result-item">
+              <div class="result-subject">English</div>
+              <div class="result-score">85/100</div>
+              <div class="result-grade">A</div>
+              <div class="result-date">10 Apr 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section id="secLibrary" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Library</h3>
+
+      <!-- Search Books -->
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Search Books</h4>
+        </div>
+        <div class="card-body">
+          <div class="library-search-row">
+            <input type="text" id="bookSearch" class="library-search-input" placeholder="Search by title, author, or subject...">
+            <select id="bookCategory" class="library-search-select">
+              <option value="">All Categories</option>
+              <option value="fiction">Fiction</option>
+              <option value="non-fiction">Non-Fiction</option>
+              <option value="science">Science</option>
+              <option value="history">History</option>
+              <option value="mathematics">Mathematics</option>
+            </select>
+            <button onclick="searchBooks()" class="btn btn-primary">Search</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <div>
+            <h4>Class Bookshelf</h4>
+            <p class="today-schedule-subtitle" id="libraryClassMeta">Open your class subjects and chapter-wise reading.</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="library-learning-grid">
+            <div class="library-panel">
+              <div class="library-panel-title">
+                <span>📚 Subjects</span>
+              </div>
+              <div id="librarySubjectList" role="listbox" aria-label="Available subjects"></div>
+            </div>
+            <div class="library-panel">
+              <div class="library-panel-title">
+                <span>📖 Chapters</span>
+              </div>
+              <div id="libraryChapterList" class="library-empty-state" role="listbox" aria-label="Chapter list">
+                Select a subject to view chapters
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Books -->
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>My Borrowed Books</h4>
+        </div>
+        <div class="card-body" id="myBooks">
+          <div class="book-item">
+            <div class="book-cover">📖</div>
+            <div class="book-details">
+              <div class="book-title">Mathematics Textbook</div>
+              <div class="book-author">R.D. Sharma</div>
+              <div class="book-meta">
+                <span><i class="fas fa-calendar"></i> Due: 25 Apr 2025</span>
+                <span><i class="fas fa-tag"></i> Mathematics</span>
+              </div>
+            </div>
+            <div class="book-actions">
+              <button class="btn btn-sm btn-primary">Renew</button>
+              <button class="btn btn-sm btn-outline-primary">Return</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Available Books -->
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Available Books</h4>
+        </div>
+        <div class="card-body" id="availableBooks">
+          <div class="book-item">
+            <div class="book-cover">📚</div>
+            <div class="book-details">
+              <div class="book-title">The Alchemist</div>
+              <div class="book-author">Paulo Coelho</div>
+              <div class="book-meta">
+                <span><i class="fas fa-tag"></i> Fiction</span>
+                <span><i class="fas fa-check-circle"></i> Available</span>
+              </div>
+            </div>
+            <div class="book-actions">
+              <button class="btn btn-sm btn-primary">Reserve</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MESSAGES -->
+    <section id="secMessages" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Messages</h3>
+
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px">
+        <!-- Message List -->
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Inbox</h4>
+            <button onclick="composeMessage()" class="btn btn-sm btn-primary">
+              <i class="fas fa-plus"></i> Compose
+            </button>
+          </div>
+          <div class="card-body" id="messageList">
+            <div class="message-item active">
+              <div class="message-avatar">👨‍🏫</div>
+              <div class="message-content">
+                <div class="message-sender">Mr. Sharma (Mathematics)</div>
+                <div class="message-preview">Regarding your homework submission...</div>
+                <div class="message-time">2 hours ago</div>
+              </div>
+            </div>
+            <div class="message-item">
+              <div class="message-avatar">👩‍🏫</div>
+              <div class="message-content">
+                <div class="message-sender">Ms. Patel (English)</div>
+                <div class="message-preview">Essay feedback is ready</div>
+                <div class="message-time">1 day ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message View -->
+        <div class="table-card">
+          <div class="card-header">
+            <h4 id="messageTitle">Mathematics Homework</h4>
+          </div>
+          <div class="card-body" id="messageView">
+            <div class="message-thread">
+              <div class="message-bubble received">
+                <div class="message-header">
+                  <strong>Mr. Sharma</strong>
+                  <span class="message-time">2 hours ago</span>
+                </div>
+                <div class="message-text">
+                  Dear Student,<br><br>
+                  I have reviewed your mathematics homework submission. Good work on the quadratic equations, but please pay more attention to the steps in Ex 5.2 Q.7.<br><br>
+                  Please resubmit the corrected version by tomorrow.<br><br>
+                  Best regards,<br>
+                  Mr. Sharma
+                </div>
+              </div>
+            </div>
+            <div class="message-reply">
+              <textarea placeholder="Type your reply..." rows="3"></textarea>
+              <button class="btn btn-primary" style="margin-top:10px">Send Reply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEES -->
+    <section id="secFees" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Fee Status</h3>
+
+      <div class="table-card">
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+            <div style="padding:24px;background:rgba(37,99,235,0.05);border-radius:var(--radius);border:2px solid rgba(37,99,235,0.1)">
+              <div style="font-size:14px;color:var(--gray-500)">Annual Fee</div>
+              <div style="font-size:28px;font-weight:700;color:var(--primary)">₹15,000</div>
+            </div>
+            <div style="padding:24px;background:rgba(16,185,129,0.05);border-radius:var(--radius);border:2px solid rgba(16,185,129,0.1)">
+              <div style="font-size:14px;color:var(--gray-500)">Status</div>
+              <div style="font-size:28px;font-weight:700" id="feeStatusBig">—</div>
+            </div>
+          </div>
+
+          <div style="background:var(--gray-100);border-radius:var(--radius);padding:20px;margin-bottom:20px">
+            <h4 style="font-size:15px;margin-bottom:14px">Payment History</h4>
+            <div class="data-table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Quarter</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Q1 (Apr-Jun)</td>
+                    <td>₹3,750</td>
+                    <td>04 Apr 2024</td>
+                    <td><span class="status status-paid">Paid</span></td>
+                    <td><button onclick="downloadReceipt('RCP001')" class="btn btn-sm btn-outline-primary">Receipt</button></td>
+                  </tr>
+                  <tr>
+                    <td>Q2 (Jul-Sep)</td>
+                    <td>₹3,750</td>
+                    <td>02 Jul 2024</td>
+                    <td><span class="status status-paid">Paid</span></td>
+                    <td><button onclick="downloadReceipt('RCP002')" class="btn btn-sm btn-outline-primary">Receipt</button></td>
+                  </tr>
+                  <tr>
+                    <td>Q3 (Oct-Dec)</td>
+                    <td>₹3,750</td>
+                    <td>—</td>
+                    <td><span class="status status-pending" id="q3Status">Pending</span></td>
+                    <td><button onclick="payFees()" class="btn btn-sm btn-primary">Pay Now</button></td>
+                  </tr>
+                  <tr>
+                    <td>Q4 (Jan-Mar)</td>
+                    <td>₹3,750</td>
+                    <td>—</td>
+                    <td><span class="status status-pending">Pending</span></td>
+                    <td><button onclick="payFees()" class="btn btn-sm btn-primary">Pay Now</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <button onclick="payFees()" class="btn btn-primary" style="width:100%">
+            <i class="fas fa-credit-card"></i> Pay Outstanding Fees
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTICES -->
+    <section id="secNotices" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Notice Board</h3>
+
+      <div class="notice-filters" style="margin-bottom:20px">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="urgent">Urgent</button>
+        <button class="filter-btn" data-filter="academic">Academic</button>
+        <button class="filter-btn" data-filter="events">Events</button>
+      </div>
+
+      <div class="notice-list" id="fullNoticeList"></div>
+    </section>
+
+    <!-- STUDY MATERIAL -->
+    <section id="secStudy" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Study Material</h3>
+
+      <div class="study-hero-card">
+        <div>
+          <div class="study-hero-kicker">Smart Learning Hub</div>
+          <h4>Notes, lectures, tests aur chapter-wise revision ek jagah</h4>
+          <p>Har subject ke resources ko quick access, progress insight aur recommended actions ke saath explore karo.</p>
+        </div>
+        <div class="study-hero-stats" id="studyHeroStats">
+          <div class="study-hero-stat">
+            <strong>0</strong>
+            <span>Subjects</span>
+          </div>
+          <div class="study-hero-stat">
+            <strong>0</strong>
+            <span>Resources</span>
+          </div>
+          <div class="study-hero-stat">
+            <strong>0 MB</strong>
+            <span>Content Size</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="study-layout-grid">
+        <div class="table-card">
+          <div class="card-header">
+            <div>
+              <h4>Subjects</h4>
+              <p class="study-section-subtitle">Choose a subject to open curated resources.</p>
+            </div>
+          </div>
+          <div class="card-body" id="studySubjectsList">
+            <p>Select a subject to view chapters and resources.</p>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-header">
+            <div>
+              <h4>Chapters & Resources</h4>
+              <p class="study-section-subtitle">Detailed notes, videos and test actions.</p>
+            </div>
+            <div class="study-active-chip" id="studyActiveSubjectChip">No subject selected</div>
+          </div>
+          <div class="card-body" id="studyChapterList">
+            <div style="text-align:center;padding:40px;color:var(--gray-500)">
+              <i class="fas fa-book-open" style="font-size:36px;margin-bottom:16px"></i>
+              <p>Select a subject from the left to explore chapter notes, online tests, and lectures.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="card-header">
+          <div>
+            <h4>Recent Downloads</h4>
+            <p class="study-section-subtitle">Quick resume for your latest learning files.</p>
+          </div>
+        </div>
+        <div class="card-body" id="recentDownloads">
+          <div class="download-item">
+            <div class="download-icon">📄</div>
+            <div class="download-details">
+              <div class="download-title">Math Chapter 5 Notes</div>
+              <div class="download-meta">Downloaded 2 days ago • 2.5 MB</div>
+            </div>
+            <div class="download-actions">
+              <button class="btn btn-sm btn-outline-primary">View</button>
+              <button class="btn btn-sm btn-outline-primary">Download Again</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="secSettings" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Settings</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Account Settings</h4>
+        </div>
+        <div class="card-body">
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-title">Email Notifications</div>
+              <div class="setting-desc">Receive email notifications for important updates</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="emailNotif" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-title">SMS Notifications</div>
+              <div class="setting-desc">Receive SMS alerts for urgent notices</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="smsNotif">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-title">Push Notifications</div>
+              <div class="setting-desc">Receive push notifications in browser</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="pushNotif" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Privacy Settings</h4>
+        </div>
+        <div class="card-body">
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-title">Profile Visibility</div>
+              <div class="setting-desc">Control who can see your profile information</div>
+            </div>
+            <select style="padding:8px 12px;border:1px solid var(--gray-300);border-radius:6px">
+              <option value="public">Public</option>
+              <option value="teachers">Teachers Only</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-title">Show Grades to Parents</div>
+              <div class="setting-desc">Allow parents to view your academic performance</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="parentGrades" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Security</h4>
+        </div>
+        <div class="card-body">
+          <button onclick="changePassword()" class="btn btn-outline-primary" style="margin-bottom:16px">
+            <i class="fas fa-key"></i> Change Password
+          </button>
+          <button onclick="enable2FA()" class="btn btn-outline-primary">
+            <i class="fas fa-shield-alt"></i> Enable Two-Factor Authentication
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ONLINE TESTS -->
+    <section id="secTests" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Online Tests</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Available Tests</h4>
+        </div>
+        <div class="card-body" id="availableTests">
+          <div class="test-item">
+            <div class="test-info">
+              <h5>Mathematics Practice Test</h5>
+              <p>Quadratic Equations & Linear Equations</p>
+              <div class="test-meta">
+                <span><i class="fas fa-clock"></i> 30 mins</span>
+                <span><i class="fas fa-question-circle"></i> 25 questions</span>
+                <span><i class="fas fa-star"></i> 50 marks</span>
+              </div>
+            </div>
+            <div class="test-actions">
+              <button onclick="startTest('math')" class="btn btn-primary">Start Test</button>
+            </div>
+          </div>
+
+          <div class="test-item">
+            <div class="test-info">
+              <h5>Science Quiz</h5>
+              <p>Chemistry - Acids, Bases & Salts</p>
+              <div class="test-meta">
+                <span><i class="fas fa-clock"></i> 20 mins</span>
+                <span><i class="fas fa-question-circle"></i> 20 questions</span>
+                <span><i class="fas fa-star"></i> 40 marks</span>
+              </div>
+            </div>
+            <div class="test-actions">
+              <button onclick="startTest('science')" class="btn btn-primary">Start Test</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Test Results</h4>
+        </div>
+        <div class="card-body" id="testResults">
+          <div class="result-item">
+            <div class="result-subject">Mathematics Practice Test</div>
+            <div class="result-score">42/50</div>
+            <div class="result-grade">A</div>
+            <div class="result-date">15 Mar 2025</div>
+          </div>
+          <div class="result-item">
+            <div class="result-subject">English Grammar Quiz</div>
+            <div class="result-score">35/40</div>
+            <div class="result-grade">A</div>
+            <div class="result-date">12 Mar 2025</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRESS TRACKING -->
+    <section id="secProgress" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Progress Tracking</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Subject-wise Progress</h4>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
+            <div class="progress-item">
+              <div class="progress-label">Mathematics</div>
+              <div class="progress-value">85%</div>
+              <div class="progress-bar" style="height:8px;margin-top:8px">
+                <div class="progress-fill green" style="width:85%;height:8px"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label">Science</div>
+              <div class="progress-value">78%</div>
+              <div class="progress-bar" style="height:8px;margin-top:8px">
+                <div class="progress-fill green" style="width:78%;height:8px"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label">English</div>
+              <div class="progress-value">92%</div>
+              <div class="progress-bar" style="height:8px;margin-top:8px">
+                <div class="progress-fill green" style="width:92%;height:8px"></div>
+              </div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-label">Social Science</div>
+              <div class="progress-value">71%</div>
+              <div class="progress-bar" style="height:8px;margin-top:8px">
+                <div class="progress-fill" style="width:71%;height:8px;background:orange"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Learning Goals</h4>
+        </div>
+        <div class="card-body">
+          <div class="goal-item">
+            <div class="goal-info">
+              <h5>Complete Mathematics Chapter 5</h5>
+              <p>Master quadratic equations and their applications</p>
+            </div>
+            <div class="goal-progress">
+              <div class="progress-bar" style="height:6px;margin-bottom:4px">
+                <div class="progress-fill green" style="width:60%;height:6px"></div>
+              </div>
+              <span style="font-size:12px;color:var(--gray-500)">60% Complete</span>
+            </div>
+          </div>
+
+          <div class="goal-item">
+            <div class="goal-info">
+              <h5>Improve Science Lab Skills</h5>
+              <p>Practice experimental procedures and observations</p>
+            </div>
+            <div class="goal-progress">
+              <div class="progress-bar" style="height:6px;margin-bottom:4px">
+                <div class="progress-fill green" style="width:40%;height:6px"></div>
+              </div>
+              <span style="font-size:12px;color:var(--gray-500)">40% Complete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Class Rank Insight</h4>
+        </div>
+        <div class="card-body">
+          <div class="student-rank-summary" id="studentRankSummary"></div>
+          <div class="student-rank-board" id="studentRankBoard"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PARENT COMMUNICATION -->
+    <section id="secParents" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Parent Communication</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Parent Dashboard Access</h4>
+        </div>
+        <div class="card-body">
+          <div style="text-align:center;padding:40px 0">
+            <div style="font-size:48px;margin-bottom:16px">👨‍👩‍👧‍👦</div>
+            <h4>Parent Portal Access</h4>
+            <p style="color:var(--gray-500);margin-bottom:20px">Share your academic progress with parents</p>
+            <button onclick="generateParentCode()" class="btn btn-primary">Generate Access Code</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Communication Log</h4>
+        </div>
+        <div class="card-body" id="parentCommunication">
+          <div class="message-item">
+            <div class="message-avatar">👨</div>
+            <div class="message-content">
+              <div class="message-sender">Father - Rajesh Sharma</div>
+              <div class="message-preview">Great job on your mathematics test! Keep it up.</div>
+              <div class="message-time">2 days ago</div>
+            </div>
+          </div>
+          <div class="message-item">
+            <div class="message-avatar">👩</div>
+            <div class="message-content">
+              <div class="message-sender">Mother - Priya Sharma</div>
+              <div class="message-preview">Don't forget to complete your homework before tomorrow.</div>
+              <div class="message-time">5 days ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATES -->
+    <section id="secCertificates" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Certificates & Achievements</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Achievement Certificates</h4>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px">
+            <div class="certificate-item">
+              <div class="certificate-icon">🏆</div>
+              <div class="certificate-info">
+                <h5>Mathematics Excellence</h5>
+                <p>Outstanding performance in Mathematics</p>
+                <span class="certificate-date">March 2025</span>
+              </div>
+              <button onclick="downloadCertificate('math')" class="btn btn-outline-primary btn-sm">Download</button>
+            </div>
+
+            <div class="certificate-item">
+              <div class="certificate-icon">🎯</div>
+              <div class="certificate-info">
+                <h5>Science Fair Winner</h5>
+                <p>1st Prize in Inter-school Science Fair</p>
+                <span class="certificate-date">February 2025</span>
+              </div>
+              <button onclick="downloadCertificate('science')" class="btn btn-outline-primary btn-sm">Download</button>
+            </div>
+
+            <div class="certificate-item">
+              <div class="certificate-icon">📚</div>
+              <div class="certificate-info">
+                <h5>Perfect Attendance</h5>
+                <p>100% attendance for the academic year</p>
+                <span class="certificate-date">January 2025</span>
+              </div>
+              <button onclick="downloadCertificate('attendance')" class="btn btn-outline-primary btn-sm">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Badges & Achievements</h4>
+        </div>
+        <div class="card-body">
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <div class="badge-item">
+              <div class="badge-icon">⭐</div>
+              <span>Top Performer</span>
+            </div>
+            <div class="badge-item">
+              <div class="badge-icon">🔬</div>
+              <span>Science Star</span>
+            </div>
+            <div class="badge-item">
+              <div class="badge-icon">📖</div>
+              <span>Book Worm</span>
+            </div>
+            <div class="badge-item">
+              <div class="badge-icon">⚡</div>
+              <span>Quick Learner</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ONLINE CLASSES -->
+    <section id="secClasses" class="portal-section">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px">Online Classes</h3>
+
+      <div class="table-card">
+        <div class="card-header">
+          <h4>Today's Classes</h4>
+        </div>
+        <div class="card-body" id="todayClasses">
+          <div class="class-item">
+            <div class="class-time">
+              <div class="class-hour">10:00</div>
+              <div class="class-ampm">AM</div>
+            </div>
+            <div class="class-details">
+              <h5>Mathematics</h5>
+              <p>Chapter 5: Quadratic Equations</p>
+              <div class="class-meta">
+                <span><i class="fas fa-user"></i> Dr. Sunita Sharma</span>
+                <span><i class="fas fa-clock"></i> 45 mins</span>
+              </div>
+            </div>
+            <div class="class-actions">
+              <button onclick="joinClass('math')" class="btn btn-primary">Join Class</button>
+            </div>
+          </div>
+
+          <div class="class-item">
+            <div class="class-time">
+              <div class="class-hour">11:00</div>
+              <div class="class-ampm">AM</div>
+            </div>
+            <div class="class-details">
+              <h5>Science</h5>
+              <p>Chemistry Lab Session</p>
+              <div class="class-meta">
+                <span><i class="fas fa-user"></i> Mr. Rajiv Kumar</span>
+                <span><i class="fas fa-clock"></i> 60 mins</span>
+              </div>
+            </div>
+            <div class="class-actions">
+              <button onclick="joinClass('science')" class="btn btn-primary">Join Class</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:20px">
+        <div class="card-header">
+          <h4>Class Recordings</h4>
+        </div>
+        <div class="card-body" id="classRecordings">
+          <div class="recording-item">
+            <div class="recording-icon">🎥</div>
+            <div class="recording-details">
+              <h5>Mathematics - Linear Equations</h5>
+              <p>Recorded on March 15, 2025</p>
+              <span class="recording-duration">45 minutes</span>
+            </div>
+            <div class="recording-actions">
+              <button onclick="playRecording('math1')" class="btn btn-outline-primary btn-sm">Play</button>
+              <button onclick="downloadRecording('math1')" class="btn btn-outline-primary btn-sm">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script type="module" src="../js/firebase-config.js"></script>
+<script src="../js/app.js"></script>
+<script src="./student-portal.js"></script>
+<script>
+let attendanceCalendarMonth = new Date();
+
+function syncStudentSession(student) {
+  if (!student) return;
+  localStorage.setItem('vm_studentUser', JSON.stringify(student));
+  const auth = JSON.parse(localStorage.getItem('ssvm_auth') || 'null');
+  if (auth && auth.role === 'student') {
+    localStorage.setItem('ssvm_auth', JSON.stringify({ ...auth, user: student }));
+  }
+}
+
+// Initialize Student Portal
+document.addEventListener('DOMContentLoaded', async function() {
+  if (window.ensureVmDataReady) {
+    await window.ensureVmDataReady({ forceHydrate: true });
+  }
+  // Initialize navigation
+  initNavigation();
+
+  // Load student data
+  loadStudentData();
+
+  // Initialize charts
+  setTimeout(() => {
+    initCharts();
+  }, 500);
+
+  // Load initial data
+  loadNotices();
+  loadTimetable();
+  loadHomework();
+  loadMessages();
+  loadLibraryData();
+  loadExamSchedule();
+  loadExamResults();
+  loadStudyMaterials();
+
+  // Update notification count
+  updateNotificationCount();
+});
+
+// Navigation Functions
+function initNavigation() {
+  const navLinks = document.querySelectorAll('.portal-nav a[data-section]');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetSection = this.getAttribute('data-section');
+      if (!targetSection) return;
+      showSection(targetSection);
+
+      // Update active state
+      navLinks.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+
+      // Update topbar title
+      const titles = {
+        'secDash': 'Dashboard',
+        'secProfile': 'My Profile',
+        'secAttendance': 'Attendance',
+        'secMarks': 'Marks & Results',
+        'secHomework': 'Homework',
+        'secTimetable': 'Timetable',
+        'secExams': 'Exam Schedule',
+        'secLibrary': 'Library',
+        'secMessages': 'Messages',
+        'secFees': 'Fee Status',
+        'secNotices': 'Notices',
+        'secStudy': 'Study Material',
+        'secTests': 'Online Tests',
+        'secProgress': 'Progress Tracking',
+        'secParents': 'Parent Communication',
+        'secCertificates': 'Certificates & Achievements',
+        'secClasses': 'Online Classes',
+        'secSettings': 'Settings'
+      };
+      document.getElementById('portalTopbarTitle').textContent = titles[targetSection] || 'Dashboard';
+    });
+  });
+
+  // Mobile sidebar toggle
+  document.getElementById('sidebarToggle').style.display = window.innerWidth < 768 ? 'block' : 'none';
+  window.addEventListener('resize', () => {
+    document.getElementById('sidebarToggle').style.display = window.innerWidth < 768 ? 'block' : 'none';
+  });
+}
+
+function showSection(sectionId) {
+  document.querySelectorAll('.portal-section').forEach(sec => {
+    sec.classList.remove('active');
+  });
+  const section = document.getElementById(sectionId);
+  if (section) {
+    section.classList.add('active');
+  }
+}
+
+// Modal Functions
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.style.display = 'flex';
+  modal.classList.add('open');
+}
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.style.display = 'none';
+  modal.classList.remove('open');
+}
+
+function renderStudentAvatar(student) {
+  const name = student?.name || 'Student';
+  const initials = name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase() || 'S';
+  const topbarAvatar = document.getElementById('studentAvatar');
+  const profileImage = document.getElementById('profileAvatarImage');
+  const profileFallback = document.getElementById('profileAvatarFallback');
+  const profileCardName = document.getElementById('profileCardName');
+  const profileCardClass = document.getElementById('profileCardClass');
+
+  if (topbarAvatar) topbarAvatar.textContent = initials;
+  if (profileFallback) {
+    profileFallback.textContent = initials;
+    profileFallback.style.display = 'flex';
+  }
+  if (profileImage) {
+    if (student?.avatar) {
+      profileImage.src = student.avatar;
+      profileImage.style.display = 'block';
+      profileImage.onerror = () => {
+        profileImage.style.display = 'none';
+        if (profileFallback) profileFallback.style.display = 'flex';
+      };
+      if (profileFallback) profileFallback.style.display = 'none';
+    } else {
+      profileImage.removeAttribute('src');
+      profileImage.style.display = 'none';
+    }
+  }
+  if (profileCardName) profileCardName.textContent = name;
+  if (profileCardClass) profileCardClass.textContent = `Class ${student?.class || '--'}-${student?.section || 'A'}`;
+}
+
+// Load Student Data
+function loadStudentData() {
+  let user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) {
+    const auth = JSON.parse(localStorage.getItem('ssvm_auth') || 'null');
+    if (auth && auth.role === 'student' && auth.user) {
+      user = auth.user;
+      syncStudentSession(user);
+    }
+  }
+  if (!user) {
+    const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
+    if (students.length) {
+      user = students[0];
+      syncStudentSession(user);
+    }
+  }
+  if (!user) return;
+
+  // Update header info
+  document.getElementById('studentName').textContent = user.name || 'Student';
+  document.getElementById('dashWelcomeName').textContent = user.name || 'Student';
+
+  // Get student details from main database
+  const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
+  const student = students.find(s => s.id === user.id);
+
+  if (student) {
+    syncStudentSession(student);
+    document.getElementById('studentClass').textContent = student.class || '—';
+    document.getElementById('studentRoll').textContent = `Roll No: ${student.roll || '—'} | Class: ${student.class || '—'}`;
+    renderStudentAvatar(student);
+
+    // Profile data
+    document.getElementById('profileFullName').textContent = student.name || '—';
+    document.getElementById('profileStudentId').textContent = student.id || '—';
+    document.getElementById('profileClass').textContent = `${student.class || '—'} | Section: ${student.section || 'A'}`;
+    document.getElementById('profileRollNo').textContent = student.roll || '—';
+    document.getElementById('profileEmail').textContent = student.email || '—';
+    document.getElementById('profilePhone').textContent = student.phone || '—';
+    document.getElementById('profileDOB').textContent = student.dob || '—';
+    document.getElementById('profileAddress').textContent = student.address || '—';
+    document.getElementById('fatherName').textContent = student.fatherName || '—';
+    document.getElementById('fatherPhone').textContent = student.fatherPhone || '—';
+    document.getElementById('motherName').textContent = student.motherName || '—';
+    document.getElementById('emergencyContact').textContent = student.emergencyContact || '—';
+
+    // Fee status
+    const feeStatus = student.fees === 'paid' ? '✅ Paid' : '⚠️ Pending';
+    document.getElementById('feeStatusBig').textContent = feeStatus;
+    document.getElementById('feeStatusBig').style.color = student.fees === 'paid' ? 'var(--green)' : 'var(--red)';
+    document.getElementById('studentFeeStatus').textContent = feeStatus;
+  }
+
+  // Load attendance data
+  loadAttendanceData(user.id);
+
+  // Load marks data
+  loadMarksData(user.id);
+
+  renderDashboardGraphs(user.id);
+}
+
+// Load Attendance Data
+function loadAttendanceData(studentId) {
+  const attendance = JSON.parse(localStorage.getItem('vm_attendance') || '{}')[studentId] || { present: 85, total: 95 };
+
+  const present = attendance.present;
+  const total = attendance.total;
+  const absent = total - present;
+  const percentage = Math.round((present / total) * 100);
+
+  document.getElementById('totalPresent').textContent = present;
+  document.getElementById('totalAbsent').textContent = absent;
+  const attPctDisplayElement = document.getElementById('attPctDisplay');
+  if (attPctDisplayElement) attPctDisplayElement.textContent = `${percentage}%`;
+
+  const studentAttPct = document.getElementById('studentAttPct');
+  if (studentAttPct) studentAttPct.textContent = `${percentage}%`;
+
+  const studentAttPct2 = document.getElementById('studentAttPct2');
+  if (studentAttPct2) studentAttPct2.textContent = `${percentage}%`;
+
+  const attBarBig = document.getElementById('attBarBig');
+  if (attBarBig) attBarBig.style.width = `${percentage}%`;
+
+  const studentAttBar = document.getElementById('studentAttBar');
+  if (studentAttBar) studentAttBar.style.width = `${percentage}%`;
+
+  const history = ensureStudentAttendanceHistory(studentId, percentage);
+  renderMonthlyAttendanceChart(history);
+  renderAttendanceCalendar(studentId, percentage);
+}
+
+function ensureStudentAttendanceHistory(studentId, currentPercentage) {
+  const key = 'vm_studentAttendanceHistory';
+  const allHistory = JSON.parse(localStorage.getItem(key) || '{}');
+  if (!allHistory[studentId]) {
+    const months = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+    const offsets = [-6, -3, -4, -1, 2, 0];
+    allHistory[studentId] = months.map((month, index) => ({
+      month,
+      percentage: Math.max(62, Math.min(99, currentPercentage + offsets[index]))
+    }));
+    localStorage.setItem(key, JSON.stringify(allHistory));
+  }
+  return allHistory[studentId];
+}
+
+function renderDashboardGraphs(studentId) {
+  const marksMap = JSON.parse(localStorage.getItem('vm_marks') || '{}')[studentId] || {};
+  const attendanceMap = JSON.parse(localStorage.getItem('vm_attendance') || '{}')[studentId] || { present: 0, total: 0 };
+  const attendanceHistory = ensureStudentAttendanceHistory(studentId, attendanceMap.total ? Math.round((attendanceMap.present / attendanceMap.total) * 100) : 0);
+  const homework = JSON.parse(localStorage.getItem('vm_homework') || '[]').filter(hw => hw.studentId === studentId);
+
+  const performanceCanvas = document.getElementById('dashboardPerformanceChart');
+  if (performanceCanvas) {
+    Chart.getChart(performanceCanvas)?.destroy();
+    const subjects = Object.keys(marksMap);
+    const marksData = subjects.length ? subjects.map(subject => Number(marksMap[subject]) || 0) : [0];
+    new Chart(performanceCanvas, {
+      type: 'bar',
+      data: {
+        labels: subjects.length ? subjects : ['No Data'],
+        datasets: [{
+          data: marksData,
+          backgroundColor: ['#2563eb', '#0f766e', '#f59e0b', '#7c3aed', '#dc2626', '#0891b2'],
+          borderRadius: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: { color: 'rgba(148, 163, 184, 0.18)' }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  const attendanceCanvas = document.getElementById('dashboardAttendanceChart');
+  if (attendanceCanvas) {
+    Chart.getChart(attendanceCanvas)?.destroy();
+    new Chart(attendanceCanvas, {
+      type: 'line',
+      data: {
+        labels: attendanceHistory.map(item => item.month),
+        datasets: [{
+          data: attendanceHistory.map(item => item.percentage),
+          borderColor: '#0f766e',
+          backgroundColor: 'rgba(15, 118, 110, 0.12)',
+          fill: true,
+          tension: 0.35,
+          borderWidth: 3,
+          pointBackgroundColor: '#0f766e',
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            ticks: {
+              callback(value) {
+                return value + '%';
+              }
+            },
+            grid: { color: 'rgba(148, 163, 184, 0.18)' }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  const homeworkCanvas = document.getElementById('dashboardHomeworkChart');
+  if (homeworkCanvas) {
+    Chart.getChart(homeworkCanvas)?.destroy();
+    const doneCount = homework.filter(hw => hw.status === 'completed').length;
+    const pendingCount = homework.filter(hw => hw.status === 'pending').length;
+    new Chart(homeworkCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: ['Done', 'Not Done'],
+        datasets: [{
+          data: [doneCount, pendingCount || 0],
+          backgroundColor: ['#10b981', '#f59e0b'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '68%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              boxWidth: 10
+            }
+          }
+        }
+      }
+    });
+  }
+}
+
+function renderMonthlyAttendanceChart(history) {
+  const canvas = document.getElementById('monthlyAttendanceChart');
+  if (!canvas || !window.Chart) return;
+  Chart.getChart(canvas)?.destroy();
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: history.map(item => item.month),
+      datasets: [{
+        label: 'Attendance %',
+        data: history.map(item => item.percentage),
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37, 99, 235, 0.12)',
+        fill: true,
+        tension: 0.35,
+        pointBackgroundColor: '#2563eb',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: false,
+          min: 50,
+          max: 100,
+          ticks: {
+            callback: value => `${value}%`
+          }
+        }
+      }
+    }
+  });
+}
+
+function changeAttendanceMonth(delta) {
+  attendanceCalendarMonth = new Date(attendanceCalendarMonth.getFullYear(), attendanceCalendarMonth.getMonth() + delta, 1);
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+  const attendance = JSON.parse(localStorage.getItem('vm_attendance') || '{}')[user.id] || { present: 85, total: 95 };
+  const percentage = attendance.total ? Math.round((attendance.present / attendance.total) * 100) : 0;
+  renderAttendanceCalendar(user.id, percentage);
+}
+
+function jumpToCurrentAttendanceMonth() {
+  attendanceCalendarMonth = new Date();
+  changeAttendanceMonth(0);
+}
+
+function renderAttendanceCalendar(studentId, percentage) {
+  const key = 'vm_studentAttendanceCalendar';
+  const allCalendars = JSON.parse(localStorage.getItem(key) || '{}');
+  const activeMonth = attendanceCalendarMonth instanceof Date ? attendanceCalendarMonth : new Date();
+  const year = activeMonth.getFullYear();
+  const month = activeMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  const startIndex = firstDay.getDay();
+  const monthName = firstDay.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+
+  if (!allCalendars[studentId]) allCalendars[studentId] = {};
+  const monthKey = `${year}-${month + 1}`;
+  if (!allCalendars[studentId][monthKey]) {
+    const records = {};
+    for (let day = 1; day <= totalDays; day++) {
+      const date = new Date(year, month, day);
+      const weekday = date.getDay();
+      if (weekday === 0) {
+        records[day] = 'holiday';
+      } else {
+        const absenceTrigger = (day * 7 + studentId.length) % 100;
+        records[day] = absenceTrigger < Math.max(5, 100 - percentage) ? 'absent' : 'present';
+      }
+    }
+    allCalendars[studentId][monthKey] = records;
+    localStorage.setItem(key, JSON.stringify(allCalendars));
+  }
+
+  const calendar = allCalendars[studentId][monthKey];
+  document.getElementById('attendanceCalendarMonth').textContent = monthName;
+  const grid = document.getElementById('attendanceCalendarGrid');
+  if (!grid) return;
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  let html = `<div class="attendance-calendar-grid">`;
+  html += weekDays.map(day => `<div class="attendance-calendar-head">${day}</div>`).join('');
+  for (let i = 0; i < startIndex; i++) {
+    html += `<div class="attendance-calendar-day empty"></div>`;
+  }
+  for (let day = 1; day <= totalDays; day++) {
+    const status = calendar[day] || 'present';
+    const label = status === 'present' ? 'Present' : status === 'absent' ? 'Absent' : 'Holiday';
+    html += `
+      <div class="attendance-calendar-day ${status}">
+        <div class="attendance-calendar-date">${day}</div>
+        <div class="attendance-calendar-status">${label}</div>
+      </div>
+    `;
+  }
+  html += `</div>`;
+  grid.innerHTML = html;
+}
+
+// Load Marks Data
+function loadMarksData(studentId) {
+  const marksData = JSON.parse(localStorage.getItem('vm_marks') || '{}')[studentId] || {
+    'Mathematics': 92,
+    'Science': 85,
+    'English': 78,
+    'Hindi': 82,
+    'Social Science': 76,
+    'Computer': 88
+  };
+
+  const tableBody = document.getElementById('studentMarksTable');
+  if (!tableBody) return;
+
+  let totalMarks = 0;
+  let html = '';
+
+  for (const [subject, marks] of Object.entries(marksData)) {
+    totalMarks += marks;
+    const percentage = Math.round((marks / 100) * 100);
+    const grade = getGrade(marks);
+    html += `
+      <tr>
+        <td>${subject}</td>
+        <td>100</td>
+        <td>${marks}</td>
+        <td>${percentage}%</td>
+        <td><span class="grade grade-${grade.toLowerCase()}">${grade}</span></td>
+        <td>${getRemarks(marks)}</td>
+      </tr>
+    `;
+  }
+
+  tableBody.innerHTML = html;
+
+  // Update dashboard stats
+  const avgMarks = Math.round(totalMarks / Object.keys(marksData).length);
+  document.getElementById('studentMarksPct').textContent = `${avgMarks}%`;
+  document.getElementById('studentGrade').textContent = getGrade(avgMarks);
+  const overallGrade = document.getElementById('overallGrade');
+  if (overallGrade) overallGrade.textContent = getGrade(avgMarks);
+  renderProgressRank(studentId);
+}
+
+function ordinalRank(rank) {
+  if (rank % 100 >= 11 && rank % 100 <= 13) return `${rank}th`;
+  if (rank % 10 === 1) return `${rank}st`;
+  if (rank % 10 === 2) return `${rank}nd`;
+  if (rank % 10 === 3) return `${rank}rd`;
+  return `${rank}th`;
+}
+
+function getClassRankings(studentId) {
+  const allStudents = JSON.parse(localStorage.getItem('vm_students') || '[]');
+  const allMarks = JSON.parse(localStorage.getItem('vm_marks') || '{}');
+  const currentUser = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  const currentStudent = allStudents.find(s => s.id === studentId) || currentUser;
+  if (!currentStudent) return null;
+
+  let cohortStudents = allStudents.filter(s => s.class === currentStudent.class && s.section === currentStudent.section);
+  if (cohortStudents.length < 2) {
+    cohortStudents = allStudents.filter(s => s.class === currentStudent.class);
+  }
+  if (cohortStudents.length < 2) {
+    cohortStudents = [...allStudents];
+  }
+
+  const currentExistsInCohort = cohortStudents.some(student => student.id === currentStudent.id);
+  if (!currentExistsInCohort) {
+    cohortStudents.unshift(currentStudent);
+  }
+
+  const ranked = cohortStudents.map(student => {
+    const subjectMarks = Object.values(allMarks[student.id] || {}).map(Number).filter(Number.isFinite);
+    const average = subjectMarks.length ? Math.round(subjectMarks.reduce((a, b) => a + b, 0) / subjectMarks.length) : 0;
+    return { student, average };
+  }).sort((a, b) => b.average - a.average);
+
+  if (ranked.length < 3) {
+    const baseAverage = ranked[0]?.average || 75;
+    const demoPeers = [
+      { id: `peer-${studentId}-1`, name: 'Aarav Sharma', rollNo: '201', average: Math.min(99, baseAverage + 4) },
+      { id: `peer-${studentId}-2`, name: 'Priya Verma', rollNo: '202', average: Math.max(40, baseAverage - 3) },
+      { id: `peer-${studentId}-3`, name: 'Rohan Gupta', rollNo: '203', average: Math.max(35, baseAverage - 7) }
+    ];
+
+    demoPeers.forEach(peer => {
+      if (!ranked.some(item => item.student.id === peer.id || item.student.name === peer.name)) {
+        ranked.push({
+          student: {
+            id: peer.id,
+            name: peer.name,
+            rollNo: peer.rollNo,
+            class: currentStudent.class,
+            section: currentStudent.section
+          },
+          average: peer.average
+        });
+      }
+    });
+
+    ranked.sort((a, b) => b.average - a.average);
+  }
+
+  const currentIndex = ranked.findIndex(item => item.student.id === studentId);
+  if (currentIndex === -1) return null;
+
+  return {
+    ranked,
+    currentIndex,
+    currentRank: currentIndex + 1,
+    current: ranked[currentIndex],
+    aheadStudents: ranked.slice(0, currentIndex),
+    followingStudents: ranked.slice(currentIndex + 1, currentIndex + 4)
+  };
+}
+
+function renderProgressRank(studentId) {
+  const rankingData = getClassRankings(studentId);
+  if (!rankingData) return;
+
+  const { ranked, currentIndex, currentRank, current, aheadStudents, followingStudents } = rankingData;
+
+  const classRankEl = document.getElementById('classRank');
+  if (classRankEl) classRankEl.textContent = ordinalRank(currentRank);
+  const progressAttendanceEl = document.getElementById('progressAttendance');
+  const att = JSON.parse(localStorage.getItem('vm_attendance') || '{}')[studentId];
+  if (progressAttendanceEl && att) progressAttendanceEl.textContent = `${att.percentage || 0}%`;
+  const improvementEl = document.getElementById('improvement');
+  if (improvementEl) {
+    const previous = ranked[Math.min(ranked.length - 1, currentIndex + 2)];
+    const diff = previous ? current.average - previous.average : current.average;
+    improvementEl.textContent = `${diff >= 0 ? '+' : ''}${diff}%`;
+  }
+
+  const summary = document.getElementById('studentRankSummary');
+  if (summary) {
+    summary.innerHTML = `
+      <div class="student-rank-stat"><strong>${ordinalRank(currentRank)}</strong><span>Your Current Rank</span></div>
+      <div class="student-rank-stat"><strong>${current.average}%</strong><span>Your Average Score</span></div>
+      <div class="student-rank-stat"><strong>${ranked.length}</strong><span>Students in Class</span></div>
+      <div class="student-rank-stat"><strong>${aheadStudents.length}</strong><span>Students Ahead of You</span></div>
+    `;
+  }
+
+  const listMarkup = (entries, emptyText) => {
+    if (!entries.length) {
+      return `<div class="student-rank-empty">${emptyText}</div>`;
+    }
+    return `<div class="student-rank-list">${entries.map(entry => {
+      const rank = ordinalRank(ranked.findIndex(item => item.student.id === entry.student.id) + 1);
+      return `
+        <div class="student-rank-list-item">
+          <strong>${entry.student.name}</strong>
+          <span>${rank} • ${entry.average}% avg • Roll ${entry.student.rollNo || entry.student.roll || '--'}</span>
+        </div>
+      `;
+    }).join('')}</div>`;
+  };
+
+  const currentCard = (entry) => {
+    if (!entry) return '';
+    const rank = ordinalRank(ranked.findIndex(item => item.student.id === entry.student.id) + 1);
+    return `
+      <div class="student-rank-card current">
+        <h5>You</h5>
+        <p>${entry.student.name}</p>
+        <div class="student-rank-meta">
+          <span>Rank ${rank}</span>
+          <span>${entry.average}% avg</span>
+          <span>Roll ${entry.student.rollNo || entry.student.roll || '--'}</span>
+        </div>
+      </div>
+    `;
+  };
+
+  const board = document.getElementById('studentRankBoard');
+  if (board) {
+    board.innerHTML = [
+      `<div class="student-rank-card">
+        <h5>Students Ahead of You</h5>
+        <p>${aheadStudents.length} student${aheadStudents.length === 1 ? '' : 's'} are currently ahead of you.</p>
+        ${listMarkup(aheadStudents, 'You are currently at the top of the class.')}
+      </div>`,
+      currentCard(current),
+      `<div class="student-rank-card">
+        <h5>Students Behind You</h5>
+        <p>These students are closest behind your current score.</p>
+        ${listMarkup(followingStudents, 'No students are currently behind you in this ranking.')}
+      </div>`
+    ].join('');
+  }
+
+  const examRankSummary = document.getElementById('examRankSummary');
+  if (examRankSummary) {
+    const nextTarget = aheadStudents[aheadStudents.length - 1];
+    const gapToNext = nextTarget ? Math.max(0, nextTarget.average - current.average) : 0;
+    examRankSummary.innerHTML = `
+      <div class="student-rank-stat"><strong>${ordinalRank(currentRank)}</strong><span>Overall Rank</span></div>
+      <div class="student-rank-stat"><strong>${aheadStudents.length}</strong><span>Students Ahead</span></div>
+      <div class="student-rank-stat"><strong>${gapToNext}%</strong><span>Gap To Next Rank</span></div>
+    `;
+  }
+}
+
+// Helper Functions
+function getGrade(marks) {
+  if (marks >= 90) return 'A+';
+  if (marks >= 80) return 'A';
+  if (marks >= 70) return 'B+';
+  if (marks >= 60) return 'B';
+  if (marks >= 50) return 'C';
+  return 'F';
+}
+
+function getRemarks(marks) {
+  if (marks >= 90) return 'Excellent';
+  if (marks >= 80) return 'Very Good';
+  if (marks >= 70) return 'Good';
+  if (marks >= 60) return 'Satisfactory';
+  if (marks >= 50) return 'Needs Improvement';
+  return 'Poor';
+}
+
+// Load Notices
+function loadNotices() {
+  const notices = JSON.parse(localStorage.getItem('vm_notices') || '[]');
+  const container = document.getElementById('fullNoticeList');
+
+  if (!container) return;
+
+  const html = notices.map(notice => `
+    <div class="notice-item ${notice.type || 'info'}">
+      <div class="notice-icon">${getNoticeIcon(notice.type)}</div>
+      <div class="notice-content">
+        <h4>${notice.title}</h4>
+        <p>${notice.content}</p>
+        <div class="notice-date">${notice.date} | By: ${notice.author}</div>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = html;
+}
+
+function getNoticeIcon(type) {
+  switch(type) {
+    case 'urgent': return '🔴';
+    case 'important': return '🟡';
+    case 'event': return '📅';
+    default: return '📢';
+  }
+}
+
+// Load Timetable
+function loadTimetable() {
+  const container = document.getElementById('studentTimetable');
+  if (!container) return;
+
+  const schedule = [
+    { time: '8:00-8:45', periods: ['Mathematics', 'English', 'Science', 'Hindi', 'Maths', 'PT'] },
+    { time: '8:45-9:30', periods: ['Science', 'Hindi', 'English', 'Mathematics', 'Computer', 'Music'] },
+    { time: '9:30-10:15', periods: ['English', 'Science', 'Hindi', 'Computer', 'Hindi', 'Science'] },
+    { time: '10:15-10:30', periods: ['——Break——', '——Break——', '——Break——', '——Break——', '——Break——', '——Break——'] },
+    { time: '10:30-11:15', periods: ['Hindi', 'Mathematics', 'Computer', 'Science', 'English', 'Hindi'] },
+    { time: '11:15-12:00', periods: ['Computer', 'Drawing', 'Social', 'Social', 'Social', 'Drawing'] },
+    { time: '12:00-12:45', periods: ['Social', 'Computer', 'Mathematics', 'English', 'Science', 'Mathematics'] }
+  ];
+
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  let html = '<table class="timetable-table"><thead><tr><th>Time</th>';
+  days.forEach(day => html += `<th>${day}</th>`);
+  html += '</tr></thead><tbody>';
+
+  schedule.forEach(row => {
+    html += `<tr><td class="time-cell">${row.time}</td>`;
+    row.periods.forEach(period => {
+      if (period.includes('Break')) {
+        html += `<td colspan="6" class="break-cell">${period}</td>`;
+      } else {
+        html += `<td class="subject-cell">${period}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// Load Homework
+function loadHomework() {
+  // Homework data is already in HTML, but could be loaded from localStorage
+}
+
+// Load Messages
+function loadMessages() {
+  // Messages are already in HTML, but could be loaded from localStorage
+}
+
+function getDefaultStudentTimetable() {
+  return {
+    Monday: [
+      { time: '8:00 - 8:45', subject: 'Mathematics', teacher: 'Mr. Sharma', room: '101' },
+      { time: '8:45 - 9:30', subject: 'English', teacher: 'Ms. Patel', room: '102' },
+      { time: '9:30 - 10:15', subject: 'Science', teacher: 'Mr. Gupta', room: 'Lab 1' },
+      { time: '10:15 - 10:30', subject: 'Break' },
+      { time: '10:30 - 11:15', subject: 'Computer', teacher: 'Mr. Khan', room: 'Lab 2' },
+      { time: '11:15 - 12:00', subject: 'Social Science', teacher: 'Ms. Iyer', room: '104' },
+      { time: '12:00 - 12:45', subject: 'Hindi', teacher: 'Mrs. Verma', room: '103' }
+    ],
+    Tuesday: [
+      { time: '8:00 - 8:45', subject: 'English', teacher: 'Ms. Patel', room: '102' },
+      { time: '8:45 - 9:30', subject: 'Mathematics', teacher: 'Mr. Sharma', room: '101' },
+      { time: '9:30 - 10:15', subject: 'Computer', teacher: 'Mr. Khan', room: 'Lab 2' },
+      { time: '10:15 - 10:30', subject: 'Break' },
+      { time: '10:30 - 11:15', subject: 'Science', teacher: 'Mr. Gupta', room: 'Lab 1' },
+      { time: '11:15 - 12:00', subject: 'Art', teacher: 'Ms. Roy', room: 'Art Room' },
+      { time: '12:00 - 12:45', subject: 'Physical Education', teacher: 'Coach Singh', room: 'Ground' }
+    ],
+    Wednesday: [
+      { time: '8:00 - 8:45', subject: 'Science', teacher: 'Mr. Gupta', room: 'Lab 1' },
+      { time: '8:45 - 9:30', subject: 'Hindi', teacher: 'Mrs. Verma', room: '103' },
+      { time: '9:30 - 10:15', subject: 'Mathematics', teacher: 'Mr. Sharma', room: '101' },
+      { time: '10:15 - 10:30', subject: 'Break' },
+      { time: '10:30 - 11:15', subject: 'English', teacher: 'Ms. Patel', room: '102' },
+      { time: '11:15 - 12:00', subject: 'Social Science', teacher: 'Ms. Iyer', room: '104' },
+      { time: '12:00 - 12:45', subject: 'Computer', teacher: 'Mr. Khan', room: 'Lab 2' }
+    ],
+    Thursday: [
+      { time: '8:00 - 8:45', subject: 'Hindi', teacher: 'Mrs. Verma', room: '103' },
+      { time: '8:45 - 9:30', subject: 'Science', teacher: 'Mr. Gupta', room: 'Lab 1' },
+      { time: '9:30 - 10:15', subject: 'English', teacher: 'Ms. Patel', room: '102' },
+      { time: '10:15 - 10:30', subject: 'Break' },
+      { time: '10:30 - 11:15', subject: 'Mathematics', teacher: 'Mr. Sharma', room: '101' },
+      { time: '11:15 - 12:00', subject: 'Computer', teacher: 'Mr. Khan', room: 'Lab 2' },
+      { time: '12:00 - 12:45', subject: 'Music', teacher: 'Mrs. Das', room: 'Music Room' }
+    ],
+    Friday: [
+      { time: '8:00 - 8:45', subject: 'Mathematics', teacher: 'Mr. Sharma', room: '101' },
+      { time: '8:45 - 9:30', subject: 'Computer', teacher: 'Mr. Khan', room: 'Lab 2' },
+      { time: '9:30 - 10:15', subject: 'Hindi', teacher: 'Mrs. Verma', room: '103' },
+      { time: '10:15 - 10:30', subject: 'Break' },
+      { time: '10:30 - 11:15', subject: 'English', teacher: 'Ms. Patel', room: '102' },
+      { time: '11:15 - 12:00', subject: 'Science', teacher: 'Mr. Gupta', room: 'Lab 1' },
+      { time: '12:00 - 12:45', subject: 'Social Science', teacher: 'Ms. Iyer', room: '104' }
+    ],
+    Saturday: [
+      { time: '8:00 - 8:45', subject: 'Physical Education', teacher: 'Coach Singh', room: 'Ground' },
+      { time: '8:45 - 9:30', subject: 'Art', teacher: 'Ms. Roy', room: 'Art Room' },
+      { time: '9:30 - 10:15', subject: 'Library', teacher: 'Mrs. Nanda', room: 'Library' },
+      { time: '10:15 - 10:30', subject: 'Break' },
+      { time: '10:30 - 11:15', subject: 'Computer', teacher: 'Mr. Khan', room: 'Lab 2' },
+      { time: '11:15 - 12:00', subject: 'Mathematics Practice', teacher: 'Mr. Sharma', room: '101' },
+      { time: '12:00 - 12:45', subject: 'Class Activity', teacher: 'Class Teacher', room: 'Home Room' }
+    ]
+  };
+}
+
+function loadTimetable() {
+  const container = document.getElementById('studentTimetable');
+  if (!container) return;
+
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  let timetable = JSON.parse(localStorage.getItem('vm_timetable') || 'null');
+
+  if (!timetable || typeof timetable !== 'object' || !days.every(day => Array.isArray(timetable[day]) && timetable[day].length)) {
+    timetable = getDefaultStudentTimetable();
+    localStorage.setItem('vm_timetable', JSON.stringify(timetable));
+  }
+
+  const timeSlots = timetable.Monday.map(period => period.time);
+  let html = '<table class="timetable-table"><thead><tr><th>Time</th>';
+  days.forEach(day => html += `<th>${day}</th>`);
+  html += '</tr></thead><tbody>';
+
+  timeSlots.forEach((time, rowIndex) => {
+    html += `<tr><td class="time-cell">${time}</td>`;
+    const isBreakRow = days.every(day => (timetable[day][rowIndex]?.subject || '') === 'Break');
+
+    if (isBreakRow) {
+      html += '<td colspan="6" class="break-cell">Break</td>';
+    } else {
+      days.forEach(day => {
+        const period = timetable[day][rowIndex] || {};
+        html += `
+          <td class="subject-cell">
+            <div class="timetable-subject">${period.subject || '-'}</div>
+            ${period.subject && period.subject !== 'Break'
+              ? `<div class="timetable-teacher">${period.teacher || ''}</div><div class="timetable-room">Room ${period.room || 'TBA'}</div>`
+              : ''
+            }
+          </td>
+        `;
+      });
+    }
+
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+
+  const todaySchedule = document.getElementById('todaySchedule');
+  const todayScheduleDay = document.getElementById('todayScheduleDay');
+  const todayScheduleMeta = document.getElementById('todayScheduleMeta');
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const todayName = dayNames[new Date().getDay()];
+  const todayPeriods = timetable[todayName] || timetable.Monday || [];
+
+  if (todayScheduleDay) {
+    todayScheduleDay.textContent = todayName === 'Sunday' ? 'Sunday Overview' : `${todayName} Classes`;
+  }
+  if (todayScheduleMeta) {
+    const teachingCount = todayPeriods.filter(period => period.subject !== 'Break').length;
+    todayScheduleMeta.textContent = `${teachingCount} learning blocks planned for today`;
+  }
+
+  if (todaySchedule) {
+    todaySchedule.innerHTML = todayPeriods.map(period => `
+      <div class="schedule-item${period.subject === 'Break' ? ' break' : ''}">
+        <div class="schedule-time">${period.time}</div>
+        <div class="schedule-content">
+          <div class="schedule-subject">${period.subject === 'Break' ? 'Break' : period.subject}</div>
+          <div class="schedule-teacher">${period.subject === 'Break' ? 'Recharge time' : period.teacher}</div>
+        </div>
+        <div class="schedule-room">${period.subject === 'Break' ? 'Campus' : `Room ${period.room}`}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// Initialize Charts
+function initCharts() {
+  // Marks Chart
+  const marksCtx = document.getElementById('studentMarksChart');
+  if (marksCtx) {
+    new Chart(marksCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Math', 'Science', 'English', 'Hindi', 'S.Sc', 'Computer'],
+        datasets: [{
+          label: 'Marks',
+          data: [92, 85, 78, 82, 76, 88],
+          backgroundColor: [
+            'rgba(37, 99, 235, 0.7)',
+            'rgba(5, 150, 105, 0.7)',
+            'rgba(232, 160, 32, 0.7)',
+            'rgba(124, 58, 237, 0.7)',
+            'rgba(220, 38, 38, 0.7)',
+            'rgba(8, 145, 178, 0.7)'
+          ],
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, max: 100 } }
+      }
+    });
+  }
+}
+
+// Action Functions
+function openEditProfileModal() {
+  let user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) {
+    const auth = JSON.parse(localStorage.getItem('ssvm_auth') || 'null');
+    if (auth && auth.role === 'student' && auth.user) {
+      user = auth.user;
+      localStorage.setItem('vm_studentUser', JSON.stringify(user));
+    }
+  }
+  if (!user) return;
+
+  const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
+  const student = students.find(s => s.id === user.id);
+  if (!student) return;
+
+  document.getElementById('profileInputName').value = student.name || '';
+  document.getElementById('profileInputEmail').value = student.email || '';
+  document.getElementById('profileInputPhone').value = student.phone || '';
+  document.getElementById('profileInputAddress').value = student.address || '';
+  document.getElementById('profileInputEmergency').value = student.emergencyContact || '';
+  document.getElementById('profileInputAvatar').value = '';
+  document.getElementById('profileInputAvatar').dataset.currentAvatar = student.avatar || '';
+
+  openModal('profileModal');
+}
+
+function readProfileImage(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) return resolve(null);
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Image upload failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function saveProfile() {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  // Get form values
+  const fullName = document.getElementById('profileInputName').value;
+  const email = document.getElementById('profileInputEmail').value;
+  const phone = document.getElementById('profileInputPhone').value;
+  const address = document.getElementById('profileInputAddress').value;
+  const emergencyContact = document.getElementById('profileInputEmergency').value;
+  const avatarInput = document.getElementById('profileInputAvatar');
+  const avatarFile = avatarInput.files?.[0] || null;
+  let avatar = avatarInput.dataset.currentAvatar || '';
+
+  if (avatarFile) {
+    try {
+      avatar = await readProfileImage(avatarFile);
+    } catch (error) {
+      showToast('Image upload failed. Please try another file.', 'error');
+      return;
+    }
+  }
+
+  // Update student data
+  const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
+  const studentIndex = students.findIndex(s => s.id === user.id);
+
+  if (studentIndex !== -1) {
+    students[studentIndex].name = fullName;
+    students[studentIndex].email = email;
+    students[studentIndex].phone = phone;
+    students[studentIndex].address = address;
+    students[studentIndex].emergencyContact = emergencyContact;
+    students[studentIndex].avatar = avatar;
+
+    localStorage.setItem('vm_students', JSON.stringify(students));
+    syncStudentSession({
+      ...user,
+      ...students[studentIndex]
+    });
+
+    // Reload student data
+    loadStudentData();
+    showToast('Profile updated successfully!', 'success');
+  }
+
+  closeModal('profileModal');
+}
+
+function sendMessage() {
+  const teacher = document.getElementById('messageTeacher').value;
+  const subject = document.getElementById('messageSubject').value;
+  const content = document.getElementById('messageContent').value;
+
+  if (!teacher || !subject || !content) {
+    showToast('Please fill all fields', 'error');
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  // Create new message
+  const messages = JSON.parse(localStorage.getItem('vm_messages') || '[]');
+  const newMessage = {
+    id: 'MSG' + Date.now(),
+    from: user.id,
+    to: teacher,
+    subject: subject,
+    content: content,
+    timestamp: new Date().toISOString(),
+    read: false,
+    type: 'sent'
+  };
+
+  messages.push(newMessage);
+  localStorage.setItem('vm_messages', JSON.stringify(messages));
+
+  showToast('Message sent successfully!', 'success');
+  closeModal('messageModal');
+
+  // Clear form
+  document.getElementById('messageTeacher').value = '';
+  document.getElementById('messageSubject').value = '';
+  document.getElementById('messageContent').value = '';
+  loadMessages();
+  updateNotificationCount();
+}
+
+function payFees() {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  // Simulate payment process
+  showToast('Redirecting to payment gateway...', 'info');
+
+  setTimeout(() => {
+    // Update fee status
+    const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
+    const studentIndex = students.findIndex(s => s.id === user.id);
+
+    if (studentIndex !== -1) {
+      students[studentIndex].fees = 'paid';
+      localStorage.setItem('vm_students', JSON.stringify(students));
+      syncStudentSession(students[studentIndex]);
+
+      // Update fee history
+      const feeHistory = JSON.parse(localStorage.getItem('vm_feeHistory') || '[]');
+      const pendingFees = feeHistory.filter(f => f.studentId === user.id && f.status === 'pending');
+
+      pendingFees.forEach(fee => {
+        fee.status = 'paid';
+        fee.date = new Date().toISOString().split('T')[0];
+        fee.paymentMethod = 'Online';
+        fee.receipt = 'RCP' + Date.now();
+      });
+
+      localStorage.setItem('vm_feeHistory', JSON.stringify(feeHistory));
+
+      loadStudentData();
+      showToast('Payment successful!', 'success');
+    }
+  }, 2000);
+}
+
+function downloadMaterial(subject) {
+  showToast(`Downloading ${subject} study material...`, 'info');
+
+  // Simulate download
+  setTimeout(() => {
+    showToast(`${subject} material downloaded successfully!`, 'success');
+  }, 1500);
+}
+
+function viewVideos(subject) {
+  showToast(`Loading ${subject} video lectures...`, 'info');
+
+  // Simulate video loading
+  setTimeout(() => {
+    showToast(`${subject} videos loaded. Opening in new tab...`, 'success');
+    // In a real app, this would open a video player
+  }, 1000);
+}
+
+function searchBooks() {
+  const query = document.getElementById('bookSearch').value.toLowerCase();
+  const category = document.getElementById('bookCategory').value;
+
+  const books = JSON.parse(localStorage.getItem('vm_library') || '[]');
+  let filteredBooks = books;
+
+  if (query) {
+    filteredBooks = filteredBooks.filter(book =>
+      book.title.toLowerCase().includes(query) ||
+      book.author.toLowerCase().includes(query) ||
+      book.subject.toLowerCase().includes(query)
+    );
+  }
+
+  if (category) {
+    filteredBooks = filteredBooks.filter(book => book.category.toLowerCase() === category.toLowerCase());
+  }
+
+  displayBooks(filteredBooks);
+  showToast(`Found ${filteredBooks.length} books matching your search.`, 'info');
+}
+
+function displayBooks(books) {
+  const container = document.getElementById('availableBooks');
+  if (!container) return;
+
+  const html = books.map(book => `
+    <div class="book-item">
+      <div class="book-cover">${getBookEmoji(book.category)}</div>
+      <div class="book-details">
+        <div class="book-title">${book.title}</div>
+        <div class="book-author">${book.author}</div>
+        <div class="book-meta">
+          <span><i class="fas fa-tag"></i> ${book.category}</span>
+          <span><i class="fas fa-${book.available ? 'check-circle' : 'times-circle'}"></i> ${book.available ? 'Available' : 'Not Available'}</span>
+        </div>
+      </div>
+      <div class="book-actions">
+        ${book.available ? `<button class="btn btn-sm btn-primary" onclick="reserveBook('${book.id}')">Reserve</button>` : '<button class="btn btn-sm btn-outline-primary" disabled>Unavailable</button>'}
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = html;
+}
+
+function getBookEmoji(category) {
+  switch(category.toLowerCase()) {
+    case 'fiction': return '📚';
+    case 'non-fiction': return '📖';
+    case 'textbook': return '📓';
+    case 'science': return '🔬';
+    case 'history': return '📜';
+    default: return '📚';
+  }
+}
+
+function reserveBook(bookId) {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  const books = JSON.parse(localStorage.getItem('vm_library') || '[]');
+  const bookIndex = books.findIndex(b => b.id === bookId);
+
+  if (bookIndex !== -1 && books[bookIndex].available) {
+    books[bookIndex].available = false;
+    books[bookIndex].borrowed = true;
+    books[bookIndex].borrowerId = user.id;
+    books[bookIndex].dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 14 days from now
+
+    localStorage.setItem('vm_library', JSON.stringify(books));
+    loadLibraryData();
+    showToast('Book reserved successfully!', 'success');
+  }
+}
+
+function loadLibraryData() {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+  const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
+  const student = students.find(item => item.id === user.id) || user;
+  renderClassBookshelf(student);
+
+  // Load borrowed books
+  const books = JSON.parse(localStorage.getItem('vm_library') || '[]');
+  const myBooks = books.filter(b => b.borrowerId === user.id);
+
+  const myBooksContainer = document.getElementById('myBooks');
+  if (myBooksContainer) {
+    const html = myBooks.map(book => `
+      <div class="book-item">
+        <div class="book-cover">📖</div>
+        <div class="book-details">
+          <div class="book-title">${book.title}</div>
+          <div class="book-author">${book.author}</div>
+          <div class="book-meta">
+            <span><i class="fas fa-calendar"></i> Due: ${book.dueDate}</span>
+            <span><i class="fas fa-tag"></i> ${book.category}</span>
+          </div>
+        </div>
+        <div class="book-actions">
+          <button class="btn btn-sm btn-primary" onclick="renewBook('${book.id}')">Renew</button>
+          <button class="btn btn-sm btn-outline-primary" onclick="returnBook('${book.id}')">Return</button>
+        </div>
+      </div>
+    `).join('') || '<div class="library-empty-state">No borrowed books right now. Reserve a book or open your class bookshelf.</div>';
+    myBooksContainer.innerHTML = html;
+  }
+
+  // Load available books
+  const availableBooks = books.filter(b => b.available);
+  displayBooks(availableBooks);
+}
+
+function normalizeStudentClassLabel(rawClass) {
+  const text = String(rawClass || '').trim();
+  const match = text.match(/\d+/);
+  return match ? `Class ${match[0]}` : (text || 'Class 10');
+}
+
+function getClassBookshelfTemplate(classLabel) {
+  const defaultTemplate = {
+    'Class 10': {
+      Mathematics: [
+        { id: 'math-1', title: 'Real Numbers', content: 'Real Numbers chapter covers Euclid division lemma, irrational numbers, and decimal expansion of rational numbers. Focus on theorem-based practice and examples.' },
+        { id: 'math-2', title: 'Polynomials', content: 'This chapter explains zeros of polynomials, relationship between zeros and coefficients, and graphical understanding. Solve value-based and factorisation questions.' },
+        { id: 'math-3', title: 'Pair of Linear Equations', content: 'Learn substitution, elimination, and cross multiplication methods to solve pair of linear equations in two variables. Practice word problems for mastery.' }
+      ],
+      Science: [
+        { id: 'science-1', title: 'Chemical Reactions and Equations', content: 'Study balancing of equations, types of reactions, oxidation and reduction, and daily-life examples. Prepare reaction equations carefully.' },
+        { id: 'science-2', title: 'Life Processes', content: 'This chapter includes nutrition, respiration, transportation, and excretion in plants and animals. Draw neat diagrams for important processes.' },
+        { id: 'science-3', title: 'Light - Reflection and Refraction', content: 'Cover mirror formula, lens formula, magnification, image formation, and ray diagrams. Practice numerical problems with sign convention.' }
+      ],
+      English: [
+        { id: 'english-1', title: 'A Letter to God', content: 'Read the story deeply, note the character emotions, and prepare long-answer and extract-based questions. Focus on themes of faith and irony.' },
+        { id: 'english-2', title: 'Nelson Mandela', content: 'Understand the ideas of freedom, courage, and equality. Prepare summary points and important lines for writing tasks.' },
+        { id: 'english-3', title: 'Writing Skills', content: 'Revise formal letters, analytical paragraphs, and grammar usage. Practice with timed responses and correct structure.' }
+      ],
+      'Social Science': [
+        { id: 'sst-1', title: 'Nationalism in Europe', content: 'Learn the rise of nationalism, role of liberalism, and major historical events in Europe. Use timelines and map work for better recall.' },
+        { id: 'sst-2', title: 'Resources and Development', content: 'Understand resource classification, land utilization, soil types, and conservation methods. Revise key terms and examples.' },
+        { id: 'sst-3', title: 'Power Sharing', content: 'Study forms of power sharing, case studies like Belgium and Sri Lanka, and importance in democracy. Prepare comparative answers.' }
+      ],
+      Hindi: [
+        { id: 'hindi-1', title: 'Bade Bhai Sahab', content: 'Read the chapter for message, character sketch, and style of narration. Prepare short and long answers with textual support.' },
+        { id: 'hindi-2', title: 'Padya Khand', content: 'Focus on poem explanation, figures of speech, and central message. Revise line meanings carefully.' }
+      ]
+    }
+  };
+
+  return defaultTemplate[classLabel] || defaultTemplate['Class 10'];
+}
+
+function ensureClassBookshelf(student) {
+  const key = 'vm_classBookshelf';
+  const classLabel = normalizeStudentClassLabel(student?.class);
+  const allShelves = JSON.parse(localStorage.getItem(key) || '{}');
+  if (!allShelves[classLabel]) {
+    allShelves[classLabel] = getClassBookshelfTemplate(classLabel);
+    localStorage.setItem(key, JSON.stringify(allShelves));
+  }
+  return { classLabel, shelf: allShelves[classLabel] };
+}
+
+function renderClassBookshelf(student) {
+  const { classLabel, shelf } = ensureClassBookshelf(student);
+  const subjectList = document.getElementById('librarySubjectList');
+  const chapterList = document.getElementById('libraryChapterList');
+  const meta = document.getElementById('libraryClassMeta');
+  if (meta) {
+    meta.textContent = `${classLabel} ke subjects aur chapter-wise reading yahin se open karein.`;
+  }
+
+  const subjects = Object.keys(shelf);
+  if (subjectList) {
+    subjectList.innerHTML = subjects.map(subject => `
+      <button class="library-subject-card" id="library-subject-${subject.replace(/\s+/g, '-')}" onclick="selectLibrarySubject('${subject.replace(/'/g, "\\'")}')">
+        <span>${subject}</span>
+        <small>${shelf[subject].length} chapters</small>
+      </button>
+    `).join('');
+  }
+
+  if (chapterList) {
+    chapterList.innerHTML = '<div class="library-empty-state">Select a subject to see all chapters.</div>';
+  }
+
+  if (subjects.length) {
+    selectLibrarySubject(subjects[0]);
+  }
+}
+
+function selectLibrarySubject(subject) {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+  const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
+  const student = students.find(item => item.id === user.id) || user;
+  const { shelf } = ensureClassBookshelf(student);
+  const chapters = shelf[subject] || [];
+
+  document.querySelectorAll('.library-subject-card').forEach(card => card.classList.remove('active'));
+  const activeCard = document.getElementById(`library-subject-${subject.replace(/\s+/g, '-')}`);
+  if (activeCard) activeCard.classList.add('active');
+
+  const chapterList = document.getElementById('libraryChapterList');
+  if (chapterList) {
+    chapterList.innerHTML = chapters.map((chapter, index) => `
+      <button class="library-chapter-card" data-library-chapter="${chapter.id}" onclick="openLibraryChapter('${subject.replace(/'/g, "\\'")}', '${chapter.id}')">
+        <strong>Chapter ${index + 1}</strong>
+        <span>${chapter.title}</span>
+        <small>Tap to read in popup</small>
+      </button>
+    `).join('') || '<div class="library-empty-state">No chapters found for this subject yet.</div>';
+  }
+}
+
+function openLibraryChapter(subject, chapterId) {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+  const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
+  const student = students.find(item => item.id === user.id) || user;
+  const { classLabel, shelf } = ensureClassBookshelf(student);
+  const chapter = (shelf[subject] || []).find(item => item.id === chapterId);
+  const modalTitle = document.getElementById('libraryChapterModalTitle');
+  const modalMeta = document.getElementById('libraryChapterModalMeta');
+  const modalBody = document.getElementById('libraryChapterModalBody');
+  if (!chapter || !modalBody) return;
+
+  document.querySelectorAll('.library-chapter-card').forEach(card => card.classList.remove('active'));
+  const activeChapter = document.querySelector(`.library-chapter-card[data-library-chapter="${chapterId}"]`);
+  if (activeChapter) activeChapter.classList.add('active');
+
+  if (modalTitle) modalTitle.textContent = chapter.title;
+  if (modalMeta) modalMeta.textContent = `${classLabel} • ${subject} • Focus reading mode`;
+
+  modalBody.innerHTML = `
+    <div class="library-reader-head">
+      <div>
+        <div class="library-reader-kicker">${classLabel} • ${subject}</div>
+        <h4>${chapter.title}</h4>
+      </div>
+      <span class="library-reader-badge">Chapter Open</span>
+    </div>
+    <div class="library-reader-body">
+      <p>${chapter.content}</p>
+    </div>
+  `;
+  openModal('libraryChapterModal');
+}
+function renewBook(bookId) {
+  const books = JSON.parse(localStorage.getItem('vm_library') || '[]');
+  const bookIndex = books.findIndex(b => b.id === bookId);
+
+  if (bookIndex !== -1) {
+    const newDueDate = new Date(books[bookIndex].dueDate);
+    newDueDate.setDate(newDueDate.getDate() + 7); // Extend by 7 days
+    books[bookIndex].dueDate = newDueDate.toISOString().split('T')[0];
+
+    localStorage.setItem('vm_library', JSON.stringify(books));
+    loadLibraryData();
+    showToast('Book renewed successfully!', 'success');
+  }
+}
+
+function returnBook(bookId) {
+  const books = JSON.parse(localStorage.getItem('vm_library') || '[]');
+  const bookIndex = books.findIndex(b => b.id === bookId);
+
+  if (bookIndex !== -1) {
+    books[bookIndex].available = true;
+    books[bookIndex].borrowed = false;
+    books[bookIndex].borrowerId = null;
+    books[bookIndex].dueDate = null;
+
+    localStorage.setItem('vm_library', JSON.stringify(books));
+    loadLibraryData();
+    showToast('Book returned successfully!', 'success');
+  }
+}
+
+function updateHomeworkStatus(homeworkId, nextStatus) {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  const homework = JSON.parse(localStorage.getItem('vm_homework') || '[]');
+  const hwIndex = homework.findIndex(h => h.id === homeworkId && h.studentId === user.id);
+
+  if (hwIndex !== -1) {
+    const isCompleted = nextStatus === 'completed';
+    homework[hwIndex].status = isCompleted ? 'completed' : 'pending';
+    homework[hwIndex].submitted = isCompleted;
+    homework[hwIndex].submissionDate = isCompleted ? new Date().toISOString().split('T')[0] : '';
+
+    localStorage.setItem('vm_homework', JSON.stringify(homework));
+    loadHomework();
+    showToast(
+      isCompleted ? 'Homework marked as done!' : 'Homework marked as not done!',
+      isCompleted ? 'success' : 'warning'
+    );
+  }
+}
+
+function parseHomeworkDate(value) {
+  if (!value) return 0;
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function renderHomeworkGrowth(myHomework) {
+  const summary = document.getElementById('homeworkGrowthSummary');
+  const chartCanvas = document.getElementById('homeworkGrowthChart');
+  if (!summary || !chartCanvas) return;
+
+  const total = myHomework.length;
+  const done = myHomework.filter(hw => hw.status === 'completed').length;
+  const notDone = total - done;
+  const completionRate = total ? Math.round((done / total) * 100) : 0;
+
+  const orderedHomework = [...myHomework].sort((a, b) => {
+    const dateA = parseHomeworkDate(a.submissionDate || a.dueDate);
+    const dateB = parseHomeworkDate(b.submissionDate || b.dueDate);
+    return dateA - dateB;
+  });
+
+  let streak = 0;
+  for (let i = orderedHomework.length - 1; i >= 0; i -= 1) {
+    if (orderedHomework[i].status === 'completed') {
+      streak += 1;
+    } else {
+      break;
+    }
+  }
+
+  summary.innerHTML = `
+    <div class="student-rank-stat">
+      <span class="label">Completion Rate</span>
+      <strong>${completionRate}%</strong>
+    </div>
+    <div class="student-rank-stat">
+      <span class="label">Done</span>
+      <strong>${done}</strong>
+    </div>
+    <div class="student-rank-stat">
+      <span class="label">Not Done</span>
+      <strong>${notDone}</strong>
+    </div>
+    <div class="student-rank-stat">
+      <span class="label">Current Streak</span>
+      <strong>${streak}</strong>
+    </div>
+  `;
+
+  const recentHomework = orderedHomework.slice(-6);
+  const labels = recentHomework.map(hw => `${hw.subject || 'Task'} ${hw.title ? '- ' + hw.title.slice(0, 10) : ''}`);
+  const data = recentHomework.map(hw => hw.status === 'completed' ? 100 : 35);
+
+  if (window.studentHomeworkGrowthChart) {
+    window.studentHomeworkGrowthChart.destroy();
+  }
+
+  window.studentHomeworkGrowthChart = new Chart(chartCanvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Self Growth',
+        data,
+        borderColor: '#0f766e',
+        backgroundColor: 'rgba(15, 118, 110, 0.14)',
+        fill: true,
+        tension: 0.35,
+        borderWidth: 3,
+        pointBackgroundColor: recentHomework.map(hw => hw.status === 'completed' ? '#10b981' : '#f59e0b'),
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label(context) {
+              return context.raw >= 100 ? 'Done' : 'Not Done';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          min: 0,
+          max: 100,
+          ticks: {
+            callback(value) {
+              return value + '%';
+            }
+          },
+          grid: {
+            color: 'rgba(148, 163, 184, 0.18)'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+}
+
+function loadHomework() {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  const homework = JSON.parse(localStorage.getItem('vm_homework') || '[]');
+  const myHomework = homework.filter(h => h.studentId === user.id);
+
+  // Pending homework
+  const pendingHomework = myHomework.filter(h => h.status === 'pending');
+  const pendingContainer = document.getElementById('pendingHomework');
+
+  if (pendingContainer) {
+    const html = pendingHomework.map(hw => `
+      <div class="homework-item pending">
+        <div class="homework-header">
+          <h5>${hw.subject} - ${hw.title}</h5>
+          <span class="homework-status pending">Pending</span>
+        </div>
+        <div class="homework-content">
+          <p>${hw.description}</p>
+          <div class="homework-meta">
+            <span><i class="fas fa-calendar"></i> Due: ${hw.dueDate}</span>
+            <span><i class="fas fa-star"></i> Marks: ${hw.marks}</span>
+            <span><i class="fas fa-user"></i> ${hw.teacher}</span>
+          </div>
+        </div>
+        <div class="homework-actions">
+          <button class="btn btn-sm homework-toggle-btn done" onclick="updateHomeworkStatus('${hw.id}', 'completed')">Done</button>
+          <button class="btn btn-sm homework-toggle-btn not-done active" onclick="updateHomeworkStatus('${hw.id}', 'pending')">Not Done</button>
+        </div>
+      </div>
+    `).join('') || '<p class="empty-state-text">No pending homework right now. Keep the streak going.</p>';
+    pendingContainer.innerHTML = html;
+  }
+
+  // Completed homework
+  const completedHomework = myHomework.filter(h => h.status === 'completed');
+  const completedContainer = document.getElementById('completedHomework');
+
+  if (completedContainer) {
+    const html = completedHomework.map(hw => `
+      <div class="homework-item completed">
+        <div class="homework-header">
+          <h5>${hw.subject} - ${hw.title}</h5>
+          <span class="homework-status completed">Submitted</span>
+        </div>
+        <div class="homework-content">
+          <p>${hw.description}</p>
+          <div class="homework-meta">
+            <span><i class="fas fa-calendar"></i> Submitted: ${hw.submissionDate}</span>
+            <span><i class="fas fa-star"></i> Marks: ${hw.obtainedMarks || hw.marks}/${hw.marks}</span>
+            <span><i class="fas fa-user"></i> ${hw.teacher}</span>
+          </div>
+        </div>
+        <div class="homework-actions">
+          <button class="btn btn-sm homework-toggle-btn done active" onclick="updateHomeworkStatus('${hw.id}', 'completed')">Done</button>
+          <button class="btn btn-sm homework-toggle-btn not-done" onclick="updateHomeworkStatus('${hw.id}', 'pending')">Not Done</button>
+        </div>
+      </div>
+    `).join('') || '<p class="empty-state-text">No completed homework yet. Start by marking one task as done.</p>';
+    completedContainer.innerHTML = html;
+  }
+
+  renderHomeworkGrowth(myHomework);
+  renderDashboardGraphs(user.id);
+}
+
+function composeMessage() {
+  // Populate teacher dropdown
+  const teachers = JSON.parse(localStorage.getItem('vm_teachers') || '[]');
+  const teacherSelect = document.getElementById('messageTeacher');
+
+  if (teacherSelect) {
+    teacherSelect.innerHTML = '<option value="">Select Teacher</option>' +
+      teachers.map(t => `<option value="${t.id}">${t.name} (${t.subject})</option>`).join('');
+  }
+
+  openModal('messageModal');
+}
+
+function loadMessages() {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  const messages = JSON.parse(localStorage.getItem('vm_messages') || '[]');
+  const myMessages = messages.filter(m => m.from === user.id || m.to === user.id);
+
+  // Group messages by conversation
+  const conversations = {};
+  myMessages.forEach(msg => {
+    const otherParty = msg.from === user.id ? msg.to : msg.from;
+    if (!conversations[otherParty]) {
+      conversations[otherParty] = [];
+    }
+    conversations[otherParty].push(msg);
+  });
+
+  // Display message list
+  const messageList = document.getElementById('messageList');
+  if (messageList) {
+    const html = Object.keys(conversations).map(otherId => {
+      const convMessages = conversations[otherId];
+      const lastMessage = convMessages[convMessages.length - 1];
+      const teachers = JSON.parse(localStorage.getItem('vm_teachers') || '[]');
+      const teacher = teachers.find(t => t.id === otherId);
+
+      return `
+        <div class="message-item" onclick="viewConversation('${otherId}')">
+          <div class="message-avatar">${teacher ? '👨‍🏫' : '👩‍🏫'}</div>
+          <div class="message-content">
+            <div class="message-sender">${teacher ? teacher.name : 'Unknown'} (${teacher ? teacher.subject : ''})</div>
+            <div class="message-preview">${lastMessage.subject}</div>
+            <div class="message-time">${formatTime(lastMessage.timestamp)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    const conversationKeys = Object.keys(conversations);
+    messageList.innerHTML = html || '<p style="padding:16px;color:var(--gray-500)">No messages yet.</p>';
+    if (conversationKeys.length > 0) {
+      viewConversation(conversationKeys[0]);
+    }
+  }
+  updateNotificationCount();
+}
+
+function viewConversation(teacherId) {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  const messages = JSON.parse(localStorage.getItem('vm_messages') || '[]');
+  const conversation = messages.filter(m =>
+    (m.from === user.id && m.to === teacherId) ||
+    (m.from === teacherId && m.to === user.id)
+  ).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  // Mark incoming messages as read
+  const updated = messages.map(msg => {
+    if (msg.from === teacherId && msg.to === user.id) {
+      return { ...msg, read: true };
+    }
+    return msg;
+  });
+  localStorage.setItem('vm_messages', JSON.stringify(updated));
+
+  const teachers = JSON.parse(localStorage.getItem('vm_teachers') || '[]');
+  const teacher = teachers.find(t => t.id === teacherId);
+
+  const messageView = document.getElementById('messageView');
+  const messageTitle = document.getElementById('messageTitle');
+
+  if (messageTitle) {
+    messageTitle.textContent = `Conversation with ${teacher ? teacher.name : 'Teacher'}`;
+  }
+
+  if (messageView) {
+    const html = conversation.map(msg => `
+      <div class="message-thread">
+        <div class="message-bubble ${msg.from === user.id ? 'sent' : 'received'}">
+          <div class="message-header">
+            <strong>${msg.from === user.id ? 'You' : (teacher ? teacher.name : 'Teacher')}</strong>
+            <span class="message-time">${formatTime(msg.timestamp)}</span>
+          </div>
+          <div class="message-text">${msg.content.replace(/\n/g, '<br>')}</div>
+        </div>
+      </div>
+    `).join('');
+
+    messageView.innerHTML = html + `
+      <div class="message-reply">
+        <textarea placeholder="Type your reply..." rows="3" id="replyContent"></textarea>
+        <button class="btn btn-primary" style="margin-top:10px" onclick="sendReply('${teacherId}')">Send Reply</button>
+      </div>
+    `;
+  }
+  updateNotificationCount();
+}
+
+function sendReply(teacherId) {
+  const content = document.getElementById('replyContent').value;
+  if (!content.trim()) {
+    showToast('Please enter a message', 'error');
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  const messages = JSON.parse(localStorage.getItem('vm_messages') || '[]');
+  const newMessage = {
+    id: 'MSG' + Date.now(),
+    from: user.id,
+    to: teacherId,
+    subject: 'Re: Conversation',
+    content: content,
+    timestamp: new Date().toISOString(),
+    read: false,
+    type: 'sent'
+  };
+
+  messages.push(newMessage);
+  localStorage.setItem('vm_messages', JSON.stringify(messages));
+
+  document.getElementById('replyContent').value = '';
+  viewConversation(teacherId);
+  loadMessages();
+  updateNotificationCount();
+  showToast('Reply sent successfully!', 'success');
+}
+
+function formatTime(timestamp) {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diff = now - date;
+
+  if (diff < 60000) return 'Just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+  if (diff < 604800000) return `${Math.floor(diff / 86400000)} days ago`;
+
+  return date.toLocaleDateString();
+}
+
+function changePassword() {
+  showToast('Password change feature coming soon!', 'info');
+}
+
+function enable2FA() {
+  showToast('Two-factor authentication setup coming soon!', 'info');
+}
+
+function showToast(message, type = 'info') {
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <div class="toast-content">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+      <span>${message}</span>
+    </div>
+  `;
+
+  // Add to page
+  document.body.appendChild(toast);
+
+  // Show toast
+  setTimeout(() => toast.classList.add('show'), 100);
+
+  // Hide and remove toast
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => document.body.removeChild(toast), 300);
+  }, 3000);
+}
+
+// Quick Actions
+function viewTimetable() {
+  showSection('secTimetable');
+  document.querySelector('[data-section="secTimetable"]').click();
+}
+
+function viewHomework() {
+  showSection('secHomework');
+  document.querySelector('[data-section="secHomework"]').click();
+}
+
+function viewResults() {
+  showSection('secMarks');
+  document.querySelector('[data-section="secMarks"]').click();
+}
+
+function downloadStudyMaterial() {
+  showSection('secStudy');
+  document.querySelector('[data-section="secStudy"]').click();
+}
+
+function downloadTimetable() {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  const timetable = JSON.parse(localStorage.getItem('vm_timetable') || '{}');
+  if (!Object.keys(timetable).length) {
+    showToast('Timetable is not available yet.', 'warning');
+    return;
+  }
+
+  let content = 'Weekly Timetable\n\n';
+  Object.keys(timetable).forEach(day => {
+    content += `${day.toUpperCase()}:\n`;
+    timetable[day].forEach(period => {
+      if (period.subject !== 'Break') {
+        content += `${period.time}: ${period.subject} (${period.teacher}, Room ${period.room})\n`;
+      } else {
+        content += `${period.time}: ${period.subject}\n`;
+      }
+    });
+    content += '\n';
+  });
+
+  // Create and download file
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'timetable.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast('Timetable downloaded successfully!', 'success');
+}
+
+function loadExamResults() {
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+  if (!user) return;
+
+  const examResults = ensureStudentExamResults(user.id);
+  const myResults = examResults.filter(r => r.studentId === user.id);
+  const filter = document.getElementById('examSelector')?.value || 'latest';
+
+  const filtered = myResults.filter(result => {
+    if (filter === 'latest') return true;
+    return result.examName.toLowerCase().includes(filter);
+  });
+
+  const container = document.getElementById('examResults');
+  if (container) {
+    const html = filtered.map(result => `
+      <div class="result-item">
+        <div class="result-subject">${result.subject}</div>
+        <div class="result-score">${result.marks}/${result.maxMarks}</div>
+        <div class="result-grade">${result.grade}</div>
+        <div class="result-date">${result.date}</div>
+      </div>
+    `).join('');
+    container.innerHTML = html || '<p style="color:var(--gray-500)">No exam results found for the selected category.</p>';
+  }
+
+  renderProgressRank(user.id);
+  renderExamProgressChart(filtered);
+}
+
+function ensureStudentExamResults(studentId) {
+  const key = 'vm_examResults';
+  const allResults = JSON.parse(localStorage.getItem(key) || '[]');
+  const existingStudentResults = allResults.filter(result => result.studentId === studentId);
+
+  if (existingStudentResults.length >= 4) {
+    return allResults;
+  }
+
+  const demoResults = [
+    { examName: 'Unit Test 1', subject: 'Mathematics', marks: 92, maxMarks: 100, date: '10 Apr 2026' },
+    { examName: 'Unit Test 1', subject: 'Science', marks: 88, maxMarks: 100, date: '12 Apr 2026' },
+    { examName: 'Monthly Test', subject: 'English', marks: 84, maxMarks: 100, date: '18 Mar 2026' },
+    { examName: 'Monthly Test', subject: 'Social Science', marks: 79, maxMarks: 100, date: '16 Mar 2026' },
+    { examName: 'Class Assessment', subject: 'Computer', marks: 95, maxMarks: 100, date: '28 Feb 2026' }
+  ];
+
+  const seeded = demoResults.map((result, index) => ({
+    id: `ER-${studentId}-${index + 1}`,
+    studentId,
+    examName: result.examName,
+    subject: result.subject,
+    marks: result.marks,
+    maxMarks: result.maxMarks,
+    grade: getGrade(result.marks),
+    date: result.date
+  }));
+
+  const updatedResults = allResults.concat(seeded.filter(seed =>
+    !allResults.some(existing =>
+      existing.studentId === seed.studentId &&
+      existing.examName === seed.examName &&
+      existing.subject === seed.subject &&
+      existing.date === seed.date
+    )
+  ));
+
+  localStorage.setItem(key, JSON.stringify(updatedResults));
+  return updatedResults;
+}
+
+function renderExamProgressChart(results) {
+  const canvas = document.getElementById('examProgressChart');
+  if (!canvas) return;
+
+  Chart.getChart(canvas)?.destroy();
+
+  const sortedResults = [...results].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(-6);
+  const labels = sortedResults.map(result => `${result.subject} (${result.examName})`);
+  const data = sortedResults.map(result => Math.round((result.marks / result.maxMarks) * 100));
+
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels.length ? labels : ['No Results'],
+      datasets: [{
+        label: 'Exam Progress',
+        data: data.length ? data : [0],
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37, 99, 235, 0.12)',
+        fill: true,
+        tension: 0.35,
+        borderWidth: 3,
+        pointBackgroundColor: '#2563eb',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          min: 0,
+          max: 100,
+          ticks: {
+            callback(value) {
+              return value + '%';
+            }
+          },
+          grid: {
+            color: 'rgba(148, 163, 184, 0.18)'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+}
+
+function viewExamSyllabus(examId) {
+  const exams = JSON.parse(localStorage.getItem('vm_examSchedule') || '[]');
+  const exam = exams.find(e => e.id === examId);
+  if (!exam) return;
+
+  document.getElementById('examDetailTitle').textContent = `${exam.subject} - ${exam.examName}`;
+  document.getElementById('examDetailBody').innerHTML = `
+    <p><strong>Date:</strong> ${exam.date}</p>
+    <p><strong>Time:</strong> ${exam.time}</p>
+    <p><strong>Duration:</strong> ${exam.duration}</p>
+    <p><strong>Room:</strong> ${exam.room}</p>
+    <p><strong>Syllabus:</strong> ${exam.syllabus}</p>
+    <p style="margin-top:16px"><strong>Tip:</strong> Review all practice questions and complete one mock test before exam day.</p>
+  `;
+  openModal('examDetailModal');
+}
+
+function viewExamDetails(examId) {
+  const exams = JSON.parse(localStorage.getItem('vm_examSchedule') || '[]');
+  const exam = exams.find(e => e.id === examId);
+  if (!exam) return;
+
+  document.getElementById('examDetailTitle').textContent = `${exam.subject} - Exam Overview`;
+  document.getElementById('examDetailBody').innerHTML = `
+    <p><strong>Exam:</strong> ${exam.examName}</p>
+    <p><strong>Date:</strong> ${exam.date}</p>
+    <p><strong>Time:</strong> ${exam.time}</p>
+    <p><strong>Room:</strong> ${exam.room}</p>
+    <p><strong>Duration:</strong> ${exam.duration}</p>
+    <p><strong>Syllabus:</strong> ${exam.syllabus}</p>
+    <p><strong>Preparation Advice:</strong> Finish the syllabus, revise previous tests, and sleep early the night before.</p>
+  `;
+  openModal('examDetailModal');
+}
+
+function downloadReceipt(receiptId) {
+  const feeHistory = JSON.parse(localStorage.getItem('vm_feeHistory') || '[]');
+  const receipt = feeHistory.find(f => f.receipt === receiptId);
+  if (!receipt) {
+    showToast('Receipt not found.', 'error');
+    return;
+  }
+
+  const content = `Fee Receipt\nReceipt ID: ${receipt.receipt}\nStudent ID: ${receipt.studentId}\nQuarter: ${receipt.quarter}\nAmount: ₹${receipt.amount}\nDate: ${receipt.date}\nPayment Method: ${receipt.paymentMethod}`;
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `receipt-${receipt.receipt}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Receipt downloaded successfully!', 'success');
+}
+
+function loadExamSchedule() {
+  const exams = JSON.parse(localStorage.getItem('vm_examSchedule') || '[]');
+  const container = document.getElementById('examSchedule');
+  if (!container) return;
+
+  const html = exams.map(exam => `
+    <div class="exam-item">
+      <div class="exam-date">
+        <div class="exam-day">${new Date(exam.date).getDate().toString().padStart(2, '0')}</div>
+        <div class="exam-month">${new Date(exam.date).toLocaleString('default', { month: 'short' })}</div>
+      </div>
+      <div class="exam-details">
+        <div class="exam-subject">${exam.subject}</div>
+        <div class="exam-info">${exam.examName}</div>
+        <div class="exam-meta">
+          <span><i class="fas fa-clock"></i> ${exam.duration}</span>
+          <span><i class="fas fa-map-marker-alt"></i> ${exam.room}</span>
+        </div>
+      </div>
+      <div class="exam-actions">
+        <button class="btn btn-sm btn-primary" onclick="viewExamSyllabus('${exam.id}')">View Syllabus</button>
+        <button class="btn btn-sm btn-outline-primary" onclick="viewExamDetails('${exam.id}')">View Details</button>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = html;
+}
+
+function loadStudyMaterials() {
+  const materials = JSON.parse(localStorage.getItem('vm_studyMaterials') || '{}');
+  const subjects = Object.keys(materials);
+  const subjectContainer = document.getElementById('studySubjectsList');
+  const chapterContainer = document.getElementById('studyChapterList');
+  const heroStats = document.getElementById('studyHeroStats');
+
+  const totalResources = subjects.reduce((sum, subject) => sum + (materials[subject] || []).length, 0);
+  const totalSize = subjects.reduce((sum, subject) => sum + (materials[subject] || []).reduce((sizeSum, item) => sizeSum + parseResourceSize(item.size), 0), 0);
+
+  if (heroStats) {
+    heroStats.innerHTML = `
+      <div class="study-hero-stat">
+        <strong>${subjects.length}</strong>
+        <span>Subjects</span>
+      </div>
+      <div class="study-hero-stat">
+        <strong>${totalResources}</strong>
+        <span>Resources</span>
+      </div>
+      <div class="study-hero-stat">
+        <strong>${totalSize.toFixed(1)} MB</strong>
+        <span>Content Size</span>
+      </div>
+    `;
+  }
+
+  if (subjectContainer) {
+    subjectContainer.innerHTML = `<div class="study-subject-stack">${subjects.map(subject => {
+      const items = materials[subject] || [];
+      const pdfCount = items.filter(item => item.type === 'pdf').length;
+      const videoCount = items.filter(item => item.type === 'mp4').length;
+      const completion = Math.min(100, 38 + (items.length * 12));
+      return `
+        <div class="study-subject-card" onclick="selectStudySubject('${subject}')" id="study-subject-${subject}">
+          <div class="study-subject-top">
+            <div class="study-subject-badge">${getStudySubjectIcon(subject)}</div>
+            <div class="study-resource-type other">${items.length} items</div>
+          </div>
+          <div class="study-subject-title">${formatSubjectName(subject)}</div>
+          <div class="study-subject-meta">${pdfCount} notes • ${videoCount} lectures • smart revision ready</div>
+          <div class="study-progress-bar">
+            <div class="study-progress-fill" style="width:${completion}%"></div>
+          </div>
+        </div>
+      `;
+    }).join('')}</div>`;
+  }
+
+  if (chapterContainer) {
+    chapterContainer.innerHTML = `<div class="study-panel-empty">
+      <i class="fas fa-book-open"></i>
+      <p>Select a subject from the left to open chapters and supporting resources.</p>
+    </div>`;
+  }
+
+  renderRecentStudyDownloads();
+
+  if (subjects.length > 0) {
+    selectStudySubject(subjects[0]);
+  }
+}
+
+function selectStudySubject(subject) {
+  const materials = JSON.parse(localStorage.getItem('vm_studyMaterials') || '{}');
+  const subjectItems = materials[subject] || [];
+  document.querySelectorAll('[id^="study-subject-"]').forEach(el => el.classList.remove('active'));
+  const selected = document.getElementById(`study-subject-${subject}`);
+  if (selected) selected.classList.add('active');
+
+  const chapterContainer = document.getElementById('studyChapterList');
+  if (!chapterContainer) return;
+
+  const activeChip = document.getElementById('studyActiveSubjectChip');
+  if (activeChip) activeChip.textContent = `${formatSubjectName(subject)} Focus`;
+
+  const pdfCount = subjectItems.filter(item => item.type === 'pdf').length;
+  const videoCount = subjectItems.filter(item => item.type === 'mp4').length;
+  const totalDownloads = subjectItems.reduce((sum, item) => sum + (item.downloads || 0), 0);
+
+  chapterContainer.innerHTML = `
+    <div class="study-resource-header">
+      <div>
+        <h4 class="study-resource-title">${formatSubjectName(subject)}</h4>
+        <p class="study-resource-subtitle">High-value notes, lecture support, and quick practice actions for this subject.</p>
+      </div>
+      <div class="study-subject-badge">${getStudySubjectIcon(subject)}</div>
+    </div>
+    <div class="study-resource-summary">
+      <div class="study-resource-pill">
+        <strong>${subjectItems.length}</strong>
+        <span>Total Resources</span>
+      </div>
+      <div class="study-resource-pill">
+        <strong>${pdfCount + videoCount}</strong>
+        <span>Core Learning Assets</span>
+      </div>
+      <div class="study-resource-pill">
+        <strong>${totalDownloads}</strong>
+        <span>Total Downloads</span>
+      </div>
+    </div>
+    <div class="study-resource-grid">
+      ${subjectItems.map(item => `
+        <div class="study-resource-card">
+          <div class="study-resource-top">
+            <div>
+              <div class="study-resource-type ${resourceTypeClass(item.type)}">
+                <i class="fas ${resourceTypeIcon(item.type)}"></i>
+                ${resourceTypeLabel(item.type)}
+              </div>
+              <h5>${item.title}</h5>
+              <p>${resourceDescription(item)}</p>
+            </div>
+          </div>
+          <div class="study-resource-meta">
+            <span><i class="fas fa-database"></i> ${item.size || '1.0MB'}</span>
+            <span><i class="fas fa-download"></i> ${item.downloads || 0} downloads</span>
+            <span><i class="fas fa-layer-group"></i> ${formatSubjectName(subject)}</span>
+          </div>
+          <div class="study-resource-actions">
+            ${item.type === 'pdf' ? `<button class="btn btn-sm btn-primary" onclick="downloadStudyResource('${subject}','${item.id}')">Download Notes</button>` : ''}
+            ${item.type === 'mp4' ? `<button class="btn btn-sm btn-primary" onclick="openLecture('${subject}','${item.id}')">Watch Lecture</button>` : ''}
+            <button class="btn btn-sm btn-outline-primary" onclick="startTest('${subject}')">Take Online Test</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  return;
+
+  chapterContainer.innerHTML = subjectItems.map(item => `
+    <div class="study-chapter-card">
+      <div>
+        <h4>${item.title}</h4>
+        <p>${item.type === 'pdf' ? 'Notes' : item.type === 'mp4' ? 'Lecture' : 'Resource'}</p>
+        <small>${item.size} • ${item.downloads} downloads</small>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+        ${item.type === 'pdf' ? `<button class="btn btn-sm btn-primary" onclick="downloadStudyResource('${subject}','${item.id}')">Download Notes</button>` : ''}
+        ${item.type === 'mp4' ? `<button class="btn btn-sm btn-primary" onclick="openLecture('${subject}','${item.id}')">Watch Lecture</button>` : ''}
+        <button class="btn btn-sm btn-outline-primary" onclick="startTest('${subject}')">Take Online Test</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function downloadStudyResource(subject, itemId) {
+  const materials = JSON.parse(localStorage.getItem('vm_studyMaterials') || '{}');
+  const item = (materials[subject] || []).find(m => m.id === itemId);
+  if (!item) return;
+  rememberStudyDownload(subject, item);
+  showToast(`Downloading ${item.title}...`, 'info');
+  setTimeout(() => {
+    showToast(`${item.title} downloaded successfully!`, 'success');
+  }, 1200);
+}
+
+function openLecture(subject, itemId) {
+  const materials = JSON.parse(localStorage.getItem('vm_studyMaterials') || '{}');
+  const item = (materials[subject] || []).find(m => m.id === itemId);
+  if (!item) return;
+  rememberStudyDownload(subject, item, 'Viewed');
+  showToast(`Opening lecture: ${item.title}`, 'info');
+  setTimeout(() => {
+    showToast(`Lecture is ready to watch.`, 'success');
+  }, 1000);
+}
+
+function formatSubjectName(subject) {
+  return subject.charAt(0).toUpperCase() + subject.slice(1);
+}
+
+function parseResourceSize(size) {
+  const raw = String(size || '0').toLowerCase().replace(/,/g, '').trim();
+  const value = Number.parseFloat(raw);
+  if (!Number.isFinite(value)) return 0;
+  if (raw.endsWith('kb')) return value / 1024;
+  if (raw.endsWith('gb')) return value * 1024;
+  return value;
+}
+
+function getStudySubjectIcon(subject) {
+  const map = {
+    mathematics: '∑',
+    science: '⚗',
+    english: 'A',
+    hindi: 'अ',
+    social: '◎',
+    computer: '</>'
+  };
+  return map[String(subject).toLowerCase()] || '📘';
+}
+
+function resourceTypeClass(type) {
+  if (type === 'pdf') return 'pdf';
+  if (type === 'mp4') return 'video';
+  return 'other';
+}
+
+function resourceTypeIcon(type) {
+  if (type === 'pdf') return 'fa-file-pdf';
+  if (type === 'mp4') return 'fa-circle-play';
+  return 'fa-book-open';
+}
+
+function resourceTypeLabel(type) {
+  if (type === 'pdf') return 'Notes Pack';
+  if (type === 'mp4') return 'Video Lecture';
+  return 'Learning Resource';
+}
+
+function resourceDescription(item) {
+  if (item.type === 'pdf') return 'Concept notes, solved examples aur quick revision points ke saath downloadable material.';
+  if (item.type === 'mp4') return 'Recorded explanation lecture with visual walkthrough for faster understanding.';
+  return 'Supplementary resource for deeper learning and practice.';
+}
+
+function rememberStudyDownload(subject, item, action = 'Downloaded') {
+  const key = 'vm_recentStudyDownloads';
+  const downloads = JSON.parse(localStorage.getItem(key) || '[]');
+  const record = {
+    id: `${subject}-${item.id}-${Date.now()}`,
+    subject,
+    title: item.title,
+    size: item.size || '1.0MB',
+    action,
+    type: item.type || 'resource',
+    timestamp: new Date().toISOString()
+  };
+  const updated = [record, ...downloads.filter(entry => !(entry.subject === subject && entry.title === item.title))].slice(0, 6);
+  localStorage.setItem(key, JSON.stringify(updated));
+  renderRecentStudyDownloads();
+}
+
+function renderRecentStudyDownloads() {
+  const container = document.getElementById('recentDownloads');
+  if (!container) return;
+
+  const downloads = JSON.parse(localStorage.getItem('vm_recentStudyDownloads') || '[]');
+  if (!downloads.length) {
+    container.innerHTML = `
+      <div class="study-download-empty">
+        <i class="fas fa-cloud-arrow-down"></i>
+        <p>Your recent downloads will appear here after you open study resources.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `<div class="study-download-list">${downloads.map(item => `
+    <div class="study-download-item">
+      <div class="study-download-main">
+        <div class="study-download-icon"><i class="fas ${resourceTypeIcon(item.type)}"></i></div>
+        <div>
+          <div class="study-download-title">${item.title}</div>
+          <div class="study-download-meta">${formatSubjectName(item.subject)} • ${item.action} • ${item.size} • ${new Date(item.timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</div>
+        </div>
+      </div>
+      <div class="study-download-actions">
+        <button class="btn btn-sm btn-outline-primary" onclick="selectStudySubject('${item.subject}')">Open Subject</button>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function updateNotificationCount() {
+  const messages = JSON.parse(localStorage.getItem('vm_messages') || '[]');
+  const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+
+  if (user) {
+    const unreadCount = messages.filter(m => m.to === user.id && !m.read).length;
+    const countElement = document.getElementById('notificationCount');
+    if (countElement) {
+      countElement.textContent = unreadCount;
+      countElement.style.display = unreadCount > 0 ? 'inline' : 'none';
+    }
+  }
+}
+
+// Online Tests Functions
+function startTest(subject) {
+  showToast('Starting ' + subject + ' test...', 'info');
+  // In a real implementation, this would redirect to the test page
+  setTimeout(() => {
+    showToast('Test started! Good luck!', 'success');
+  }, 1000);
+}
+
+// Progress Tracking Functions
+function updateProgress(subject, percentage) {
+  showToast('Progress updated for ' + subject, 'success');
+}
+
+// Parent Communication Functions
+function generateParentCode() {
+  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  showToast('Parent access code generated: ' + code, 'success');
+  // In a real implementation, this would send the code to parents
+}
+
+// Certificate Functions
+function downloadCertificate(type) {
+  showToast('Downloading ' + type + ' certificate...', 'info');
+  setTimeout(() => {
+    showToast('Certificate downloaded successfully!', 'success');
+  }, 1500);
+}
+
+// Online Classes Functions
+function joinClass(subject) {
+  showToast('Joining ' + subject + ' class...', 'info');
+  // In a real implementation, this would open the video conferencing app
+  setTimeout(() => {
+    showToast('Connected to class!', 'success');
+  }, 2000);
+}
+
+function playRecording(recordingId) {
+  showToast('Playing recording...', 'info');
+  // In a real implementation, this would open the video player
+}
+
+function downloadRecording(recordingId) {
+  showToast('Downloading recording...', 'info');
+  setTimeout(() => {
+    showToast('Recording downloaded!', 'success');
+  }, 2000);
+}
+
+// Initialize on load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
+    if (!user) return;
+
+    // Load notices for dashboard
+    const notices = JSON.parse(localStorage.getItem('vm_notices') || '[]');
+    const noticeContainer = document.getElementById('studentNoticeList');
+    if (noticeContainer) {
+      noticeContainer.innerHTML = notices.slice(0, 3).map(n => `
+        <div class="notice-item ${n.type}" style="margin-bottom:12px">
+          <div class="notice-icon">${getNoticeIcon(n.type)}</div>
+          <div class="notice-content">
+            <h4>${n.title}</h4>
+            <p>${n.content}</p>
+            <div class="notice-date">${n.date}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }, 400);
+});
+</script>
+</body>
+</html>

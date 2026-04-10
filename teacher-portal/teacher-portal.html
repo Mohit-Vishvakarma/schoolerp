@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Portal | Vidya Mandir School</title>
+  <meta name="description" content="Teacher workspace for attendance, homework, marks, materials, and communication.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="./teacher-portal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="teacher-portal-page">
+<div id="toastContainer" class="toast-container"></div>
+
+<div class="teacher-shell">
+  <aside class="portal-sidebar teacher-sidebar" id="teacherSidebar">
+    <div class="portal-sidebar-brand">
+      <div class="logo">VM</div>
+      <h2>Vidya Mandir<small>Teacher Portal</small></h2>
+    </div>
+    <nav class="portal-nav">
+      <a class="active" data-section="secDash"><span class="nav-icon">🏠</span> Dashboard</a>
+      <a data-section="secProfile"><span class="nav-icon">👤</span> My Profile</a>
+      <a data-section="secAttendance"><span class="nav-icon">📋</span> Attendance</a>
+      <a data-section="secHomework"><span class="nav-icon">📝</span> Homework</a>
+      <a data-section="secMarks"><span class="nav-icon">📊</span> Marks Entry</a>
+      <a data-section="secMessages"><span class="nav-icon">💬</span> Messages</a>
+      <a data-section="secNotices"><span class="nav-icon">📢</span> Notices</a>
+      <a data-section="secMaterials"><span class="nav-icon">📚</span> Materials</a>
+      <a data-section="secAnalytics"><span class="nav-icon">📈</span> Analytics</a>
+      <a data-section="secSchedule"><span class="nav-icon">🗓️</span> Schedule</a>
+      <a data-section="secSettings"><span class="nav-icon">⚙️</span> Settings</a>
+      <a onclick="doLogout()"><span class="nav-icon">🚪</span> Logout</a>
+    </nav>
+  </aside>
+
+  <div class="portal-main">
+    <header class="portal-topbar teacher-topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button id="teacherSidebarToggle" class="teacher-menu-btn" type="button">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div>
+          <h2 id="portalTopbarTitle">Dashboard</h2>
+          <p class="teacher-topbar-meta" id="teacherTopbarMeta">Teacher workspace</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="tpOpenMessageModal()">
+          <i class="fas fa-paper-plane"></i> Message Student
+        </button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="tpOpenHomeworkModal()">
+          <i class="fas fa-plus"></i> New Homework
+        </button>
+        <div class="topbar-notif">
+          <i class="fas fa-bell"></i>
+          <span class="notif-badge" id="teacherNotificationCount">0</span>
+        </div>
+        <div class="topbar-user">
+          <div class="topbar-avatar" id="teacherAvatar">👩‍🏫</div>
+          <div class="topbar-user-info">
+            <span id="teacherName">Teacher</span>
+            <small id="teacherSubject">Subject</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="portal-content">
+      <section id="secDash" class="portal-section active">
+        <div class="teacher-hero">
+          <div>
+            <p class="teacher-hero-kicker">Faculty Command Center</p>
+            <h2 id="teacherWelcomeName">Welcome back</h2>
+            <p id="teacherAssignedClasses">Assigned classes: --</p>
+          </div>
+          <div class="teacher-hero-badge">
+            <span id="teacherTodayDate">--</span>
+            <small>Today's snapshot</small>
+          </div>
+        </div>
+
+        <div class="dash-stats">
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon">👨‍🎓</div>
+            <div class="dash-stat-info">
+              <label>Students</label>
+              <div class="dash-stat-num" id="dashStudentCount">0</div>
+              <span class="dash-stat-change up">Across assigned classes</span>
+            </div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon">📝</div>
+            <div class="dash-stat-info">
+              <label>Active Homework</label>
+              <div class="dash-stat-num" id="dashHomeworkCount">0</div>
+              <span class="dash-stat-change up">Pending submissions</span>
+            </div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon">📬</div>
+            <div class="dash-stat-info">
+              <label>Unread Messages</label>
+              <div class="dash-stat-num" id="dashUnreadCount">0</div>
+              <span class="dash-stat-change up">Student conversations</span>
+            </div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon">📊</div>
+            <div class="dash-stat-info">
+              <label>Subject Average</label>
+              <div class="dash-stat-num" id="dashAverageScore">0%</div>
+              <span class="dash-stat-change up">Current performance</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="teacher-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Today's Schedule</h4>
+            </div>
+            <div class="card-body" id="todayScheduleList"></div>
+          </div>
+
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Quick Actions</h4>
+            </div>
+            <div class="card-body teacher-quick-grid">
+              <button class="btn btn-outline-primary btn-sm" onclick="tpNavigate('secAttendance')">
+                <i class="fas fa-user-check"></i> Mark Attendance
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="tpOpenHomeworkModal()">
+                <i class="fas fa-book"></i> Assign Homework
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="tpNavigate('secMarks')">
+                <i class="fas fa-pen"></i> Enter Marks
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="tpOpenNoticeModal()">
+                <i class="fas fa-bullhorn"></i> Publish Notice
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="tpOpenMaterialModal()">
+                <i class="fas fa-upload"></i> Upload Material
+              </button>
+              <button class="btn btn-outline-primary btn-sm" onclick="tpOpenMessageModal()">
+                <i class="fas fa-comments"></i> Message Student
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="teacher-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Recent Homework</h4>
+            </div>
+            <div class="card-body" id="dashboardHomeworkList"></div>
+          </div>
+
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Priority Queue</h4>
+            </div>
+            <div class="card-body" id="teacherPriorityList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secProfile" class="portal-section">
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Teacher Profile</h4>
+          </div>
+          <div class="card-body teacher-profile-grid">
+            <div class="teacher-profile-card">
+              <div class="teacher-profile-avatar">👩‍🏫</div>
+              <h3 id="profileTeacherName">Teacher</h3>
+              <p id="profileTeacherSubject">Subject</p>
+            </div>
+            <div class="teacher-profile-fields">
+              <div class="profile-field"><label>Teacher ID</label><div id="profileTeacherId">--</div></div>
+              <div class="profile-field"><label>Email</label><div id="profileTeacherEmail">--</div></div>
+              <div class="profile-field"><label>Phone</label><div id="profileTeacherPhone">--</div></div>
+              <div class="profile-field"><label>Experience</label><div id="profileTeacherExp">--</div></div>
+              <div class="profile-field"><label>Assigned Classes</label><div id="profileTeacherClasses">--</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secAttendance" class="portal-section">
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Attendance Register</h4>
+            <div class="teacher-form-inline">
+              <select id="attendanceClassSelect" class="form-control"></select>
+              <input type="date" id="attendanceDate" class="form-control">
+              <button class="btn btn-primary btn-sm" type="button" onclick="tpSaveAttendance()">Save Attendance</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="teacher-att-summary" id="attendanceSummary"></div>
+            <div id="attendanceStudentList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secHomework" class="portal-section">
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Homework Tracker</h4>
+            <div class="teacher-form-inline">
+              <div class="teacher-filter-group">
+                <button class="teacher-filter-btn active" type="button" data-hw-filter="all" onclick="tpSetHomeworkFilter('all')">All</button>
+                <button class="teacher-filter-btn" type="button" data-hw-filter="pending" onclick="tpSetHomeworkFilter('pending')">Pending</button>
+                <button class="teacher-filter-btn" type="button" data-hw-filter="completed" onclick="tpSetHomeworkFilter('completed')">Completed</button>
+              </div>
+              <button class="btn btn-primary btn-sm" type="button" onclick="tpOpenHomeworkModal()">+ Assign Homework</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="teacher-att-summary" id="teacherHomeworkSummary"></div>
+            <div id="teacherHomeworkList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secMarks" class="portal-section">
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Subject Marks Entry</h4>
+            <div class="teacher-form-inline">
+              <select id="marksClassSelect" class="form-control"></select>
+              <input id="marksExamName" class="form-control" placeholder="Exam name" value="Unit Test 1">
+              <button class="btn btn-primary btn-sm" type="button" onclick="tpSaveMarks()">Save Marks</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Roll</th>
+                  <th>Student</th>
+                  <th>Class</th>
+                  <th id="marksSubjectLabel">Marks</th>
+                  <th>Grade</th>
+                </tr>
+              </thead>
+              <tbody id="teacherMarksTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="secMessages" class="portal-section">
+        <div class="teacher-messages-layout">
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Conversations</h4>
+              <div class="teacher-form-inline">
+                <input id="teacherMessageSearch" class="form-control" placeholder="Search student or subject">
+                <button class="btn btn-sm btn-outline-primary" type="button" onclick="tpOpenMessageModal()">New</button>
+              </div>
+            </div>
+            <div class="card-body teacher-message-list" id="teacherMessageList"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header">
+              <h4 id="teacherMessageTitle">Message Thread</h4>
+            </div>
+            <div class="card-body" id="teacherMessageView"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secNotices" class="portal-section">
+        <div class="teacher-admin-notice-bar">
+          <div>
+            <span>Admin Notifications</span>
+            <strong id="teacherAdminNoticeMeta">No new admin message</strong>
+          </div>
+          <div class="teacher-admin-notice-count">
+            <label>Unread Admin Alerts</label>
+            <strong id="teacherAdminNoticeCount">0</strong>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Notices & Announcements</h4>
+            <button class="btn btn-primary btn-sm" type="button" onclick="tpOpenNoticeModal()">+ New Notice</button>
+          </div>
+          <div class="card-body" id="teacherNoticeList"></div>
+        </div>
+      </section>
+
+      <section id="secMaterials" class="portal-section">
+        <div class="teacher-material-hero">
+          <div>
+            <div class="teacher-material-kicker">Linked Content Studio</div>
+            <h4>Teacher materials ko curate karo aur students ke Study Material section se instantly sync rakho</h4>
+            <p>Jo resources aap yahan add karenge, wahi subject-wise student portal me notes, videos aur revision assets ke form me dikhengi.</p>
+          </div>
+          <div class="teacher-material-hero-stats" id="teacherMaterialHeroStats">
+            <div class="teacher-material-stat">
+              <strong>0</strong>
+              <span>Total Resources</span>
+            </div>
+            <div class="teacher-material-stat">
+              <strong>0</strong>
+              <span>Visible Students</span>
+            </div>
+            <div class="teacher-material-stat">
+              <strong>0 MB</strong>
+              <span>Library Size</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="teacher-material-grid">
+          <div class="table-card">
+            <div class="card-header">
+              <div>
+                <h4>Material Control Center</h4>
+                <p class="teacher-topbar-meta" id="teacherMaterialSyncMeta">Student portal sync is active for your subject library.</p>
+              </div>
+              <button class="btn btn-primary btn-sm" type="button" onclick="tpOpenMaterialModal()">+ Upload Material</button>
+            </div>
+            <div class="card-body">
+              <div class="teacher-material-action-grid">
+                <button class="teacher-material-action-card" type="button" onclick="tpOpenMaterialModal()">
+                  <span><i class="fas fa-cloud-upload-alt"></i></span>
+                  <strong>Upload New Resource</strong>
+                  <p>Add notes, worksheets, or concept videos for instant student access.</p>
+                </button>
+                <div class="teacher-material-action-card static">
+                  <span><i class="fas fa-link"></i></span>
+                  <strong>Student Portal Linked</strong>
+                  <p>Same subject library is used inside the student portal Study Material dashboard.</p>
+                </div>
+                <div class="teacher-material-action-card static">
+                  <span><i class="fas fa-layer-group"></i></span>
+                  <strong>Subject Focused</strong>
+                  <p id="teacherMaterialSubjectLabel">Resources are currently mapped to your teaching subject.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Publishing Snapshot</h4>
+            </div>
+            <div class="card-body">
+              <div class="teacher-material-sync-board">
+                <div class="teacher-material-sync-item">
+                  <strong id="teacherMaterialResourceCount">0</strong>
+                  <span>Published Resources</span>
+                </div>
+                <div class="teacher-material-sync-item">
+                  <strong id="teacherMaterialVideoCount">0</strong>
+                  <span>Video Lectures</span>
+                </div>
+                <div class="teacher-material-sync-item">
+                  <strong id="teacherMaterialNoteCount">0</strong>
+                  <span>Notes / PDFs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-header">
+            <div>
+              <h4>Published Material Library</h4>
+              <p class="teacher-topbar-meta">These resources are visible inside the student portal for your subject.</p>
+            </div>
+          </div>
+          <div class="card-body" id="teacherMaterialList"></div>
+        </div>
+      </section>
+
+      <section id="secAnalytics" class="portal-section">
+        <div class="teacher-analytics-hero">
+          <div>
+            <div class="teacher-material-kicker">Performance Intelligence</div>
+            <h4>Class performance ko sharper insights, trends, aur decision-ready analytics ke saath dekhiye</h4>
+            <p>Marks, attendance, class strength, aur top performer signals ko ek hi analytics workspace me monitor kijiye.</p>
+          </div>
+          <div class="teacher-analytics-hero-stats" id="teacherAnalyticsHeroStats">
+            <div class="teacher-analytics-stat">
+              <strong>0</strong>
+              <span>Tracked Classes</span>
+            </div>
+            <div class="teacher-analytics-stat">
+              <strong>0%</strong>
+              <span>Average Score</span>
+            </div>
+            <div class="teacher-analytics-stat">
+              <strong>0%</strong>
+              <span>Average Attendance</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-card" style="margin-bottom:24px">
+          <div class="card-header">
+            <h4>Analytics Controls</h4>
+            <div class="teacher-form-inline">
+              <select id="analyticsClassSelect" class="form-control"></select>
+              <button class="btn btn-outline-primary btn-sm" type="button" onclick="tpExportAnalytics()">Export CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="teacher-analytics-strip" id="teacherAnalyticsStrip">
+          <div class="teacher-analytics-strip-card">
+            <span>Top Class</span>
+            <strong id="teacherAnalyticsTopClass">--</strong>
+            <p>Highest subject average across tracked classes.</p>
+          </div>
+          <div class="teacher-analytics-strip-card">
+            <span>Best Attendance</span>
+            <strong id="teacherAnalyticsAttendanceLead">--</strong>
+            <p>Strongest class consistency from attendance records.</p>
+          </div>
+          <div class="teacher-analytics-strip-card">
+            <span>Top Performer</span>
+            <strong id="teacherAnalyticsTopStudent">--</strong>
+            <p>Student leading your current subject performance.</p>
+          </div>
+        </div>
+
+        <div class="teacher-dashboard-grid">
+          <div class="table-card teacher-analytics-chart-card">
+            <div class="card-header">
+              <div>
+                <h4>Marks Overview</h4>
+                <p class="teacher-topbar-meta">Class-wise subject averages for your assigned groups.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="teacherMarksChart" height="110"></canvas>
+            </div>
+          </div>
+          <div class="table-card teacher-analytics-chart-card">
+            <div class="card-header">
+              <div>
+                <h4>Attendance Snapshot</h4>
+                <p class="teacher-topbar-meta">Attendance distribution across your assigned classes.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="teacherAttendanceChart" height="110"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-card teacher-analytics-table-card">
+          <div class="card-header">
+            <div>
+              <h4>Class Performance</h4>
+              <p class="teacher-topbar-meta">Compare class strength, subject averages, attendance, and leaders.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Class</th>
+                  <th>Students</th>
+                  <th>Average Marks</th>
+                  <th>Attendance</th>
+                  <th>Top Performer</th>
+                </tr>
+              </thead>
+              <tbody id="teacherAnalyticsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="secSchedule" class="portal-section">
+        <div class="teacher-planning-strip" id="teacherPlanningSummary"></div>
+
+        <div class="teacher-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Weekly Teaching Plan</h4>
+            </div>
+            <div class="card-body" id="teacherScheduleGrid"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Upcoming Academic Events</h4>
+            </div>
+            <div class="card-body" id="teacherEventList"></div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Lesson Planner & Teaching Strategy</h4>
+            <button class="btn btn-sm btn-outline-primary" type="button" onclick="tpApplyPlanningTemplate()">
+              <i class="fas fa-wand-magic-sparkles"></i> Apply Smart Template
+            </button>
+          </div>
+          <div class="card-body">
+            <form id="tpLessonPlanForm">
+              <div class="teacher-form-inline teacher-form-inline-3">
+                <div class="form-group">
+                  <label class="form-label">Date</label>
+                  <input id="tpLessonDate" type="date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Class</label>
+                  <select id="tpLessonClass" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Topic</label>
+                  <input id="tpLessonTopic" class="form-control" required>
+                </div>
+              </div>
+              <div class="teacher-form-inline teacher-form-inline-3">
+                <div class="form-group">
+                  <label class="form-label">Teaching Goal</label>
+                  <input id="tpLessonGoal" class="form-control" placeholder="Concept clarity, exam prep, revision sprint" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Duration</label>
+                  <select id="tpLessonDuration" class="form-control">
+                    <option value="35 min">35 min</option>
+                    <option value="40 min">40 min</option>
+                    <option value="45 min" selected>45 min</option>
+                    <option value="60 min">60 min</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Teaching Mode</label>
+                  <select id="tpLessonMode" class="form-control">
+                    <option value="Interactive board teaching">Interactive board teaching</option>
+                    <option value="Activity based learning">Activity based learning</option>
+                    <option value="Discussion and problem solving">Discussion and problem solving</option>
+                    <option value="Revision and assessment">Revision and assessment</option>
+                    <option value="Project mentoring">Project mentoring</option>
+                  </select>
+                </div>
+              </div>
+              <div class="teacher-form-inline teacher-form-inline-2">
+                <div class="form-group">
+                  <label class="form-label">Objective</label>
+                  <textarea id="tpLessonObjective" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Resources</label>
+                  <textarea id="tpLessonResources" class="form-control" rows="3" placeholder="Worksheet, PPT, activity notes"></textarea>
+                </div>
+              </div>
+              <div class="teacher-form-inline teacher-form-inline-2">
+                <div class="form-group">
+                  <label class="form-label">Classroom Strategy</label>
+                  <textarea id="tpLessonStrategy" class="form-control" rows="3" placeholder="Hook, examples, peer discussion, recap" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Assessment Plan</label>
+                  <textarea id="tpLessonAssessment" class="form-control" rows="3" placeholder="Exit ticket, oral quiz, worksheet check" required></textarea>
+                </div>
+              </div>
+              <div class="teacher-form-inline teacher-form-inline-2">
+                <div class="form-group">
+                  <label class="form-label">Differentiation Support</label>
+                  <textarea id="tpLessonSupport" class="form-control" rows="3" placeholder="Support for struggling learners and challenge for fast learners"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Success Criteria</label>
+                  <textarea id="tpLessonSuccess" class="form-control" rows="3" placeholder="By end of class students should be able to..."></textarea>
+                </div>
+              </div>
+              <div class="modal-footer" style="margin-top:0">
+                <button class="btn btn-primary" type="submit">Save Lesson Plan</button>
+              </div>
+            </form>
+            <div class="teacher-planning-board" id="teacherStrategyBoard"></div>
+            <div id="teacherLessonPlanList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secSettings" class="portal-section">
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Teacher Settings</h4>
+          </div>
+          <div class="card-body">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Email Notifications</div>
+                <div class="setting-desc">Receive updates when students submit homework or send messages.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="settingEmailNotifications">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Parent Alerts</div>
+                <div class="setting-desc">Notify parents when marks or notices are published.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="settingParentAlerts">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-title">Reminder Popups</div>
+                <div class="setting-desc">Show reminders for pending tasks on dashboard load.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="settingTaskReminders">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="teacher-settings-actions">
+              <button class="btn btn-primary" type="button" onclick="tpSaveSettings()">Save Settings</button>
+              <button class="btn btn-outline-primary" type="button" onclick="doLogout()">Logout</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="tpHomeworkModal" class="teacher-modal-overlay">
+  <div class="teacher-modal">
+    <div class="modal-header">
+      <div>
+        <h3>Assign Homework</h3>
+        <p class="modal-subtitle">Create homework and publish it to an entire class instantly.</p>
+      </div>
+      <button type="button" class="modal-close" onclick="tpCloseModal('tpHomeworkModal')">&times;</button>
+    </div>
+    <form id="tpHomeworkForm">
+      <div class="form-group">
+        <label class="form-label">Class</label>
+        <select id="tpHomeworkClass" class="form-control" required></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input id="tpHomeworkTitle" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="tpHomeworkDescription" class="form-control" rows="4" required></textarea>
+      </div>
+      <div class="teacher-form-inline teacher-form-inline-2">
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input id="tpHomeworkDueDate" type="date" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Marks</label>
+          <input id="tpHomeworkMarks" type="number" min="1" max="100" class="form-control" value="10" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" onclick="tpCloseModal('tpHomeworkModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Assign Homework</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="tpMessageModal" class="teacher-modal-overlay">
+  <div class="teacher-modal">
+    <div class="modal-header">
+      <div>
+        <h3>Send Message</h3>
+        <p class="modal-subtitle">Send a direct update to a student from your assigned classes.</p>
+      </div>
+      <button type="button" class="modal-close" onclick="tpCloseModal('tpMessageModal')">&times;</button>
+    </div>
+    <form id="tpMessageForm">
+      <div class="form-group">
+        <label class="form-label">Student</label>
+        <select id="tpMessageStudent" class="form-control" required></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input id="tpMessageSubject" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea id="tpMessageContent" class="form-control" rows="5" required></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" onclick="tpCloseModal('tpMessageModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Send Message</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="tpNoticeModal" class="teacher-modal-overlay">
+  <div class="teacher-modal">
+    <div class="modal-header">
+      <div>
+        <h3>Create Notice</h3>
+        <p class="modal-subtitle">Share reminders, class updates, or academic notices.</p>
+      </div>
+      <button type="button" class="modal-close" onclick="tpCloseModal('tpNoticeModal')">&times;</button>
+    </div>
+    <form id="tpNoticeForm">
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input id="tpNoticeTitle" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Content</label>
+        <textarea id="tpNoticeContent" class="form-control" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select id="tpNoticeType" class="form-control">
+          <option value="important">Important</option>
+          <option value="urgent">Urgent</option>
+          <option value="info">Info</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" onclick="tpCloseModal('tpNoticeModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Publish Notice</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="tpMaterialModal" class="teacher-modal-overlay">
+  <div class="teacher-modal">
+    <div class="modal-header">
+      <div>
+        <h3>Upload Material</h3>
+        <p class="modal-subtitle">Create digital notes, worksheets, or video links for students.</p>
+      </div>
+      <button type="button" class="modal-close" onclick="tpCloseModal('tpMaterialModal')">&times;</button>
+    </div>
+    <form id="tpMaterialForm">
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input id="tpMaterialTitle" class="form-control" required>
+      </div>
+      <div class="teacher-form-inline teacher-form-inline-2">
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select id="tpMaterialType" class="form-control">
+            <option value="pdf">Notes PDF</option>
+            <option value="mp4">Video Lecture</option>
+            <option value="doc">Worksheet</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">File Size</label>
+          <input id="tpMaterialSize" class="form-control" placeholder="e.g. 2.4 MB" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" onclick="tpCloseModal('tpMaterialModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Material</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="../js/firebase-config.js"></script>
+<script src="../js/app.js"></script>
+<script src="./teacher-portal.js"></script>
+</body>
+</html>

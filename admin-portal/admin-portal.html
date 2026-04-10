@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | Vidya Mandir ERP</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="./admin-portal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="admin-portal-page">
+<div id="toastContainer" class="toast-container"></div>
+
+<div class="admin-shell">
+  <aside class="portal-sidebar admin-sidebar" id="adminSidebar">
+    <div class="portal-sidebar-brand">
+      <div class="logo">VM</div>
+      <h2>Vidya Mandir<small>Admin Control Center</small></h2>
+    </div>
+    <nav class="portal-nav">
+      <a class="active" data-section="secDashboard"><span class="nav-icon">Dashboard</span></a>
+      <a data-section="secStudents"><span class="nav-icon">Students</span></a>
+      <a data-section="secTeachers"><span class="nav-icon">Teachers</span></a>
+      <a data-section="secClasses"><span class="nav-icon">Classes</span></a>
+      <a data-section="secAdmissions"><span class="nav-icon">Admissions</span></a>
+      <a data-section="secFees"><span class="nav-icon">Fees</span></a>
+      <a data-section="secAttendance"><span class="nav-icon">Attendance</span></a>
+      <a data-section="secResults"><span class="nav-icon">Results</span></a>
+      <a data-section="secAcademics"><span class="nav-icon">Academics</span></a>
+      <a data-section="secResources"><span class="nav-icon">Resources</span></a>
+      <a data-section="secDigital"><span class="nav-icon">Digital</span></a>
+      <a data-section="secOperations"><span class="nav-icon">Operations</span></a>
+      <a data-section="secCommunication"><span class="nav-icon">Communication</span></a>
+      <a data-section="secReports"><span class="nav-icon">Reports</span></a>
+      <a data-section="secSettings"><span class="nav-icon">Settings</span></a>
+      <a onclick="doLogout()"><span class="nav-icon">Logout</span></a>
+    </nav>
+  </aside>
+
+  <div class="portal-main">
+    <header class="portal-topbar admin-topbar">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button id="adminSidebarToggle" class="admin-menu-btn" type="button"><i class="fas fa-bars"></i></button>
+        <div>
+          <h2 id="adminTopbarTitle">Dashboard</h2>
+          <p class="admin-topbar-meta" id="adminTopbarMeta">School-wide control and analytics</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-sm btn-outline-primary" type="button" onclick="apOpenModal('adminNoticeModal')">Quick Notice</button>
+        <button class="btn btn-sm btn-primary" type="button" onclick="apOpenModal('adminStudentModal')">Add Student</button>
+        <div class="topbar-user">
+          <div class="topbar-avatar">AD</div>
+          <div class="topbar-user-info">
+            <span id="adminName">Admin</span>
+            <small>School Administrator</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="portal-content">
+      <section id="secDashboard" class="portal-section active">
+        <div class="admin-hero">
+          <div>
+            <p class="admin-hero-kicker">School Management System</p>
+            <h2 id="adminHeroTitle">Welcome back</h2>
+            <p id="adminHeroSubtitle">Track school operations, academics, fees, and communication from one place.</p>
+          </div>
+          <div class="admin-hero-badge">
+            <strong id="adminTodayDate">--</strong>
+            <span>Live admin snapshot</span>
+          </div>
+        </div>
+
+        <div class="dash-stats admin-stats-grid">
+          <div class="dash-stat-card"><div class="dash-stat-icon">ST</div><div class="dash-stat-info"><label>Students</label><div class="dash-stat-num" id="statStudents">0</div><span class="dash-stat-change up" id="statStudentsMeta">Across all classes</span></div></div>
+          <div class="dash-stat-card"><div class="dash-stat-icon">TC</div><div class="dash-stat-info"><label>Teachers</label><div class="dash-stat-num" id="statTeachers">0</div><span class="dash-stat-change up" id="statTeachersMeta">Active faculty</span></div></div>
+          <div class="dash-stat-card"><div class="dash-stat-icon">CL</div><div class="dash-stat-info"><label>Classes</label><div class="dash-stat-num" id="statClasses">0</div><span class="dash-stat-change up" id="statClassesMeta">Managed sections</span></div></div>
+          <div class="dash-stat-card"><div class="dash-stat-icon">FD</div><div class="dash-stat-info"><label>Fees Collected</label><div class="dash-stat-num" id="statFeesPaid">0</div><span class="dash-stat-change up" id="statFeesMeta">This academic cycle</span></div></div>
+          <div class="dash-stat-card"><div class="dash-stat-icon">PD</div><div class="dash-stat-info"><label>Pending Fees</label><div class="dash-stat-num" id="statFeesPending">0</div><span class="dash-stat-change down" id="statPendingMeta">Requires follow-up</span></div></div>
+          <div class="dash-stat-card"><div class="dash-stat-icon">AD</div><div class="dash-stat-info"><label>Admissions</label><div class="dash-stat-num" id="statAdmissions">0</div><span class="dash-stat-change up" id="statAdmissionsMeta">Awaiting review</span></div></div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Fee Performance</h4></div>
+            <div class="card-body"><canvas id="adminFeesChart" height="120"></canvas></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Admission Funnel</h4></div>
+            <div class="card-body"><canvas id="adminAdmissionsChart" height="120"></canvas></div>
+          </div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Operational Alerts</h4></div>
+            <div class="card-body admin-card-list" id="adminAlertsList"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Class Performance Snapshot</h4></div>
+            <div class="card-body admin-card-list" id="adminClassOverview"></div>
+          </div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Command Center</h4></div>
+            <div class="card-body admin-card-list" id="adminCommandCenter"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Audit Log</h4>
+              <button class="btn btn-sm btn-outline-primary" type="button" onclick="apClearAuditLog()">Clear Log</button>
+            </div>
+            <div class="card-body admin-card-list" id="adminAuditLog"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secStudents" class="portal-section">
+        <div class="admin-students-hero">
+          <div>
+            <div class="admin-hero-kicker">Student Portal Control</div>
+            <h3>Student records ko manage karo aur unke portal experience par direct admin-level control rakho</h3>
+            <p>Student profile, fee state, attendance signals, class mapping, aur portal login readiness sab yahin se linked form me manage kiye ja sakte hain.</p>
+          </div>
+          <div class="admin-students-hero-stats" id="adminStudentsHeroStats">
+            <div class="admin-students-stat">
+              <strong>0</strong>
+              <span>Total Students</span>
+            </div>
+            <div class="admin-students-stat">
+              <strong>0</strong>
+              <span>Portal Ready</span>
+            </div>
+            <div class="admin-students-stat">
+              <strong>0</strong>
+              <span>Fee Pending</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-students-strip" id="adminStudentsStrip">
+          <div class="admin-students-strip-card">
+            <span>Top Attendance</span>
+            <strong id="adminStudentsTopAttendance">--</strong>
+            <p>Best student attendance signal from linked portal data.</p>
+          </div>
+          <div class="admin-students-strip-card">
+            <span>Fee Risk</span>
+            <strong id="adminStudentsFeeRisk">--</strong>
+            <p>Students currently blocking smooth portal fee status.</p>
+          </div>
+          <div class="admin-students-strip-card">
+            <span>Portal Access</span>
+            <strong id="adminStudentsPortalAccess">--</strong>
+            <p>Profiles with login-ready student portal records.</p>
+          </div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card admin-students-card">
+            <div class="card-header">
+              <div>
+                <h4>Student Portal Control Board</h4>
+                <p class="admin-topbar-meta">Use these controls to manage student portal visibility and readiness.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="admin-student-control-grid" id="adminStudentControlGrid"></div>
+            </div>
+          </div>
+
+          <div class="table-card admin-students-card">
+            <div class="card-header">
+              <div>
+                <h4>Priority Student Alerts</h4>
+                <p class="admin-topbar-meta">Students needing admin attention before portal experience degrades.</p>
+              </div>
+            </div>
+            <div class="card-body admin-card-list" id="adminStudentAlerts"></div>
+          </div>
+        </div>
+
+        <div class="table-card admin-students-card">
+          <div class="card-header">
+            <div>
+              <h4>Student Management</h4>
+              <p class="admin-topbar-meta">Search, update, and control linked student portal records.</p>
+            </div>
+            <div class="admin-toolbar">
+              <input id="studentSearch" class="form-control" placeholder="Search by name, id, roll, class">
+              <select id="studentClassFilter" class="form-control"></select>
+              <button class="btn btn-outline-primary btn-sm" type="button" onclick="apExportDataset('students')">Export CSV</button>
+              <button class="btn btn-primary btn-sm" type="button" onclick="apOpenModal('adminStudentModal')">Add Student</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>ID</th><th>Student</th><th>Class</th><th>Parent</th><th>Contact</th><th>Fee</th><th>Attendance</th><th>Actions</th></tr></thead>
+              <tbody id="adminStudentsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="secTeachers" class="portal-section">
+        <div class="table-card">
+          <div class="card-header">
+            <h4>Teacher Management</h4>
+            <div class="admin-toolbar">
+              <input id="teacherSearch" class="form-control" placeholder="Search by name, subject, class">
+              <button class="btn btn-outline-primary btn-sm" type="button" onclick="apExportDataset('teachers')">Export CSV</button>
+              <button class="btn btn-primary btn-sm" type="button" onclick="apOpenModal('adminTeacherModal')">Add Teacher</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>ID</th><th>Teacher</th><th>Subject</th><th>Contact</th><th>Assigned Classes</th><th>Experience</th><th>Actions</th></tr></thead>
+              <tbody id="adminTeachersTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="secClasses" class="portal-section">
+        <div class="admin-classes-hero">
+          <div>
+            <div class="admin-hero-kicker">Connected Academic Structure</div>
+            <h3>Class sections ko manage karo aur teacher plus student portals ke saath live linkage maintain rakho</h3>
+            <p>Yahan ki class configuration teachers ke assigned classes, student enrollment mapping, fee plan, aur portal views ko directly influence karti hai.</p>
+          </div>
+          <div class="admin-classes-hero-stats" id="adminClassesHeroStats">
+            <div class="admin-classes-stat">
+              <strong>0</strong>
+              <span>Total Sections</span>
+            </div>
+            <div class="admin-classes-stat">
+              <strong>0</strong>
+              <span>Total Students</span>
+            </div>
+            <div class="admin-classes-stat">
+              <strong>0</strong>
+              <span>Teachers Linked</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-classes-strip" id="adminClassesStrip">
+          <div class="admin-classes-strip-card">
+            <span>Most Filled</span>
+            <strong id="adminClassesTopFilled">--</strong>
+            <p>Section with the highest active enrollment right now.</p>
+          </div>
+          <div class="admin-classes-strip-card">
+            <span>Portal Sync</span>
+            <strong id="adminClassesPortalSync">--</strong>
+            <p>Teacher and student portals reading the same class mapping.</p>
+          </div>
+          <div class="admin-classes-strip-card">
+            <span>Unassigned Risk</span>
+            <strong id="adminClassesUnassigned">--</strong>
+            <p>Sections needing teacher ownership or roster cleanup.</p>
+          </div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card admin-classes-card">
+            <div class="card-header">
+              <div>
+                <h4>Class Directory</h4>
+                <p class="admin-topbar-meta">Visual overview of each section with live student and teacher linkage.</p>
+              </div>
+              <button class="btn btn-primary btn-sm" type="button" onclick="apOpenModal('adminClassModal')">Add Class</button>
+            </div>
+            <div class="card-body admin-card-list" id="adminClassCards"></div>
+          </div>
+          <div class="table-card admin-classes-card">
+            <div class="card-header">
+              <div>
+                <h4>Class Capacity & Ownership</h4>
+                <p class="admin-topbar-meta">Section capacity, teacher assignment, room, and fee planning.</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Class</th><th>Class Teacher</th><th>Students</th><th>Capacity</th><th>Room</th><th>Fee Plan</th></tr></thead>
+                <tbody id="adminClassesTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secAdmissions" class="portal-section">
+        <div class="admin-admissions-hero">
+          <div>
+            <div class="admin-hero-kicker">Enrollment Command Desk</div>
+            <h3>Admissions pipeline ko premium review flow ke saath manage karo aur approvals ko student records me smoothly convert karo</h3>
+            <p>Application health, pending approvals, class demand, aur conversion readiness sab ek hi connected section me dikhai denge taki admission team fast decision le sake.</p>
+          </div>
+          <div class="admin-admissions-hero-stats" id="adminAdmissionsHeroStats">
+            <div class="admin-admissions-stat">
+              <strong>0</strong>
+              <span>Total Applications</span>
+            </div>
+            <div class="admin-admissions-stat">
+              <strong>0</strong>
+              <span>Pending Review</span>
+            </div>
+            <div class="admin-admissions-stat">
+              <strong>0</strong>
+              <span>Conversion Rate</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-admissions-strip">
+          <div class="admin-admissions-strip-card">
+            <span>Hot Class Demand</span>
+            <strong id="adminAdmissionsTopClass">--</strong>
+            <p>Sabse zyada admission interest kis class me aa raha hai uska live signal.</p>
+          </div>
+          <div class="admin-admissions-strip-card">
+            <span>Approval Focus</span>
+            <strong id="adminAdmissionsPending">--</strong>
+            <p>Team ko abhi kitni applications par immediate action lena hai.</p>
+          </div>
+          <div class="admin-admissions-strip-card">
+            <span>Latest Application</span>
+            <strong id="adminAdmissionsLatest">--</strong>
+            <p>Most recent applicant jo fresh review queue me aaya hai.</p>
+          </div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card admin-admissions-card">
+            <div class="card-header">
+              <div>
+                <h4>Admission Funnel Board</h4>
+                <p class="admin-topbar-meta">Pipeline status aur next actions ko visually monitor karo.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="admin-admission-pipeline" id="adminAdmissionPipeline"></div>
+            </div>
+          </div>
+
+          <div class="table-card admin-admissions-card">
+            <div class="card-header">
+              <div>
+                <h4>Review Highlights</h4>
+                <p class="admin-topbar-meta">Demand, parent response, aur conversion readiness ka quick overview.</p>
+              </div>
+            </div>
+            <div class="card-body admin-card-list" id="adminAdmissionsInsights"></div>
+          </div>
+        </div>
+
+        <div class="table-card admin-admissions-card">
+          <div class="card-header">
+            <div>
+              <h4>Admission Applications</h4>
+              <p class="admin-topbar-meta">Approve karte hi applicant auto-create hokar student records ecosystem me aa jayega.</p>
+            </div>
+            <span class="badge badge-gold">Approve to auto-create a student record</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Parent</th><th>Contact</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="adminAdmissionsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="secFees" class="portal-section">
+        <div class="admin-fees-hero">
+          <div>
+            <div class="admin-hero-kicker">Fee Control Center</div>
+            <h3>Class-wise fee collection ko monitor karo, student payment details dekho, aur online plus offline updates ko ek hi desk se sync rakho</h3>
+            <p>Selected class ke sare students, unki live fee status, payment history, aur collection performance yahin se linked form me manage hongi.</p>
+          </div>
+          <div class="admin-fees-hero-stats" id="adminFeesHeroStats">
+            <div class="admin-fees-stat"><strong>0</strong><span>Students</span></div>
+            <div class="admin-fees-stat"><strong>Rs0</strong><span>Total Collectable</span></div>
+            <div class="admin-fees-stat"><strong>0%</strong><span>Collection Rate</span></div>
+          </div>
+        </div>
+
+        <div class="table-card admin-fees-card">
+          <div class="card-header">
+            <div>
+              <h4>Fee Collection Desk</h4>
+              <p class="admin-topbar-meta">Student section ki tarah class select karo aur us class ke sabhi students ko fee details ke saath dekho.</p>
+            </div>
+            <div class="admin-toolbar">
+              <select id="feeClassFilter" class="form-control"></select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Student</th><th>Class</th><th>Total</th><th>Paid</th><th>Pending</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="adminFeesTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-fee-summary-grid" id="adminFeeSummaryGrid">
+          <div class="admin-fee-summary-card"><span>Total Fees</span><strong>Rs0</strong><p>Selected class ki total collectable fees.</p></div>
+          <div class="admin-fee-summary-card"><span>Fees Received</span><strong>Rs0</strong><p>Online aur offline dono payments ka total.</p></div>
+          <div class="admin-fee-summary-card"><span>Collection Rate</span><strong>0%</strong><p>Overall fee collection performance for this class.</p></div>
+          <div class="admin-fee-summary-card"><span>Students Paid</span><strong>0</strong><p>Kitne students ne full fees clear ki hai.</p></div>
+        </div>
+      </section>
+
+      <section id="secAttendance" class="portal-section">
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Attendance Overview</h4></div>
+            <div class="card-body admin-card-list" id="adminAttendanceSummary"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Attendance Risk List</h4></div>
+            <div class="card-body admin-card-list" id="adminAttendanceRisk"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secResults" class="portal-section">
+        <!-- Result Dashboard Overview -->
+        <div class="admin-results-hero">
+          <div>
+            <div class="admin-hero-kicker">Academic Performance Management</div>
+            <h3>Student Results, Rankings aur Performance Analytics ko manage karo</h3>
+            <p>Marks entry, report card generation, ranking calculation, exam management, aur result publication sab ek platform se.</p>
+          </div>
+          <div class="admin-results-hero-stats" id="adminResultsHeroStats">
+            <div class="admin-results-stat">
+              <strong id="resultsTotalStudents">0</strong>
+              <span>Total Students</span>
+            </div>
+            <div class="admin-results-stat">
+              <strong id="resultsAvgMarks">0.0</strong>
+              <span>Average Marks</span>
+            </div>
+            <div class="admin-results-stat">
+              <strong id="resultsPassPercentage">0%</strong>
+              <span>Pass Percentage</span>
+            </div>
+            <div class="admin-results-stat">
+              <strong id="resultsFailedCount">0</strong>
+              <span>Failed Students</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Graphs -->
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Subject Performance</h4></div>
+            <div class="card-body"><canvas id="resultsSubjectChart" height="100"></canvas></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Grade Distribution</h4></div>
+            <div class="card-body"><canvas id="resultsGradeChart" height="100"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Quick Insights -->
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Class Topper</h4></div>
+            <div class="card-body admin-card-list" id="resultsTopperInfo"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Result Status</h4></div>
+            <div class="card-body admin-card-list" id="resultsStatusInfo"></div>
+          </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div style="margin-bottom:20px;border-bottom:2px solid var(--gray-200);">
+          <div style="display:flex;gap:0;">
+            <button class="admin-tab-btn active" data-tab="tabMarksEntry" onclick="switchResultTab(event, 'tabMarksEntry')">📝 Marks Entry</button>
+            <button class="admin-tab-btn" data-tab="tabStudentResults" onclick="switchResultTab(event, 'tabStudentResults')">📊 Results</button>
+            <button class="admin-tab-btn" data-tab="tabRanking" onclick="switchResultTab(event, 'tabRanking')">🏆 Ranking</button>
+            <button class="admin-tab-btn" data-tab="tabReportCard" onclick="switchResultTab(event, 'tabReportCard')">📄 Report Card</button>
+            <button class="admin-tab-btn" data-tab="tabImportExport" onclick="switchResultTab(event, 'tabImportExport')">📁 Import/Export</button>
+          </div>
+        </div>
+
+        <!-- MARKS ENTRY TAB -->
+        <div id="tabMarksEntry" class="admin-tab-content" style="display:block;">
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Marks Entry Form</h4>
+              <p class="admin-topbar-meta">Enter subject-wise marks for students</p>
+            </div>
+            <div class="card-body">
+              <form id="marksEntryForm" onsubmit="submitMarksEntry(event)">
+                <div class="admin-form-grid">
+                  <div class="form-group">
+                    <label>Exam Type</label>
+                    <select id="examType" class="form-control" required>
+                      <option value="">Select Exam Type</option>
+                      <option value="unit-test">Unit Test</option>
+                      <option value="midterm">Midterm</option>
+                      <option value="final">Final</option>
+                      <option value="practice">Practice</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Class</label>
+                    <select id="marksClass" class="form-control" onchange="loadStudentsForMarks()" required>
+                      <option value="">Select Class</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Student</label>
+                    <select id="marksStudent" class="form-control" required>
+                      <option value="">Select Student</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Subject</label>
+                    <select id="marksSubject" class="form-control" required>
+                      <option value="">Select Subject</option>
+                      <option value="Mathematics">Mathematics</option>
+                      <option value="Science">Science</option>
+                      <option value="English">English</option>
+                      <option value="Hindi">Hindi</option>
+                      <option value="Social Studies">Social Studies</option>
+                      <option value="Computer Science">Computer Science</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Marks Obtained</label>
+                    <input type="number" id="marksObtained" class="form-control" min="0" max="100" step="0.5" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Total Marks</label>
+                    <input type="number" id="markTotal" class="form-control" min="0" max="100" step="0.5" value="100" required>
+                  </div>
+                </div>
+                <div style="margin-top:16px;">
+                  <button type="submit" class="btn btn-primary">Save Marks</button>
+                  <button type="reset" class="btn btn-ghost">Clear</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- STUDENT RESULTS TAB -->
+        <div id="tabStudentResults" class="admin-tab-content" style="display:none;">
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Student Result Management</h4>
+              <div class="admin-toolbar">
+                <input id="resultsSearch" class="form-control" placeholder="Search by student name, roll, ID">
+                <select id="resultsClassFilter" class="form-control" onchange="filterResults()"><option value="">All Classes</option></select>
+                <select id="resultsSectionFilter" class="form-control" onchange="filterResults()"><option value="">All Sections</option></select>
+                <select id="resultsExamFilter" class="form-control" onchange="filterResults()"><option value="">All Exams</option></select>
+                <button class="btn btn-outline-primary btn-sm" onclick="publishResults()">📢 Publish Results</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Roll</th><th>Student Name</th><th>Class</th><th>Exam</th><th>Total</th><th>Percentage</th><th>Grade</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="studentResultsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- RANKING TAB -->
+        <div id="tabRanking" class="admin-tab-content" style="display:none;">
+          <div class="admin-dashboard-grid">
+            <div class="table-card">
+              <div class="card-header"><h4>Class-wise Topper List</h4></div>
+              <div class="card-body" id="classWiseToppers"></div>
+            </div>
+            <div class="table-card">
+              <div class="card-header"><h4>Section-wise Ranking</h4></div>
+              <div class="card-body">
+                <select id="sectionRankFilter" class="form-control" style="margin-bottom:12px;" onchange="showSectionRanking()">
+                  <option value="">Select Section</option>
+                </select>
+                <div id="sectionRankingList"></div>
+              </div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Overall Merit List</h4></div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Rank</th><th>Student</th><th>Class</th><th>Total Marks</th><th>Percentage</th><th>Grade</th></tr></thead>
+                <tbody id="overallMeritTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPORT CARD TAB -->
+        <div id="tabReportCard" class="admin-tab-content" style="display:none;">
+          <div class="table-card">
+            <div class="card-header">
+              <h4>Report Card Generator</h4>
+              <div class="admin-toolbar">
+                <select id="reportCardClass" class="form-control" onchange="loadStudentsForReportCard()"><option value="">Select Class</option></select>
+                <select id="reportCardStudent" class="form-control"><option value="">Select Student</option></select>
+                <button class="btn btn-primary btn-sm" onclick="generateReportCard()">Generate</button>
+                <button class="btn btn-outline-primary btn-sm" onclick="downloadReportCardPDF()">📥 Download PDF</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="reportCardPreview"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMPORT/EXPORT TAB -->
+        <div id="tabImportExport" class="admin-tab-content" style="display:none;">
+          <div class="admin-dashboard-grid">
+            <div class="table-card">
+              <div class="card-header"><h4>📤 Import Marks from CSV</h4></div>
+              <div class="card-body">
+                <p style="color:var(--gray-500);margin-bottom:12px;font-size:13px;">CSV format: StudentID, Class, Subject, Marks, TotalMarks, ExamType</p>
+                <input type="file" id="csvMarkFile" accept=".csv" class="form-control" style="margin-bottom:12px;">
+                <button class="btn btn-primary" onclick="importMarksCSV()">Upload & Import</button>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="card-header"><h4>📥 Export Results to Excel</h4></div>
+              <div class="card-body">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                  <select id="exportClass" class="form-control"><option value="">All Classes</option></select>
+                  <select id="exportExam" class="form-control"><option value="">All Exams</option></select>
+                </div>
+                <button class="btn btn-primary" onclick="exportResultsExcel()">📊 Export to Excel</button>
+                <button class="btn btn-outline-primary" onclick="exportResultsPDF()">📄 Export to PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Merit Board -->
+        <div class="admin-dashboard-grid" style="margin-top:20px;">
+          <div class="table-card">
+            <div class="card-header"><h4>🏆 School Merit Board</h4></div>
+            <div class="card-body admin-card-list" id="adminMeritBoard"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>⚠️ Weak Students (Below Pass)</h4></div>
+            <div class="card-body admin-card-list" id="adminWeakStudents"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secAcademics" class="portal-section">
+        <div class="admin-academics-hero">
+          <div>
+            <div class="admin-hero-kicker">Academic Command Center</div>
+            <h3>Exams, homework, materials, aur academic health ko ek advanced dashboard se monitor karo</h3>
+            <p>Yahan se school ki exam planning, study resource readiness, homework load, aur class-wide academic performance ko demo-ready live insights ke saath review kiya ja sakta hai.</p>
+          </div>
+          <div class="admin-academics-hero-stats" id="adminAcademicsHeroStats">
+            <div class="admin-academics-stat"><strong>0</strong><span>Upcoming Exams</span></div>
+            <div class="admin-academics-stat"><strong>0</strong><span>Homework Tasks</span></div>
+            <div class="admin-academics-stat"><strong>0</strong><span>Study Resources</span></div>
+          </div>
+        </div>
+
+        <div class="admin-academics-strip">
+          <div class="admin-academics-strip-card">
+            <span>Next Exam</span>
+            <strong id="adminAcademicsNextExam">--</strong>
+            <p>Nearest scheduled academic event that needs preparation.</p>
+          </div>
+          <div class="admin-academics-strip-card">
+            <span>Top Subject</span>
+            <strong id="adminAcademicsTopSubject">--</strong>
+            <p>Best scoring subject across current marks data.</p>
+          </div>
+          <div class="admin-academics-strip-card">
+            <span>Academic Readiness</span>
+            <strong id="adminAcademicsReadiness">--</strong>
+            <p>Combined exam, homework, and material availability signal.</p>
+          </div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card admin-academics-card">
+            <div class="card-header">
+              <div>
+                <h4>Exam Schedule</h4>
+                <p class="admin-topbar-meta">Upcoming exams with room, time, and syllabus readiness.</p>
+              </div>
+              <button class="btn btn-primary btn-sm" type="button" onclick="apOpenModal('adminExamModal')">Schedule Exam</button>
+            </div>
+            <div class="card-body admin-card-list" id="adminExamList"></div>
+          </div>
+          <div class="table-card admin-academics-card">
+            <div class="card-header"><h4>Academic Health</h4></div>
+            <div class="card-body admin-card-list" id="adminAcademicSummary"></div>
+          </div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card admin-academics-card">
+            <div class="card-header"><h4>Academic Control Board</h4></div>
+            <div class="card-body">
+              <div class="admin-academics-board" id="adminAcademicBoard"></div>
+            </div>
+          </div>
+          <div class="table-card admin-academics-card">
+            <div class="card-header"><h4>Subject Performance Snapshot</h4></div>
+            <div class="card-body admin-card-list" id="adminAcademicSubjectList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secResources" class="portal-section">
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Study Materials</h4></div>
+            <div class="card-body admin-card-list" id="adminMaterialsList"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Library Inventory</h4></div>
+            <div class="card-body admin-card-list" id="adminLibraryList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secDigital" class="portal-section">
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Online Learning Stack</h4></div>
+            <div class="card-body admin-card-list" id="adminDigitalLearning"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Recognition & Outcomes</h4></div>
+            <div class="card-body admin-card-list" id="adminRecognitionList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secOperations" class="portal-section">
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Timetable & Scheduling</h4></div>
+            <div class="card-body admin-card-list" id="adminTimetableList"></div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Parent Communication Log</h4></div>
+            <div class="card-body admin-card-list" id="adminParentCommList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secCommunication" class="portal-section">
+        <div class="admin-communication-hero">
+          <div>
+            <div class="admin-hero-kicker">Audience Aware Messaging</div>
+            <h3>Teacher aur student notices ko clearly target karo aur school-wide communication ko ek premium control hub se manage karo</h3>
+            <p>Admin ab direct dekh sakta hai ki kaunsa notice teachers ke liye hai, kaunsa students ke liye, aur kaunsi updates broadcast log me live gayi hain.</p>
+          </div>
+          <div class="admin-communication-hero-stats" id="adminCommunicationHeroStats">
+            <div class="admin-communication-stat"><strong>0</strong><span>Total Notices</span></div>
+            <div class="admin-communication-stat"><strong>0</strong><span>Teacher Notices</span></div>
+            <div class="admin-communication-stat"><strong>0</strong><span>Student Notices</span></div>
+          </div>
+        </div>
+
+        <div class="admin-communication-strip">
+          <div class="admin-communication-strip-card">
+            <span>Teacher Channel</span>
+            <strong id="adminCommunicationTeacherCount">--</strong>
+            <p>Faculty-facing notices aur admin instructions ka live count.</p>
+          </div>
+          <div class="admin-communication-strip-card">
+            <span>Student Channel</span>
+            <strong id="adminCommunicationStudentCount">--</strong>
+            <p>Student audience ke liye active announcements aur academic updates.</p>
+          </div>
+          <div class="admin-communication-strip-card">
+            <span>Latest Admin Notice</span>
+            <strong id="adminCommunicationLatest">--</strong>
+            <p>Most recent admin-side communication jo portals par visible hai.</p>
+          </div>
+        </div>
+
+        <div class="admin-dashboard-grid">
+          <div class="table-card admin-communication-card">
+            <div class="card-header">
+              <div>
+                <h4>Notice Board</h4>
+                <p class="admin-topbar-meta">Audience chips ke saath targeted notices publish aur review karo.</p>
+              </div>
+              <button class="btn btn-primary btn-sm" type="button" onclick="apOpenModal('adminNoticeModal')">Publish Notice</button>
+            </div>
+            <div class="card-body admin-card-list" id="adminNoticesList"></div>
+          </div>
+          <div class="table-card admin-communication-card">
+            <div class="card-header">
+              <div>
+                <h4>Broadcast Center</h4>
+                <p class="admin-topbar-meta">Quick one-to-many communications aur audience logs yahin track honge.</p>
+              </div>
+              <button class="btn btn-outline-primary btn-sm" type="button" onclick="apOpenModal('adminBroadcastModal')">New Broadcast</button>
+            </div>
+            <div class="card-body admin-card-list" id="adminBroadcastList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secReports" class="portal-section">
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>Export Center</h4></div>
+            <div class="card-body admin-export-grid">
+              <button class="btn btn-primary" type="button" onclick="apExportDataset('students')">Export Students</button>
+              <button class="btn btn-primary" type="button" onclick="apExportDataset('teachers')">Export Teachers</button>
+              <button class="btn btn-primary" type="button" onclick="apExportDataset('classes')">Export Classes</button>
+              <button class="btn btn-primary" type="button" onclick="apExportDataset('fees')">Export Fees</button>
+              <button class="btn btn-primary" type="button" onclick="apExportDataset('admissions')">Export Admissions</button>
+              <button class="btn btn-primary" type="button" onclick="apExportDataset('notices')">Export Notices</button>
+              <button class="btn btn-primary" type="button" onclick="apExportDataset('library')">Export Library</button>
+              <button class="btn btn-primary" type="button" onclick="apExportDataset('online')">Export Digital Data</button>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Management Summary</h4></div>
+            <div class="card-body admin-card-list" id="adminReportSummary"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="secSettings" class="portal-section">
+        <div class="admin-dashboard-grid">
+          <div class="table-card">
+            <div class="card-header"><h4>School Settings</h4></div>
+            <div class="card-body">
+              <form id="adminSchoolForm">
+                <div class="admin-form-grid">
+                  <div class="form-group"><label class="form-label">School Name</label><input id="schoolName" class="form-control"></div>
+                  <div class="form-group"><label class="form-label">Phone</label><input id="schoolPhone" class="form-control"></div>
+                  <div class="form-group"><label class="form-label">Email</label><input id="schoolEmail" class="form-control"></div>
+                  <div class="form-group"><label class="form-label">Academic Session</label><input id="schoolSession" class="form-control"></div>
+                </div>
+                <div class="form-group"><label class="form-label">Address</label><input id="schoolAddress" class="form-control"></div>
+                <div class="modal-footer" style="margin-top:0"><button class="btn btn-primary" type="submit">Save Settings</button></div>
+              </form>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="card-header"><h4>Admin Security</h4></div>
+            <div class="card-body">
+              <form id="adminPasswordForm">
+                <div class="form-group"><label class="form-label">Current Password</label><input id="adminCurrentPassword" type="password" class="form-control"></div>
+                <div class="form-group"><label class="form-label">New Password</label><input id="adminNewPassword" type="password" class="form-control"></div>
+                <div class="form-group"><label class="form-label">Confirm Password</label><input id="adminConfirmPassword" type="password" class="form-control"></div>
+                <div class="modal-footer" style="margin-top:0"><button class="btn btn-primary" type="submit">Update Password</button></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="adminStudentModal" class="admin-modal-overlay">
+  <div class="admin-modal">
+    <div class="modal-header"><h3 id="adminStudentModalTitle">Add Student</h3><button class="modal-close" type="button" onclick="apCloseModal('adminStudentModal')">&times;</button></div>
+    <form id="adminStudentForm">
+      <div class="admin-form-grid">
+        <div class="form-group"><label class="form-label">Name</label><input id="studentNameInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Class</label><input id="studentClassInput" class="form-control" placeholder="10" required></div>
+        <div class="form-group"><label class="form-label">Section</label><input id="studentSectionInput" class="form-control" placeholder="A" required></div>
+        <div class="form-group"><label class="form-label">Parent</label><input id="studentParentInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Contact</label><input id="studentContactInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Gender</label><select id="studentGenderInput" class="form-control"><option value="M">Male</option><option value="F">Female</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Address</label><input id="studentAddressInput" class="form-control"></div>
+      <div class="form-group">
+        <label class="form-label">Portal Password</label>
+        <input id="studentPasswordInput" class="form-control" placeholder="Leave blank to keep current password">
+        <small class="form-hint">Edit se aap student ka portal password manually set kar sakte ho.</small>
+      </div>
+      <div class="modal-footer"><button class="btn btn-outline-primary" type="button" onclick="apCloseModal('adminStudentModal')">Cancel</button><button class="btn btn-primary" type="submit">Save Student</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="adminTeacherModal" class="admin-modal-overlay">
+  <div class="admin-modal">
+    <div class="modal-header"><h3 id="adminTeacherModalTitle">Add Teacher</h3><button class="modal-close" type="button" onclick="apCloseModal('adminTeacherModal')">&times;</button></div>
+    <form id="adminTeacherForm">
+      <div class="admin-form-grid">
+        <div class="form-group"><label class="form-label">Name</label><input id="teacherNameInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Subjects</label><input id="teacherSubjectInput" class="form-control" placeholder="Math, Science, Computer" required></div>
+        <div class="form-group"><label class="form-label">Email</label><input id="teacherEmailInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Phone</label><input id="teacherPhoneInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Experience</label><input id="teacherExpInput" class="form-control" placeholder="5 years"></div>
+        <div class="form-group"><label class="form-label">Assigned Classes</label><input id="teacherClassInput" class="form-control" placeholder="10A, 10B"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Portal Password</label>
+        <input id="teacherPasswordInput" class="form-control" placeholder="Leave blank to keep current password">
+        <small class="form-hint">Teacher portal access password yahin se manually update hoga.</small>
+      </div>
+      <div class="modal-footer"><button class="btn btn-outline-primary" type="button" onclick="apCloseModal('adminTeacherModal')">Cancel</button><button class="btn btn-primary" type="submit">Save Teacher</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="adminClassModal" class="admin-modal-overlay">
+  <div class="admin-modal">
+    <div class="modal-header"><h3>Create Class</h3><button class="modal-close" type="button" onclick="apCloseModal('adminClassModal')">&times;</button></div>
+    <form id="adminClassForm">
+      <div class="admin-form-grid">
+        <div class="form-group"><label class="form-label">Class</label><input id="classNumberInput" class="form-control" placeholder="10" required></div>
+        <div class="form-group"><label class="form-label">Section</label><input id="classSectionInput" class="form-control" placeholder="A" required></div>
+        <div class="form-group"><label class="form-label">Class Teacher</label><input id="classTeacherInput" class="form-control" placeholder="Dr. Sunita Sharma"></div>
+        <div class="form-group"><label class="form-label">Room</label><input id="classRoomInput" class="form-control" placeholder="Room 201"></div>
+        <div class="form-group"><label class="form-label">Capacity</label><input id="classCapacityInput" type="number" class="form-control" value="40"></div>
+        <div class="form-group"><label class="form-label">Annual Fee</label><input id="classFeeInput" type="number" class="form-control" value="15000"></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-outline-primary" type="button" onclick="apCloseModal('adminClassModal')">Cancel</button><button class="btn btn-primary" type="submit">Save Class</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="adminNoticeModal" class="admin-modal-overlay">
+  <div class="admin-modal">
+    <div class="modal-header"><h3>Publish Notice</h3><button class="modal-close" type="button" onclick="apCloseModal('adminNoticeModal')">&times;</button></div>
+    <form id="adminNoticeForm">
+      <div class="form-group"><label class="form-label">Title</label><input id="noticeTitleInput" class="form-control" required></div>
+      <div class="form-group"><label class="form-label">Content</label><textarea id="noticeContentInput" class="form-control" rows="4" required></textarea></div>
+      <div class="admin-form-grid">
+        <div class="form-group"><label class="form-label">Type</label><select id="noticeTypeInput" class="form-control"><option value="important">Important</option><option value="urgent">Urgent</option><option value="info">Info</option></select></div>
+        <div class="form-group"><label class="form-label">Audience</label><select id="noticeAudienceInput" class="form-control"><option value="all">All</option><option value="students">Students</option><option value="teachers">Teachers</option><option value="parents">Parents</option></select></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-outline-primary" type="button" onclick="apCloseModal('adminNoticeModal')">Cancel</button><button class="btn btn-primary" type="submit">Publish</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="adminBroadcastModal" class="admin-modal-overlay">
+  <div class="admin-modal">
+    <div class="modal-header"><h3>Create Broadcast</h3><button class="modal-close" type="button" onclick="apCloseModal('adminBroadcastModal')">&times;</button></div>
+    <form id="adminBroadcastForm">
+      <div class="admin-form-grid">
+        <div class="form-group"><label class="form-label">Audience</label><select id="broadcastAudienceInput" class="form-control"><option value="teachers">Teachers</option><option value="students">Students</option><option value="parents">Parents</option><option value="all">All</option></select></div>
+        <div class="form-group"><label class="form-label">Subject</label><input id="broadcastSubjectInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Priority</label><select id="broadcastPriorityInput" class="form-control"><option value="important">Important</option><option value="urgent">Urgent</option><option value="info">Info</option></select></div>
+        <div class="form-group"><label class="form-label">Delivery Style</label><select id="broadcastChannelInput" class="form-control"><option value="Portal Alert">Portal Alert</option><option value="Announcement Feed">Announcement Feed</option><option value="Priority Reminder">Priority Reminder</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Message</label><textarea id="broadcastMessageInput" class="form-control" rows="4" required></textarea></div>
+      <div class="modal-footer"><button class="btn btn-outline-primary" type="button" onclick="apCloseModal('adminBroadcastModal')">Cancel</button><button class="btn btn-primary" type="submit">Send Broadcast</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="adminExamModal" class="admin-modal-overlay">
+  <div class="admin-modal">
+    <div class="modal-header"><h3>Schedule Exam</h3><button class="modal-close" type="button" onclick="apCloseModal('adminExamModal')">&times;</button></div>
+    <form id="adminExamForm">
+      <div class="admin-form-grid">
+        <div class="form-group"><label class="form-label">Exam Name</label><input id="examNameInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Subject</label><input id="examSubjectInput" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Date</label><input id="examDateInput" type="date" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Time</label><input id="examTimeInput" class="form-control" placeholder="10:30 AM" required></div>
+        <div class="form-group"><label class="form-label">Room</label><input id="examRoomInput" class="form-control" placeholder="Hall A"></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-outline-primary" type="button" onclick="apCloseModal('adminExamModal')">Cancel</button><button class="btn btn-primary" type="submit">Save Exam</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="adminFeeModal" class="admin-modal-overlay">
+  <div class="admin-modal">
+    <div class="modal-header"><h3 id="adminFeeModalTitle">Student Fee Details</h3><button class="modal-close" type="button" onclick="apCloseModal('adminFeeModal')">&times;</button></div>
+    <div id="adminFeeModalBody">
+      <div class="admin-fee-detail-grid" id="adminFeeDetailSummary"></div>
+      <div class="admin-fee-manual-panel">
+        <div class="admin-form-grid">
+          <div class="form-group">
+            <label class="form-label">Payment Method</label>
+            <select id="adminFeeMethodInput" class="form-control">
+              <option value="Offline Cash">Offline Cash</option>
+              <option value="Offline UPI">Offline UPI</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Online">Online</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment Date</label>
+            <input id="adminFeeDateInput" type="date" class="form-control">
+          </div>
+        </div>
+        <div class="admin-action-row">
+          <button class="btn btn-green btn-sm" type="button" onclick="apUpdateFullFeeStatus('paid')">Mark Full Fee Paid</button>
+          <button class="btn btn-outline-primary btn-sm" type="button" onclick="apUpdateFullFeeStatus('pending')">Mark Full Fee Pending</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Quarter</th><th>Amount</th><th>Status</th><th>Date</th><th>Method</th><th>Receipt</th><th>Action</th></tr></thead>
+          <tbody id="adminFeeDetailRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="../js/firebase-config.js"></script>
+<script src="../js/app.js"></script>
+<script src="./admin-portal.js"></script>
+</body>
+</html>

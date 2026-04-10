@@ -1,0 +1,21 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      ".firebaseignore",
+      ".gitignore",
+      "**/.*",
+      "**/node_modules/**",
+      ".vscode/**",
+      ".firebase/**",
+      "README.md",
+      "Y/**",
+      "public/**",
+      "scripts/**",
+      "admin-portal/TEST.md"
+    ],
+    "cleanUrls": true
+  }
+}

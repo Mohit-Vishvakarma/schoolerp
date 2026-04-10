@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact Excellence Academy - Get in touch with us">
+    <meta name="title" content="Contact Us - Excellence Academy">
+    <title>Contact Us - Excellence Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .contact-hero { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 60px 20px; text-align: center; }
+        .contact-hero h1 { font-size: clamp(28px, 5vw, 48px); font-weight: 700; margin-bottom: 12px; }
+        .contact-hero p { font-size: 16px; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        .contact-content { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 80px 0; align-items: start; }
+        .contact-info { display: grid; gap: 30px; }
+        .info-block { display: flex; gap: 20px; }
+        .info-icon { font-size: 32px; }
+        .info-text h3 { color: #2563eb; margin-bottom: 4px; font-weight: 600; }
+        .info-text p { color: #6b7280; font-size: 14px; line-height: 1.6; }
+        .contact-form { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-family: inherit; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .submit-btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .submit-btn:active { transform: scale(0.98); }
+        .success-message { display: none; background: #d1fae5; color: #065f46; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+        .map-section { padding: 80px 0 0; }
+        .map-placeholder { background: #f3f4f6; height: 400px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; margin-bottom: 30px; }
+        .social-links { display: flex; gap: 16px; }
+        .social-icon { width: 44px; height: 44px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700; transition: all 0.3s; }
+        .social-icon:hover { background: #1e40af; transform: translateY(-4px); }
+
+        @media (max-width: 768px) {
+            .contact-content { grid-template-columns: 1fr; gap: 40px; padding: 50px 0; }
+            .contact-form { padding: 24px; }
+            .contact-hero { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header sticky-header">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon">📚</span>
+                    <span class="logo-text">Excellence Academy</span>
+                </a>
+                <button class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </button>
+                <nav class="nav-menu" id="navMenu">
+                    <a href="../index.html" class="nav-link">Home</a>
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="contact.html" class="nav-link active">Contact</a>
+                    <div class="nav-auth">
+                        <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+                        <a href="../index.html#admission" class="btn btn-primary btn-sm">Apply Now</a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="contact-hero">
+        <h1>Get in Touch</h1>
+        <p>We'd love to hear from you. Reach out to us via phone, email, or visit our campus.</p>
+    </div>
+
+    <!-- Contact Content -->
+    <div class="container">
+        <div class="contact-content">
+            <!-- Contact Information -->
+            <div class="contact-info">
+                <div class="info-block">
+                    <div class="info-icon">📍</div>
+                    <div class="info-text">
+                        <h3>Physical Address</h3>
+                        <p>123 Education Street<br>Mumbai, Maharashtra 400000<br>India</p>
+                    </div>
+                </div>
+
+                <div class="info-block">
+                    <div class="info-icon">📞</div>
+                    <div class="info-text">
+                        <h3>Phone Numbers</h3>
+                        <p>Main Office: +91-98765-43210<br>Principal: +91-98765-43211<br>Admission: +91-98765-43212</p>
+                    </div>
+                </div>
+
+                <div class="info-block">
+                    <div class="info-icon">📧</div>
+                    <div class="info-text">
+                        <h3>Email Address</h3>
+                        <p>info@excellenceacademy.com<br>principal@excellenceacademy.com<br>admission@excellenceacademy.com</p>
+                    </div>
+                </div>
+
+                <div class="info-block">
+                    <div class="info-icon">⏰</div>
+                    <div class="info-text">
+                        <h3>Office Hours</h3>
+                        <p>Monday - Saturday: 8:00 AM - 5:00 PM<br>Sunday: Closed<br>Holidays: As per school calendar</p>
+                    </div>
+                </div>
+
+                <div class="info-block">
+                    <div class="info-icon">📱</div>
+                    <div class="info-text">
+                        <h3>Connect With Us</h3>
+                        <div class="social-links">
+                            <a href="#" class="social-icon">f</a>
+                            <a href="#" class="social-icon">t</a>
+                            <a href="#" class="social-icon">i</a>
+                            <a href="#" class="social-icon">y</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form">
+                <h2 style="color: #111827; margin-bottom: 24px; font-size: 22px;">Send us a Message</h2>
+                
+                <div class="success-message" id="successMsg">✓ Thank you! Your message has been sent successfully. We'll get back to you soon.</div>
+
+                <form id="contactForm" onsubmit="handleContactForm(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" placeholder="Your name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" placeholder="your@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" placeholder="10-digit number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select required>
+                            <option value="">Select a subject</option>
+                            <option value="admission">Admission Inquiry</option>
+                            <option value="academic">Academic Question</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="complaint">Complaint</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea placeholder="Your message..." rows="6" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Section -->
+    <div class="map-section">
+        <div class="container">
+            <h2 class="section-title" style="margin-bottom: 30px; text-align: center;">Find Us on Map</h2>
+            <div class="map-placeholder">🗺️ Google Maps Integration</div>
+            <p style="text-align: center; color: #6b7280; margin-top: 20px;">
+                <a href="https://maps.google.com" target="_blank" style="color: #2563eb; font-weight: 600;">Get Directions →</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- FAQs -->
+    <section style="padding: 80px 0; background: #f9fafb;">
+        <div class="container">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 50px;">Frequently Asked Questions</h2>
+            
+            <div style="max-width: 700px; margin: 0 auto; display: grid; gap: 20px;">
+                <details style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;">
+                    <summary style="font-weight: 600; color: #111827; cursor: pointer;">How do I apply for admission?</summary>
+                    <p style="color: #6b7280; margin-top: 12px; line-height: 1.6;">Visit our admission page and fill the online form, or contact the admission office directly. We conduct entrance tests for classes VI, IX, and XI.</p>
+                </details>
+
+                <details style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;">
+                    <summary style="font-weight: 600; color: #111827; cursor: pointer;">What are the fee payment options?</summary>
+                    <p style="color: #6b7280; margin-top: 12px; line-height: 1.6;">We accept online payments via bank transfer, credit/debit cards, and digital wallets through our ERP system.</p>
+                </details>
+
+                <details style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;">
+                    <summary style="font-weight: 600; color: #111827; cursor: pointer;">Is there transportation facility?</summary>
+                    <p style="color: #6b7280; margin-top: 12px; line-height: 1.6;">Yes, we have 20+ buses covering all major areas of the city with trained drivers and GPS tracking.</p>
+                </details>
+
+                <details style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;">
+                    <summary style="font-weight: 600; color: #111827; cursor: pointer;">How can students access the ERP portal?</summary>
+                    <p style="color: #6b7280; margin-top: 12px; line-height: 1.6;">Students can login using their roll number and password to access marks, attendance, homework, and other academic information.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Excellence Academy</h4>
+                    <p>Premier institution committed to academic excellence and character development.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="login.html">Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📍 123 Education Street, Mumbai<br>📞 +91-98765-43210<br>📧 info@excellenceacademy.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Excellence Academy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hamburger menu
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        if (hamburger) {
+            hamburger.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+        }
+
+        // Contact form
+        async function handleContactForm(event) {
+            event.preventDefault();
+            if (window.ensureVmDataReady) {
+                await window.ensureVmDataReady({ forceHydrate: true });
+            }
+
+            const form = document.getElementById('contactForm');
+            const fields = Array.from(form.querySelectorAll('input, select, textarea'));
+            const [nameInput, emailInput, phoneInput, subjectInput, messageInput] = fields;
+            const contactMessages = JSON.parse(localStorage.getItem('vm_contactMessages') || '[]');
+            contactMessages.unshift({
+                id: 'CT' + Date.now(),
+                name: nameInput?.value?.trim() || '',
+                email: emailInput?.value?.trim() || '',
+                phone: phoneInput?.value?.trim() || '',
+                subject: subjectInput?.value?.trim() || 'General Enquiry',
+                message: messageInput?.value?.trim() || '',
+                submittedDate: new Date().toISOString(),
+                source: 'website-contact'
+            });
+            if (window.vmPersistKey) {
+                const persistResult = await window.vmPersistKey('vm_contactMessages', contactMessages);
+                if (persistResult?.error) {
+                    console.warn('Contact message Firebase sync failed:', persistResult.error);
+                }
+            } else {
+                localStorage.setItem('vm_contactMessages', JSON.stringify(contactMessages));
+            }
+
+            const successMsg = document.getElementById('successMsg');
+            successMsg.style.display = 'block';
+            form.reset();
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+    <script type="module" src="../js/firebase-config.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>
