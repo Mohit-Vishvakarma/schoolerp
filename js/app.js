@@ -815,6 +815,25 @@ const getObj = (key) => {
 const normalizeText = (text) => (text || '').toString().trim().toLowerCase();
 let vmDataReadyPromise = null;
 
+async function persistAnyToStorageAndFirebase(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+  if (!window.FB) {
+    pendingFirebaseSyncs.set(key, value);
+    return { storedLocally: true, syncedRemotely: false };
+  }
+
+  try {
+    const docId = FIREBASE_DOC_MAP[key] || 'data';
+    await window.FB.setAny(key, value, docId);
+    pendingFirebaseSyncs.delete(key);
+    return { storedLocally: true, syncedRemotely: true };
+  } catch (error) {
+    console.warn(`[Firebase] Explicit persist failed for ${key}:`, error);
+    pendingFirebaseSyncs.set(key, value);
+    return { storedLocally: true, syncedRemotely: false, error };
+  }
+}
+
 async function syncKeyToFirebase(key, value) {
   if (!window.FB) {
     pendingFirebaseSyncs.set(key, value);
@@ -987,6 +1006,7 @@ async function runNoticeCrudSmokeTest() {
 window.vmDebug = {
   runNoticeCrudSmokeTest
 };
+window.vmPersistKey = persistAnyToStorageAndFirebase;
 
 function showToast(msg, type = 'success') {
   const tc = document.getElementById('toastContainer');

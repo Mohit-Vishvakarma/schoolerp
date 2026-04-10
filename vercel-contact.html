@@ -272,14 +272,7 @@
                 submittedDate: new Date().toISOString(),
                 source: 'website-contact'
             });
-            if (window.vmPersistKey) {
-                const persistResult = await window.vmPersistKey('vm_contactMessages', contactMessages);
-                if (persistResult?.error) {
-                    console.warn('Contact message Firebase sync failed:', persistResult.error);
-                }
-            } else {
-                localStorage.setItem('vm_contactMessages', JSON.stringify(contactMessages));
-            }
+            localStorage.setItem('vm_contactMessages', JSON.stringify(contactMessages));
 
             const successMsg = document.getElementById('successMsg');
             successMsg.style.display = 'block';
