@@ -345,7 +345,14 @@
             };
 
             admissions.unshift(application);
-            localStorage.setItem('vm_admissions', JSON.stringify(admissions));
+            if (window.vmPersistKey) {
+                const persistResult = await window.vmPersistKey('vm_admissions', admissions);
+                if (persistResult?.error) {
+                    console.warn('Admission Firebase sync failed:', persistResult.error);
+                }
+            } else {
+                localStorage.setItem('vm_admissions', JSON.stringify(admissions));
+            }
 
             const successMsg = document.getElementById('successMsg');
             successMsg.style.display = 'block';
