@@ -936,6 +936,21 @@ function persistAdminKeyInBackground(key, value, failureMessage = "Database sync
   });
 }
 
+function deriveStudentsFromFeeHistory(roster, history) {
+  return roster.map(student => {
+    const entries = sortedFeeEntries(history.filter(item => item.studentId === student.id));
+    const nextStatus = entries.length && entries.every(item => item.status === "paid") ? "paid" : "pending";
+    return student.fees === nextStatus ? student : { ...student, fees: nextStatus };
+  });
+}
+
+async function persistFeeState(history) {
+  const nextStudents = deriveStudentsFromFeeHistory(students(), history);
+  await persistAdminKey("vm_feeHistory", history);
+  await persistAdminKey("vm_students", nextStudents);
+  return nextStudents;
+}
+
 function bind() {
   document.querySelectorAll(".portal-nav a[data-section]").forEach(a => a.addEventListener("click", () => openSection(a.dataset.section)));
   $("adminSidebarToggle")?.addEventListener("click", () => $("adminSidebar").classList.toggle("open"));
@@ -1256,7 +1271,7 @@ window.apBulkResetStudentPasswords = async function () {
   logAdminAction("Student passwords reset", `${list.length} student portal passwords were reset to default.`);
   showToast("Visible student portal passwords reset to default.", "success");
 };
-window.apMarkAllVisibleFeesPaid = function () {
+window.apMarkAllVisibleFeesPaid = async function () {
   const visibleIds = new Set(filteredStudents().map(s => s.id));
   if (!visibleIds.size) return showToast("No visible students found.", "error");
   const history = feeHistory().map(item => visibleIds.has(item.studentId) ? {
@@ -1266,7 +1281,13 @@ window.apMarkAllVisibleFeesPaid = function () {
     paymentMethod: item.paymentMethod || "Offline Cash",
     receipt: item.receipt || `RCP${Date.now()}${item.id}`
   } : item);
-  saveFeeHistory(history);
+  try {
+    await persistFeeState(history);
+  } catch (error) {
+    console.warn("[Admin] Bulk fee sync failed:", error);
+    showToast("Fee update local me hui, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   logAdminAction("Bulk fee update", `${visibleIds.size} visible student records were marked as fee paid.`);
   showToast("Visible students marked as fee paid.", "success");
@@ -1344,7 +1365,7 @@ window.apDeleteClass = function (id) {
   logAdminAction("Class deleted", `Class ${cls?.class || ""}-${cls?.section || ""} was removed from class management.`);
   showToast("Class deleted.", "success");
 };
-window.apMarkFeePaid = function (id) {
+window.apMarkFeePaid = async function (id) {
   const history = feeHistory().map(item => item.studentId === id ? {
     ...item,
     status: "paid",
@@ -1352,7 +1373,13 @@ window.apMarkFeePaid = function (id) {
     paymentMethod: item.paymentMethod || "Offline Cash",
     receipt: item.receipt || `RCP${Date.now()}${item.id}`
   } : item);
-  saveFeeHistory(history);
+  try {
+    await persistFeeState(history);
+  } catch (error) {
+    console.warn("[Admin] Fee mark-paid sync failed:", error);
+    showToast("Fee update local me hui, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   const student = students().find(s => s.id === id);
   logAdminAction("Fee updated", `${student?.name || id} was marked as fee paid.`);
@@ -1363,7 +1390,7 @@ window.apOpenFeeModal = function (id) {
   renderAdminFeeModal(id);
   apOpenModal("adminFeeModal");
 };
-window.apUpdateFeeEntry = function (entryId, status) {
+window.apUpdateFeeEntry = async function (entryId, status) {
   if (!S.activeFeeStudentId) return;
   const list = feeHistory();
   const idx = list.findIndex(item => item.id === entryId);
@@ -1377,14 +1404,20 @@ window.apUpdateFeeEntry = function (entryId, status) {
     paymentMethod: status === "paid" ? method : null,
     receipt: status === "paid" ? (list[idx].receipt || `RCP${Date.now()}`) : null
   };
-  saveFeeHistory(list);
+  try {
+    await persistFeeState(list);
+  } catch (error) {
+    console.warn("[Admin] Fee entry sync failed:", error);
+    showToast("Fee installment local me update hui, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   renderAdminFeeModal(S.activeFeeStudentId);
   apOpenModal("adminFeeModal");
   logAdminAction("Fee installment updated", `${entryId} was marked ${status} for ${S.activeFeeStudentId}.`);
   showToast(`Fee installment marked ${status}.`, "success");
 };
-window.apUpdateFullFeeStatus = function (status) {
+window.apUpdateFullFeeStatus = async function (status) {
   if (!S.activeFeeStudentId) return;
   const method = $("adminFeeMethodInput")?.value || "Offline Cash";
   const date = $("adminFeeDateInput")?.value || new Date().toISOString().split("T")[0];
@@ -1395,7 +1428,13 @@ window.apUpdateFullFeeStatus = function (status) {
     paymentMethod: status === "paid" ? method : null,
     receipt: status === "paid" ? (item.receipt || `RCP${Date.now()}${item.id}`) : null
   } : item);
-  saveFeeHistory(list);
+  try {
+    await persistFeeState(list);
+  } catch (error) {
+    console.warn("[Admin] Full fee status sync failed:", error);
+    showToast("Full fee status local me update hua, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   renderAdminFeeModal(S.activeFeeStudentId);
   apOpenModal("adminFeeModal");
