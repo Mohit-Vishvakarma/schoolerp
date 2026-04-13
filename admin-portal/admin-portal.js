@@ -902,6 +902,18 @@ function renderAll() {
 
 function nextId(prefix, arr) { return `${prefix}${String(arr.length + 1).padStart(3, "0")}`; }
 
+async function persistAdminKey(key, value) {
+  if (typeof window.vmPersistKey === "function") {
+    const result = await window.vmPersistKey(key, value);
+    if (result?.syncedRemotely === false && result.error) {
+      throw result.error;
+    }
+    return result;
+  }
+  setData(key, value);
+  return { storedLocally: true, syncedRemotely: false };
+}
+
 function bind() {
   document.querySelectorAll(".portal-nav a[data-section]").forEach(a => a.addEventListener("click", () => openSection(a.dataset.section)));
   $("adminSidebarToggle")?.addEventListener("click", () => $("adminSidebar").classList.toggle("open"));
@@ -910,7 +922,7 @@ function bind() {
   $("teacherSearch")?.addEventListener("input", e => { S.teacherQuery = e.target.value; renderTeachers(); });
   $("feeClassFilter")?.addEventListener("change", e => { S.feeClass = e.target.value; renderFees(); });
 
-  $("adminStudentForm")?.addEventListener("submit", e => {
+  $("adminStudentForm")?.addEventListener("submit", async e => {
     e.preventDefault();
     const list = students();
     const password = $("studentPasswordInput").value.trim();
@@ -938,7 +950,13 @@ function bind() {
         ...payload
       });
     }
-    setData("vm_students", list);
+    try {
+      await persistAdminKey("vm_students", list);
+    } catch (error) {
+      console.warn("[Admin] Student save sync failed:", error);
+      showToast("Student local list me save hua, lekin database sync fail ho gaya.", "error");
+      return;
+    }
     apCloseModal("adminStudentModal");
     e.target.reset();
     S.editingStudentId = "";
