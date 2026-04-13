@@ -334,13 +334,14 @@
       <h2 id="portalTopbarTitle">Dashboard</h2>
     </div>
     <div class="topbar-right">
-      <button onclick="composeMessage()" class="btn btn-sm btn-outline-primary" style="margin-right:10px">
-        <i class="fas fa-envelope"></i> Message Teacher
+      <button onclick="composeMessage()" class="btn btn-sm btn-outline-primary topbar-action-btn topbar-message-btn" type="button" aria-label="Message Teacher">
+        <i class="fas fa-envelope"></i>
+        <span class="topbar-action-label">Message Teacher</span>
       </button>
-      <div class="topbar-notif">
+      <button class="topbar-notif topbar-action-btn" type="button" aria-label="Open notices" onclick="openTopbarSection('secNotices')">
         <i class="fas fa-bell"></i>
         <span class="notif-badge" id="notificationCount">0</span>
-      </div>
+      </button>
       <div class="topbar-user">
         <div class="topbar-avatar" id="studentAvatar">🎓</div>
         <div class="topbar-user-info">
@@ -1838,10 +1839,44 @@ function initNavigation() {
 function showSection(sectionId) {
   document.querySelectorAll('.portal-section').forEach(sec => {
     sec.classList.remove('active');
+    sec.style.display = 'none';
   });
   const section = document.getElementById(sectionId);
   if (section) {
     section.classList.add('active');
+    section.style.display = 'block';
+  }
+}
+
+function openTopbarSection(sectionId) {
+  showSection(sectionId);
+  document.querySelectorAll('.portal-nav a[data-section]').forEach(link => {
+    link.classList.toggle('active', link.getAttribute('data-section') === sectionId);
+  });
+  const titles = {
+    'secDash': 'Dashboard',
+    'secProfile': 'My Profile',
+    'secAttendance': 'Attendance',
+    'secMarks': 'Marks & Results',
+    'secHomework': 'Homework',
+    'secTimetable': 'Timetable',
+    'secExams': 'Exam Schedule',
+    'secLibrary': 'Library',
+    'secMessages': 'Messages',
+    'secFees': 'Fee Status',
+    'secNotices': 'Notices',
+    'secStudy': 'Study Material',
+    'secTests': 'Online Tests',
+    'secProgress': 'Progress Tracking',
+    'secParents': 'Parent Communication',
+    'secCertificates': 'Certificates & Achievements',
+    'secClasses': 'Online Classes',
+    'secSettings': 'Settings'
+  };
+  const title = document.getElementById('portalTopbarTitle');
+  if (title) title.textContent = titles[sectionId] || 'Dashboard';
+  if (window.innerWidth <= 768 && typeof closeSidebar === 'function') {
+    closeSidebar();
   }
 }
 

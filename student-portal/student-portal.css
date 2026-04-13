@@ -258,6 +258,17 @@
   border: 1px solid rgba(148, 163, 184, 0.24);
 }
 
+.topbar-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.topbar-action-label {
+  display: inline-block;
+}
+
 .notif-badge {
   position: absolute;
   top: 4px;
@@ -1839,12 +1850,19 @@ input:checked + .slider:before {
   .topbar-right {
     justify-content: flex-end;
     flex: 1 1 auto;
+    gap: 10px;
   }
 
   .topbar-right .btn {
     flex: 0 1 auto;
     justify-content: center;
     margin-right: 0 !important;
+  }
+
+  .topbar-action-btn {
+    min-width: 42px;
+    height: 42px;
+    padding-inline: 12px;
   }
 
   .portal-content {
@@ -3243,8 +3261,31 @@ input:checked + .slider:before {
   }
 
   .topbar-right .btn {
-    flex: 1 1 100%;
-    width: 100%;
+    flex: 0 0 auto;
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 14px;
+  }
+
+  .topbar-action-btn {
+    justify-content: center;
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 14px;
+  }
+
+  .topbar-action-label {
+    display: none;
+  }
+
+  .topbar-message-btn i,
+  .topbar-notif i {
+    margin: 0;
+    font-size: 16px;
   }
 
   .portal-menu-btn {
