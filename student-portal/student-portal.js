@@ -43,12 +43,24 @@ document.addEventListener('DOMContentLoaded', function() {
   if (sidebarToggle) {
     sidebarToggle.addEventListener('click', toggleSidebar);
   }
+  const overlay = document.getElementById('portalSidebarOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closeSidebar);
+  }
 
   // Close sidebar when clicking outside on mobile
   document.addEventListener('click', function(e) {
     const sidebar = document.getElementById('portalSidebar');
     const toggle = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('portalSidebarOverlay');
     if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && e.target !== toggle) {
+      if (overlay && overlay.contains(e.target)) return;
+      closeSidebar();
+    }
+  });
+
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
       closeSidebar();
     }
   });
@@ -96,14 +108,22 @@ function toggleSidebar() {
 function openSidebar() {
   const sidebar = document.getElementById('portalSidebar');
   const main = document.querySelector('.portal-main');
+  const overlay = document.getElementById('portalSidebarOverlay');
+  const toggle = document.getElementById('sidebarToggle');
   sidebar.classList.add('open');
+  overlay?.classList.add('show');
+  toggle?.setAttribute('aria-expanded', 'true');
   if (main) main.classList.remove('sidebar-hidden');
 }
 
 function closeSidebar() {
   const sidebar = document.getElementById('portalSidebar');
   const main = document.querySelector('.portal-main');
+  const overlay = document.getElementById('portalSidebarOverlay');
+  const toggle = document.getElementById('sidebarToggle');
   sidebar.classList.remove('open');
+  overlay?.classList.remove('show');
+  toggle?.setAttribute('aria-expanded', 'false');
   if (main) main.classList.add('sidebar-hidden');
 }
 

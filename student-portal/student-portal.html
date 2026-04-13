@@ -323,11 +323,14 @@
     <a onclick="doLogout()"><span class="nav-icon">🚪</span> Logout</a>
   </nav>
 </aside>
+<div class="portal-sidebar-overlay" id="portalSidebarOverlay"></div>
 
 <div class="portal-main">
   <header class="portal-topbar">
-    <div style="display:flex;align-items:center;gap:14px">
-      <button style="border:none;background:none;font-size:22px;cursor:pointer;display:none" id="sidebarToggle">☰</button>
+    <div class="portal-topbar-left">
+      <button id="sidebarToggle" class="portal-menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
+        <i class="fas fa-bars"></i>
+      </button>
       <h2 id="portalTopbarTitle">Dashboard</h2>
     </div>
     <div class="topbar-right">
