@@ -1744,6 +1744,18 @@ function syncStudentSession(student) {
   }
 }
 
+async function persistStudentKey(key, value) {
+  if (typeof window.vmPersistKey === 'function') {
+    const result = await window.vmPersistKey(key, value);
+    if (result?.syncedRemotely === false && result.error) {
+      throw result.error;
+    }
+    return result;
+  }
+  localStorage.setItem(key, JSON.stringify(value));
+  return { storedLocally: true, syncedRemotely: false };
+}
+
 // Initialize Student Portal
 document.addEventListener('DOMContentLoaded', async function() {
   if (window.ensureVmDataReady) {
@@ -2737,7 +2749,13 @@ async function saveProfile() {
     students[studentIndex].emergencyContact = emergencyContact;
     students[studentIndex].avatar = avatar;
 
-    localStorage.setItem('vm_students', JSON.stringify(students));
+    try {
+      await persistStudentKey('vm_students', students);
+    } catch (error) {
+      console.warn('[Student] Profile sync failed:', error);
+      showToast('Profile local me update hua, lekin database sync fail ho gaya.', 'error');
+      return;
+    }
     syncStudentSession({
       ...user,
       ...students[studentIndex]
@@ -2751,7 +2769,7 @@ async function saveProfile() {
   closeModal('profileModal');
 }
 
-function sendMessage() {
+async function sendMessage() {
   const teacher = document.getElementById('messageTeacher').value;
   const subject = document.getElementById('messageSubject').value;
   const content = document.getElementById('messageContent').value;
@@ -2778,7 +2796,13 @@ function sendMessage() {
   };
 
   messages.push(newMessage);
-  localStorage.setItem('vm_messages', JSON.stringify(messages));
+  try {
+    await persistStudentKey('vm_messages', messages);
+  } catch (error) {
+    console.warn('[Student] Message sync failed:', error);
+    showToast('Message local me save hua, lekin database sync fail ho gaya.', 'error');
+    return;
+  }
 
   showToast('Message sent successfully!', 'success');
   closeModal('messageModal');
@@ -2798,14 +2822,20 @@ function payFees() {
   // Simulate payment process
   showToast('Redirecting to payment gateway...', 'info');
 
-  setTimeout(() => {
+  setTimeout(async () => {
     // Update fee status
     const students = JSON.parse(localStorage.getItem('vm_students') || '[]');
     const studentIndex = students.findIndex(s => s.id === user.id);
 
     if (studentIndex !== -1) {
       students[studentIndex].fees = 'paid';
-      localStorage.setItem('vm_students', JSON.stringify(students));
+      try {
+        await persistStudentKey('vm_students', students);
+      } catch (error) {
+        console.warn('[Student] Fee student sync failed:', error);
+        showToast('Fee status local me update hua, lekin database sync fail ho gaya.', 'error');
+        return;
+      }
       syncStudentSession(students[studentIndex]);
 
       // Update fee history
@@ -2819,7 +2849,13 @@ function payFees() {
         fee.receipt = 'RCP' + Date.now();
       });
 
-      localStorage.setItem('vm_feeHistory', JSON.stringify(feeHistory));
+      try {
+        await persistStudentKey('vm_feeHistory', feeHistory);
+      } catch (error) {
+        console.warn('[Student] Fee history sync failed:', error);
+        showToast('Fee history local me update hui, lekin database sync fail ho gaya.', 'error');
+        return;
+      }
 
       loadStudentData();
       showToast('Payment successful!', 'success');
@@ -2904,7 +2940,7 @@ function getBookEmoji(category) {
   }
 }
 
-function reserveBook(bookId) {
+async function reserveBook(bookId) {
   const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
   if (!user) return;
 
@@ -2917,7 +2953,13 @@ function reserveBook(bookId) {
     books[bookIndex].borrowerId = user.id;
     books[bookIndex].dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 14 days from now
 
-    localStorage.setItem('vm_library', JSON.stringify(books));
+    try {
+      await persistStudentKey('vm_library', books);
+    } catch (error) {
+      console.warn('[Student] Book reserve sync failed:', error);
+      showToast('Book reserve local me hua, lekin database sync fail ho gaya.', 'error');
+      return;
+    }
     loadLibraryData();
     showToast('Book reserved successfully!', 'success');
   }
@@ -3096,7 +3138,7 @@ function openLibraryChapter(subject, chapterId) {
   `;
   openModal('libraryChapterModal');
 }
-function renewBook(bookId) {
+async function renewBook(bookId) {
   const books = JSON.parse(localStorage.getItem('vm_library') || '[]');
   const bookIndex = books.findIndex(b => b.id === bookId);
 
@@ -3105,13 +3147,19 @@ function renewBook(bookId) {
     newDueDate.setDate(newDueDate.getDate() + 7); // Extend by 7 days
     books[bookIndex].dueDate = newDueDate.toISOString().split('T')[0];
 
-    localStorage.setItem('vm_library', JSON.stringify(books));
+    try {
+      await persistStudentKey('vm_library', books);
+    } catch (error) {
+      console.warn('[Student] Book renew sync failed:', error);
+      showToast('Book renew local me hua, lekin database sync fail ho gaya.', 'error');
+      return;
+    }
     loadLibraryData();
     showToast('Book renewed successfully!', 'success');
   }
 }
 
-function returnBook(bookId) {
+async function returnBook(bookId) {
   const books = JSON.parse(localStorage.getItem('vm_library') || '[]');
   const bookIndex = books.findIndex(b => b.id === bookId);
 
@@ -3121,13 +3169,19 @@ function returnBook(bookId) {
     books[bookIndex].borrowerId = null;
     books[bookIndex].dueDate = null;
 
-    localStorage.setItem('vm_library', JSON.stringify(books));
+    try {
+      await persistStudentKey('vm_library', books);
+    } catch (error) {
+      console.warn('[Student] Book return sync failed:', error);
+      showToast('Book return local me hua, lekin database sync fail ho gaya.', 'error');
+      return;
+    }
     loadLibraryData();
     showToast('Book returned successfully!', 'success');
   }
 }
 
-function updateHomeworkStatus(homeworkId, nextStatus) {
+async function updateHomeworkStatus(homeworkId, nextStatus) {
   const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
   if (!user) return;
 
@@ -3140,7 +3194,13 @@ function updateHomeworkStatus(homeworkId, nextStatus) {
     homework[hwIndex].submitted = isCompleted;
     homework[hwIndex].submissionDate = isCompleted ? new Date().toISOString().split('T')[0] : '';
 
-    localStorage.setItem('vm_homework', JSON.stringify(homework));
+    try {
+      await persistStudentKey('vm_homework', homework);
+    } catch (error) {
+      console.warn('[Student] Homework status sync failed:', error);
+      showToast('Homework status local me update hua, lekin database sync fail ho gaya.', 'error');
+      return;
+    }
     loadHomework();
     showToast(
       isCompleted ? 'Homework marked as done!' : 'Homework marked as not done!',
@@ -3389,7 +3449,7 @@ function loadMessages() {
   updateNotificationCount();
 }
 
-function viewConversation(teacherId) {
+async function viewConversation(teacherId) {
   const user = JSON.parse(localStorage.getItem('vm_studentUser') || 'null');
   if (!user) return;
 
@@ -3406,7 +3466,12 @@ function viewConversation(teacherId) {
     }
     return msg;
   });
-  localStorage.setItem('vm_messages', JSON.stringify(updated));
+  try {
+    await persistStudentKey('vm_messages', updated);
+  } catch (error) {
+    console.warn('[Student] Conversation read-state sync failed:', error);
+    showToast('Messages read-state local me update hui, lekin database sync fail ho gaya.', 'error');
+  }
 
   const teachers = JSON.parse(localStorage.getItem('vm_teachers') || '[]');
   const teacher = teachers.find(t => t.id === teacherId);
@@ -3441,7 +3506,7 @@ function viewConversation(teacherId) {
   updateNotificationCount();
 }
 
-function sendReply(teacherId) {
+async function sendReply(teacherId) {
   const content = document.getElementById('replyContent').value;
   if (!content.trim()) {
     showToast('Please enter a message', 'error');
@@ -3464,7 +3529,13 @@ function sendReply(teacherId) {
   };
 
   messages.push(newMessage);
-  localStorage.setItem('vm_messages', JSON.stringify(messages));
+  try {
+    await persistStudentKey('vm_messages', messages);
+  } catch (error) {
+    console.warn('[Student] Reply sync failed:', error);
+    showToast('Reply local me save hui, lekin database sync fail ho gaya.', 'error');
+    return;
+  }
 
   document.getElementById('replyContent').value = '';
   viewConversation(teacherId);
