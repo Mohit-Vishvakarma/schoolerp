@@ -14,12 +14,21 @@ function authAdmin() {
 }
 
 function classesConfig() { return getData("vm_classConfig"); }
-function saveClassesConfig(v) { setData("vm_classConfig", v); }
+function saveClassesConfig(v) {
+  setData("vm_classConfig", v);
+  persistAdminKeyInBackground("vm_classConfig", v, "Class data sync fail ho gaya.");
+}
 function feeHistory() { return getData("vm_feeHistory"); }
-function saveFeeHistory(v) { setData("vm_feeHistory", v); }
+function saveFeeHistory(v) {
+  setData("vm_feeHistory", v);
+  persistAdminKeyInBackground("vm_feeHistory", v, "Fee data sync fail ho gaya.");
+}
 function notices() { return getData("vm_notices"); }
 function broadcasts() { return getData("vm_parentCommunication"); }
-function saveBroadcasts(v) { setData("vm_parentCommunication", v); }
+function saveBroadcasts(v) {
+  setData("vm_parentCommunication", v);
+  persistAdminKeyInBackground("vm_parentCommunication", v, "Broadcast data sync fail ho gaya.");
+}
 function students() { return getData("vm_students"); }
 function teachers() { return getData("vm_teachers"); }
 function admissions() { return getData("vm_admissions"); }
@@ -27,9 +36,15 @@ function marks() { return getObj("vm_marks"); }
 function attendance() { return getObj("vm_attendance"); }
 function exams() { return getData("vm_examSchedule"); }
 function school() { return getObj("vm_school"); }
-function saveSchool(v) { setData("vm_school", v); }
+function saveSchool(v) {
+  setData("vm_school", v);
+  persistAdminKeyInBackground("vm_school", v, "School settings sync fail ho gaya.");
+}
 function auditLog() { return getData("vm_adminAuditLog"); }
-function saveAuditLog(v) { setData("vm_adminAuditLog", v); }
+function saveAuditLog(v) {
+  setData("vm_adminAuditLog", v);
+  persistAdminKeyInBackground("vm_adminAuditLog", v, "Audit log sync fail ho gaya.");
+}
 function libraryBooks() { return getData("vm_library"); }
 function studyMaterials() { return getObj("vm_studyMaterials"); }
 function timetable() {
@@ -914,6 +929,13 @@ async function persistAdminKey(key, value) {
   return { storedLocally: true, syncedRemotely: false };
 }
 
+function persistAdminKeyInBackground(key, value, failureMessage = "Database sync fail ho gaya.") {
+  persistAdminKey(key, value).catch(error => {
+    console.warn(`[Admin] Background sync failed for ${key}:`, error);
+    showToast(failureMessage, "error");
+  });
+}
+
 function bind() {
   document.querySelectorAll(".portal-nav a[data-section]").forEach(a => a.addEventListener("click", () => openSection(a.dataset.section)));
   $("adminSidebarToggle")?.addEventListener("click", () => $("adminSidebar").classList.toggle("open"));
@@ -965,7 +987,7 @@ function bind() {
     showToast("Student record saved successfully.", "success");
   });
 
-  $("adminTeacherForm")?.addEventListener("submit", e => {
+  $("adminTeacherForm")?.addEventListener("submit", async e => {
     e.preventDefault();
     const list = teachers();
     const password = $("teacherPasswordInput").value.trim();
@@ -989,7 +1011,13 @@ function bind() {
         ...payload
       });
     }
-    setData("vm_teachers", list);
+    try {
+      await persistAdminKey("vm_teachers", list);
+    } catch (error) {
+      console.warn("[Admin] Teacher save sync failed:", error);
+      showToast("Teacher local list me save hua, lekin database sync fail ho gaya.", "error");
+      return;
+    }
     apCloseModal("adminTeacherModal");
     e.target.reset();
     S.editingTeacherId = "";
@@ -998,7 +1026,7 @@ function bind() {
     showToast("Teacher record saved successfully.", "success");
   });
 
-  $("adminClassForm")?.addEventListener("submit", e => {
+  $("adminClassForm")?.addEventListener("submit", async e => {
     e.preventDefault();
     const list = classesConfig();
     const payload = {
@@ -1015,7 +1043,13 @@ function bind() {
     } else {
       list.push({ id: nextId("CLS", list), ...payload });
     }
-    saveClassesConfig(list);
+    try {
+      await persistAdminKey("vm_classConfig", list);
+    } catch (error) {
+      console.warn("[Admin] Class save sync failed:", error);
+      showToast("Class local list me save hui, lekin database sync fail ho gaya.", "error");
+      return;
+    }
     apCloseModal("adminClassModal");
     e.target.reset();
     S.editingClassId = "";
@@ -1024,7 +1058,7 @@ function bind() {
     showToast("Class record saved successfully.", "success");
   });
 
-  $("adminNoticeForm")?.addEventListener("submit", e => {
+  $("adminNoticeForm")?.addEventListener("submit", async e => {
     e.preventDefault();
     const list = notices();
     list.unshift({
@@ -1036,7 +1070,13 @@ function bind() {
       date: new Date().toISOString().split("T")[0],
       author: "Admin"
     });
-    setData("vm_notices", list);
+    try {
+      await persistAdminKey("vm_notices", list);
+    } catch (error) {
+      console.warn("[Admin] Notice save sync failed:", error);
+      showToast("Notice local list me save hui, lekin database sync fail ho gaya.", "error");
+      return;
+    }
     apCloseModal("adminNoticeModal");
     e.target.reset();
     renderDashboard();
@@ -1045,7 +1085,7 @@ function bind() {
     showToast("Notice published successfully.", "success");
   });
 
-  $("adminBroadcastForm")?.addEventListener("submit", e => {
+  $("adminBroadcastForm")?.addEventListener("submit", async e => {
     e.preventDefault();
     const list = broadcasts();
     list.unshift({
@@ -1057,7 +1097,13 @@ function bind() {
       message: $("broadcastMessageInput").value.trim(),
       date: new Date().toISOString()
     });
-    saveBroadcasts(list);
+    try {
+      await persistAdminKey("vm_parentCommunication", list);
+    } catch (error) {
+      console.warn("[Admin] Broadcast save sync failed:", error);
+      showToast("Broadcast local list me save hua, lekin database sync fail ho gaya.", "error");
+      return;
+    }
     apCloseModal("adminBroadcastModal");
     e.target.reset();
     renderCommunication();
@@ -1065,7 +1111,7 @@ function bind() {
     showToast("Broadcast saved successfully.", "success");
   });
 
-  $("adminExamForm")?.addEventListener("submit", e => {
+  $("adminExamForm")?.addEventListener("submit", async e => {
     e.preventDefault();
     const list = exams();
     list.unshift({
@@ -1076,7 +1122,13 @@ function bind() {
       time: $("examTimeInput").value.trim(),
       room: $("examRoomInput").value.trim() || "TBD"
     });
-    setData("vm_examSchedule", list);
+    try {
+      await persistAdminKey("vm_examSchedule", list);
+    } catch (error) {
+      console.warn("[Admin] Exam save sync failed:", error);
+      showToast("Exam local list me save hua, lekin database sync fail ho gaya.", "error");
+      return;
+    }
     apCloseModal("adminExamModal");
     e.target.reset();
     renderAcademics();
@@ -1085,21 +1137,28 @@ function bind() {
     showToast("Exam scheduled successfully.", "success");
   });
 
-  $("adminSchoolForm")?.addEventListener("submit", e => {
+  $("adminSchoolForm")?.addEventListener("submit", async e => {
     e.preventDefault();
-    saveSchool({
+    const nextSchool = {
       ...school(),
       name: $("schoolName").value.trim(),
       phone: $("schoolPhone").value.trim(),
       email: $("schoolEmail").value.trim(),
       session: $("schoolSession").value.trim(),
       address: $("schoolAddress").value.trim()
-    });
+    };
+    try {
+      await persistAdminKey("vm_school", nextSchool);
+    } catch (error) {
+      console.warn("[Admin] School settings sync failed:", error);
+      showToast("School settings local me save hui, lekin database sync fail ho gaya.", "error");
+      return;
+    }
     logAdminAction("School settings saved", "Core school information was updated by admin.");
     showToast("School settings saved.", "success");
   });
 
-  $("adminPasswordForm")?.addEventListener("submit", e => {
+  $("adminPasswordForm")?.addEventListener("submit", async e => {
     e.preventDefault();
     const current = $("adminCurrentPassword").value;
     const next = $("adminNewPassword").value;
@@ -1107,7 +1166,13 @@ function bind() {
     const admin = getObj("vm_admin");
     if (current !== admin.password) return showToast("Current password is incorrect.", "error");
     if (!next || next !== confirm) return showToast("New password confirmation does not match.", "error");
-    setData("vm_admin", { ...admin, password: next });
+    try {
+      await persistAdminKey("vm_admin", { ...admin, password: next });
+    } catch (error) {
+      console.warn("[Admin] Admin password sync failed:", error);
+      showToast("Password local me update hua, lekin database sync fail ho gaya.", "error");
+      return;
+    }
     e.target.reset();
     logAdminAction("Admin password updated", "Administrator credentials were updated successfully.");
     showToast("Admin password updated.", "success");
@@ -1148,10 +1213,17 @@ window.apCloseModal = id => {
   }
   $(id)?.classList.remove("show");
 };
-window.apDeleteStudent = function (id) {
+window.apDeleteStudent = async function (id) {
   if (!confirm("Delete this student?")) return;
   const student = students().find(s => s.id === id);
-  setData("vm_students", students().filter(s => s.id !== id));
+  const nextStudents = students().filter(s => s.id !== id);
+  try {
+    await persistAdminKey("vm_students", nextStudents);
+  } catch (error) {
+    console.warn("[Admin] Student delete sync failed:", error);
+    showToast("Student delete local me hua, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   logAdminAction("Student deleted", `${student?.name || id} was removed from the ERP.`);
   showToast("Student deleted.", "success");
@@ -1169,10 +1241,17 @@ window.apOpenStudentPortal = function () {
   if (!first) return showToast("No student record available.", "error");
   window.apPortalPreviewStudent(first.id);
 };
-window.apBulkResetStudentPasswords = function () {
+window.apBulkResetStudentPasswords = async function () {
   const list = students();
   if (!list.length) return showToast("No student records available.", "error");
-  setData("vm_students", list.map(s => ({ ...s, password: "student123" })));
+  const nextStudents = list.map(s => ({ ...s, password: "student123" }));
+  try {
+    await persistAdminKey("vm_students", nextStudents);
+  } catch (error) {
+    console.warn("[Admin] Student password reset sync failed:", error);
+    showToast("Password reset local me hua, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderStudents();
   logAdminAction("Student passwords reset", `${list.length} student portal passwords were reset to default.`);
   showToast("Visible student portal passwords reset to default.", "success");
@@ -1215,10 +1294,17 @@ window.apEditStudent = function (id) {
   apOpenModal("adminStudentModal");
   showToast("Student loaded into form. Save to update.", "info");
 };
-window.apDeleteTeacher = function (id) {
+window.apDeleteTeacher = async function (id) {
   if (!confirm("Delete this teacher?")) return;
   const teacher = teachers().find(t => t.id === id);
-  setData("vm_teachers", teachers().filter(t => t.id !== id));
+  const nextTeachers = teachers().filter(t => t.id !== id);
+  try {
+    await persistAdminKey("vm_teachers", nextTeachers);
+  } catch (error) {
+    console.warn("[Admin] Teacher delete sync failed:", error);
+    showToast("Teacher delete local me hua, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   logAdminAction("Teacher deleted", `${teacher?.name || id} was removed from faculty records.`);
   showToast("Teacher deleted.", "success");
@@ -1342,13 +1428,12 @@ function renderAdminFeeModal(studentId) {
     <td><div class="admin-action-row">${item.status === "paid" ? `<button class="btn btn-sm btn-outline-primary" type="button" onclick="apUpdateFeeEntry('${item.id}','pending')">Mark Pending</button>` : `<button class="btn btn-sm btn-green" type="button" onclick="apUpdateFeeEntry('${item.id}','paid')">Mark Paid</button>`}</div></td>
   </tr>`).join("");
 }
-window.apUpdateAdmission = function (id, status) {
+window.apUpdateAdmission = async function (id, status) {
   const list = admissions();
   const idx = list.findIndex(a => a.id === id);
   if (idx < 0) return;
   const previousStatus = list[idx].status;
   list[idx].status = status;
-  setData("vm_admissions", list);
   if (status === "approved" && previousStatus !== "approved") {
     const a = list[idx];
     const roster = students();
@@ -1372,33 +1457,67 @@ window.apUpdateAdmission = function (id, status) {
         gender: "M",
         dob: "2010-01-01"
       });
-      setData("vm_students", roster);
+      try {
+        await persistAdminKey("vm_students", roster);
+      } catch (error) {
+        console.warn("[Admin] Admission student-create sync failed:", error);
+        showToast("Admission approve hua, lekin student database sync fail ho gaya.", "error");
+        return;
+      }
     }
+  }
+  try {
+    await persistAdminKey("vm_admissions", list);
+  } catch (error) {
+    console.warn("[Admin] Admission status sync failed:", error);
+    showToast("Admission local list me update hui, lekin database sync fail ho gaya.", "error");
+    return;
   }
   renderAll();
   logAdminAction("Admission updated", `${list[idx].name} admission was marked ${status}.`);
   showToast(`Admission ${status}.`, "success");
 };
-window.apDeleteNotice = function (id) {
+window.apDeleteNotice = async function (id) {
   if (!confirm("Delete this notice?")) return;
   const notice = notices().find(n => n.id === id);
-  setData("vm_notices", notices().filter(n => n.id !== id));
+  const nextNotices = notices().filter(n => n.id !== id);
+  try {
+    await persistAdminKey("vm_notices", nextNotices);
+  } catch (error) {
+    console.warn("[Admin] Notice delete sync failed:", error);
+    showToast("Notice delete local me hua, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   logAdminAction("Notice deleted", `${notice?.title || id} was removed from the notice board.`);
   showToast("Notice deleted.", "success");
 };
-window.apDeleteBroadcast = function (id) {
+window.apDeleteBroadcast = async function (id) {
   if (!confirm("Delete this broadcast?")) return;
   const item = broadcasts().find(b => b.id === id);
-  saveBroadcasts(broadcasts().filter(b => b.id !== id));
+  const nextBroadcasts = broadcasts().filter(b => b.id !== id);
+  try {
+    await persistAdminKey("vm_parentCommunication", nextBroadcasts);
+  } catch (error) {
+    console.warn("[Admin] Broadcast delete sync failed:", error);
+    showToast("Broadcast delete local me hua, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   logAdminAction("Broadcast deleted", `${item?.subject || id} was removed from communication logs.`);
   showToast("Broadcast deleted.", "success");
 };
-window.apDeleteExam = function (id) {
+window.apDeleteExam = async function (id) {
   if (!confirm("Delete this exam schedule?")) return;
   const exam = exams().find(ex => ex.id === id);
-  setData("vm_examSchedule", exams().filter(ex => ex.id !== id));
+  const nextExams = exams().filter(ex => ex.id !== id);
+  try {
+    await persistAdminKey("vm_examSchedule", nextExams);
+  } catch (error) {
+    console.warn("[Admin] Exam delete sync failed:", error);
+    showToast("Exam delete local me hua, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   renderAll();
   logAdminAction("Exam deleted", `${exam?.examName || id} was removed from exam scheduling.`);
   showToast("Exam removed.", "success");
@@ -1560,7 +1679,7 @@ function loadStudentsForMarks() {
   $("marksStudent").innerHTML = `<option value="">Select Student</option>` + ss.map(s => `<option value="${s.id}">${s.name} (${s.roll})</option>`).join("");
 }
 
-function submitMarksEntry(e) {
+async function submitMarksEntry(e) {
   e.preventDefault();
 
   const marksRec = getObj("vm_marks");
@@ -1577,7 +1696,13 @@ function submitMarksEntry(e) {
   if (!marksRec[studentId]) marksRec[studentId] = {};
   marksRec[studentId][subject] = obtained;
 
-  setData("vm_marks", marksRec);
+  try {
+    await persistAdminKey("vm_marks", marksRec);
+  } catch (error) {
+    console.warn("[Admin] Marks save sync failed:", error);
+    showToast("Marks local me save hue, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   showToast(`✅ Marks saved for ${subject}`, "success");
   e.target.reset();
   renderResultsSection();
@@ -1649,8 +1774,14 @@ function filterResults() {
   renderStudentResultsTable();
 }
 
-function publishResults() {
-  setData("vm_resultsPublished", true);
+async function publishResults() {
+  try {
+    await persistAdminKey("vm_resultsPublished", true);
+  } catch (error) {
+    console.warn("[Admin] Results publish sync failed:", error);
+    showToast("Results local me publish hue, lekin database sync fail ho gaya.", "error");
+    return;
+  }
   showToast("✅ Results published! Students can now view them.", "success");
 }
 
