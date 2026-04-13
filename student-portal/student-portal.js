@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('portalSidebar');
     const toggle = document.getElementById('sidebarToggle');
     const overlay = document.getElementById('portalSidebarOverlay');
-    if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && e.target !== toggle) {
+    const clickedToggle = !!(toggle && toggle.contains(e.target));
+    if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && !clickedToggle) {
       if (overlay && overlay.contains(e.target)) return;
       closeSidebar();
     }
