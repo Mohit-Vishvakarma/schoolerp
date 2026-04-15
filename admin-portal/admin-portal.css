@@ -33,6 +33,33 @@
   cursor: pointer;
 }
 
+.admin-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.admin-topbar-left h2 {
+  margin: 0;
+}
+
+.admin-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 950;
+}
+
+.admin-sidebar-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .admin-topbar-meta {
   margin: 2px 0 0;
   font-size: 12px;
@@ -1152,10 +1179,6 @@
   background: #dcfce7;
   color: #166534;
 }
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--gray-600);
-}
 
 .admin-admission-stage-gold {
   background:
@@ -1270,25 +1293,105 @@
 @media (max-width: 768px) {
   .admin-menu-btn {
     display: inline-flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    box-shadow: 0 8px 22px rgba(16, 185, 129, 0.08);
   }
 
   .admin-sidebar {
+    width: min(84vw, 320px);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    z-index: 1000;
   }
 
   .admin-sidebar.open {
     transform: translateX(0);
   }
 
+  .admin-shell .portal-main {
+    margin-left: 0;
+    width: 100%;
+  }
+
   .admin-hero,
   .admin-classes-hero,
   .admin-students-hero,
-  .admin-shell .portal-topbar,
-  .admin-shell .topbar-right,
   .admin-class-head {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .admin-shell .portal-topbar {
+    padding: 14px 16px;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .admin-shell .topbar-right {
+    margin-left: auto;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .admin-topbar-left {
+    flex: 1 1 auto;
+  }
+
+  .admin-topbar-left > div {
+    min-width: 0;
+  }
+
+  .admin-topbar-left h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 20px;
+  }
+
+  .admin-topbar-meta {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin-shell .topbar-right .btn {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 14px;
+    justify-content: center;
+    font-size: 0;
+  }
+
+  .admin-shell .topbar-right .btn::before {
+    font-size: 16px;
+  }
+
+  .admin-shell .topbar-right .btn:first-child::before {
+    content: "\f0a1";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+  }
+
+  .admin-shell .topbar-right .btn:nth-child(2)::before {
+    content: "\f067";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+  }
+
+  .admin-shell .topbar-user {
+    display: none;
   }
 
   .admin-export-grid,
@@ -1306,5 +1409,39 @@
   .admin-toolbar .form-control,
   .admin-toolbar .btn {
     width: 100%;
+  }
+
+  .admin-shell .portal-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-shell .portal-topbar {
+    padding: 12px 14px;
+  }
+
+  .admin-shell .portal-content,
+  .admin-shell .portal-section,
+  .admin-shell .card-body,
+  .admin-shell .card-header {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .admin-shell .portal-section {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .admin-hero,
+  .admin-classes-hero,
+  .admin-students-hero,
+  .admin-fees-hero,
+  .admin-academics-hero,
+  .admin-communication-hero,
+  .admin-admissions-hero {
+    padding: 18px 16px;
+    border-radius: 20px;
   }
 }

@@ -40,6 +40,33 @@
   cursor: pointer;
 }
 
+.teacher-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.teacher-topbar-left h2 {
+  margin: 0;
+}
+
+.teacher-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 950;
+}
+
+.teacher-sidebar-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .teacher-hero {
   display: flex;
   justify-content: space-between;
@@ -1159,15 +1186,30 @@
 @media (max-width: 768px) {
   .teacher-menu-btn {
     display: inline-flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    box-shadow: 0 8px 22px rgba(37, 99, 235, 0.08);
   }
 
   .teacher-sidebar {
+    width: min(84vw, 320px);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    z-index: 1000;
   }
 
   .teacher-sidebar.open {
     transform: translateX(0);
+  }
+
+  .teacher-shell .portal-main {
+    margin-left: 0;
+    width: 100%;
   }
 
   .teacher-hero,
@@ -1233,16 +1275,77 @@
   }
 
   .teacher-entry-head,
-  .teacher-shell .topbar-right,
-  .teacher-shell .portal-topbar,
   .teacher-schedule-item {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  .teacher-shell .portal-topbar {
+    padding: 14px 16px;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .teacher-shell .topbar-right {
+    margin-left: auto;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .teacher-topbar-left {
+    flex: 1 1 auto;
+  }
+
+  .teacher-topbar-left > div {
+    min-width: 0;
+  }
+
+  .teacher-topbar-left h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 20px;
+  }
+
+  .teacher-topbar-meta {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .teacher-shell .topbar-right .btn {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 14px;
+    justify-content: center;
+  }
+
+  .teacher-shell .topbar-right .btn i {
+    margin: 0;
+  }
+
+  .teacher-shell .topbar-right .btn:not(.topbar-user) {
+    font-size: 0;
+  }
+
+  .teacher-shell .topbar-right .btn i {
+    font-size: 16px;
+  }
+
+  .teacher-shell .topbar-notif {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
   .teacher-shell .topbar-user {
-    border-left: none;
-    padding-left: 0;
+    display: none;
   }
 
   .teacher-bubble {
@@ -1251,5 +1354,36 @@
 
   .teacher-settings-actions {
     flex-direction: column;
+  }
+
+  .teacher-shell .portal-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .teacher-shell .portal-topbar {
+    padding: 12px 14px;
+  }
+
+  .teacher-shell .portal-content,
+  .teacher-shell .portal-section,
+  .teacher-shell .card-body,
+  .teacher-shell .card-header {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .teacher-shell .portal-section {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .teacher-hero,
+  .teacher-material-hero,
+  .teacher-analytics-hero,
+  .teacher-admin-notice-bar {
+    padding: 18px 16px;
+    border-radius: 20px;
   }
 }

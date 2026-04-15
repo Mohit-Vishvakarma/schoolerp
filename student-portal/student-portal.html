@@ -296,7 +296,7 @@
   </div>
 </div>
 
-<aside class="portal-sidebar" id="portalSidebar">
+<aside class="portal-sidebar" id="portalSidebar" data-custom-toggle="true">
   <div class="portal-sidebar-brand">
     <div class="logo">VM</div>
     <h2>Vidya Mandir<small>Student Portal</small></h2>
@@ -328,7 +328,7 @@
 <div class="portal-main">
   <header class="portal-topbar">
     <div class="portal-topbar-left">
-      <button id="sidebarToggle" class="portal-menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
+      <button id="sidebarToggle" class="portal-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" data-custom-toggle="true">
         <i class="fas fa-bars"></i>
       </button>
       <h2 id="portalTopbarTitle">Dashboard</h2>
@@ -618,16 +618,16 @@
 
       <div class="table-card">
         <div class="card-body">
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px">
-            <div style="text-align:center;padding:20px;background:rgba(16,185,129,0.1);border-radius:var(--radius)">
+          <div class="attendance-stats-grid">
+            <div class="attendance-stat-tile attendance-stat-present">
               <div style="font-size:32px;font-weight:700;color:var(--green)" id="totalPresent">—</div>
               <div style="font-size:13px;color:var(--gray-500)">Days Present</div>
             </div>
-            <div style="text-align:center;padding:20px;background:rgba(239,68,68,0.1);border-radius:var(--radius)">
+            <div class="attendance-stat-tile attendance-stat-absent">
               <div style="font-size:32px;font-weight:700;color:var(--red)" id="totalAbsent">—</div>
               <div style="font-size:13px;color:var(--gray-500)">Days Absent</div>
             </div>
-            <div style="text-align:center;padding:20px;background:rgba(37,99,235,0.1);border-radius:var(--radius)">
+            <div class="attendance-stat-tile attendance-stat-percentage">
               <div style="font-size:32px;font-weight:700;color:var(--primary-light)" id="attPctDisplay">—</div>
               <div style="font-size:13px;color:var(--gray-500)">Percentage</div>
             </div>
@@ -855,7 +855,7 @@
       <div class="table-card">
         <div class="card-header">
           <h4>Timetable Management</h4>
-          <div>
+          <div class="timetable-action-group">
             <button class="btn btn-sm btn-primary" onclick="openManualScheduleModal()">
               <i class="fas fa-plus"></i> Create Manual Schedule
             </button>
@@ -1154,12 +1154,12 @@
 
       <div class="table-card">
         <div class="card-body">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
-            <div style="padding:24px;background:rgba(37,99,235,0.05);border-radius:var(--radius);border:2px solid rgba(37,99,235,0.1)">
+          <div class="fee-summary-grid">
+            <div class="fee-summary-card fee-summary-annual">
               <div style="font-size:14px;color:var(--gray-500)">Annual Fee</div>
               <div style="font-size:28px;font-weight:700;color:var(--primary)">₹15,000</div>
             </div>
-            <div style="padding:24px;background:rgba(16,185,129,0.05);border-radius:var(--radius);border:2px solid rgba(16,185,129,0.1)">
+            <div class="fee-summary-card fee-summary-status">
               <div style="font-size:14px;color:var(--gray-500)">Status</div>
               <div style="font-size:28px;font-weight:700" id="feeStatusBig">—</div>
             </div>
@@ -1167,7 +1167,7 @@
 
           <div style="background:var(--gray-100);border-radius:var(--radius);padding:20px;margin-bottom:20px">
             <h4 style="font-size:15px;margin-bottom:14px">Payment History</h4>
-            <div class="data-table-wrap">
+            <div class="data-table-wrap fee-table-wrap">
               <table class="data-table">
                 <thead>
                   <tr>
@@ -1447,13 +1447,13 @@
           <h4>Test Results</h4>
         </div>
         <div class="card-body" id="testResults">
-          <div class="result-item">
+          <div class="result-item test-result-item">
             <div class="result-subject">Mathematics Practice Test</div>
             <div class="result-score">42/50</div>
             <div class="result-grade">A</div>
             <div class="result-date">15 Mar 2025</div>
           </div>
-          <div class="result-item">
+          <div class="result-item test-result-item">
             <div class="result-subject">English Grammar Quiz</div>
             <div class="result-score">35/40</div>
             <div class="result-grade">A</div>

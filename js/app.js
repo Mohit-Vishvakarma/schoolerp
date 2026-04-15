@@ -1143,7 +1143,8 @@ function initPortal(role) {
   });
   const sideToggle = document.getElementById('sidebarToggle');
   const sidebar = document.querySelector('.portal-sidebar');
-  if (sideToggle && sidebar) {
+  const hasCustomSidebarToggle = sideToggle?.dataset.customToggle === 'true' || sidebar?.dataset.customToggle === 'true';
+  if (sideToggle && sidebar && !hasCustomSidebarToggle) {
     sideToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
   }
 }

@@ -97,6 +97,7 @@ function showSection(sectionId) {
 
 // Sidebar Toggle Functions
 function toggleSidebar() {
+  console.log('toggleSidebar called');
   const sidebar = document.getElementById('portalSidebar');
   const main = document.querySelector('.portal-main');
   if (sidebar.classList.contains('open')) {
@@ -107,6 +108,7 @@ function toggleSidebar() {
 }
 
 function openSidebar() {
+  console.log('openSidebar called');
   const sidebar = document.getElementById('portalSidebar');
   const main = document.querySelector('.portal-main');
   const overlay = document.getElementById('portalSidebarOverlay');

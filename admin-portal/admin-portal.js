@@ -142,7 +142,21 @@ function openSection(id) {
   document.querySelectorAll(".portal-section").forEach(sec => sec.classList.toggle("active", sec.id === id));
   const nav = document.querySelector(`.portal-nav a[data-section="${id}"]`);
   if (nav) txt("adminTopbarTitle", nav.textContent.trim());
+  closeSidebar();
+}
+function openSidebar() {
+  $("adminSidebar")?.classList.add("open");
+  $("adminSidebarOverlay")?.classList.add("show");
+  $("adminSidebarToggle")?.setAttribute("aria-expanded", "true");
+}
+function closeSidebar() {
   $("adminSidebar")?.classList.remove("open");
+  $("adminSidebarOverlay")?.classList.remove("show");
+  $("adminSidebarToggle")?.setAttribute("aria-expanded", "false");
+}
+function toggleSidebar() {
+  if ($("adminSidebar")?.classList.contains("open")) closeSidebar();
+  else openSidebar();
 }
 
 function filteredStudents() {
@@ -953,7 +967,21 @@ async function persistFeeState(history) {
 
 function bind() {
   document.querySelectorAll(".portal-nav a[data-section]").forEach(a => a.addEventListener("click", () => openSection(a.dataset.section)));
-  $("adminSidebarToggle")?.addEventListener("click", () => $("adminSidebar").classList.toggle("open"));
+  $("adminSidebarToggle")?.addEventListener("click", toggleSidebar);
+  $("adminSidebarOverlay")?.addEventListener("click", closeSidebar);
+  document.addEventListener("click", e => {
+    const sidebar = $("adminSidebar");
+    const toggle = $("adminSidebarToggle");
+    const overlay = $("adminSidebarOverlay");
+    const clickedToggle = !!(toggle && toggle.contains(e.target));
+    if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && !clickedToggle) {
+      if (overlay && overlay.contains(e.target)) return;
+      closeSidebar();
+    }
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 768) closeSidebar();
+  });
   $("studentSearch")?.addEventListener("input", e => { S.studentQuery = e.target.value; renderStudents(); });
   $("studentClassFilter")?.addEventListener("change", e => { S.studentClass = e.target.value; renderStudents(); });
   $("teacherSearch")?.addEventListener("input", e => { S.teacherQuery = e.target.value; renderTeachers(); });
